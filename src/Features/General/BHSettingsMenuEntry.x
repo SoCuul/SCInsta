@@ -2,18 +2,28 @@
 #import "../../Manager.h"
 #import "../../Controllers/SettingsViewController.h"
 
-// Workaround to show BHInsta settings by clicking on Instagram logo
-%hook IGMainAppHeaderView
-- (void)_logoButtonTapped {
-    NSLog(@"[BHInsta] Displaying BHInsta settings modal");
+// show alert when tapping settings icon (*should* be incompatible with rocket tweak)
+%hook IGProfileViewController
+- (void)navigationItemsControllerDidTapSideTray:(id)tray {
+    UIAlertController *alert = [UIAlertController alertControllerWithTitle:nil
+                               message:nil
+                               preferredStyle:UIAlertControllerStyleActionSheet];
+ 
+    [alert addAction:[UIAlertAction actionWithTitle:@"BHInsta Settings" style:UIAlertActionStyleDefault
+        handler:^(UIAlertAction *action) {
+            NSLog(@"[BHInsta] Displaying BHInsta settings modal");
+            UIViewController *rootController = [[UIApplication sharedApplication] delegate].window.rootViewController;
+            UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[SettingsViewController new]];
+            [rootController presentViewController:navigationController animated:YES completion:nil];
+        }]];
+    [alert addAction:[UIAlertAction actionWithTitle:@"Instagram Settings" style:UIAlertActionStyleDefault
+        handler:^(UIAlertAction *action) {
+            %orig(tray);
+        }]];
+    [alert addAction:[UIAlertAction actionWithTitle:@"Cancel" style:UIAlertActionStyleCancel
+       handler:^(UIAlertAction *action) {}]];
 
-    UIViewController *rootController = [[UIApplication sharedApplication] delegate].window.rootViewController;
-    SettingsViewController *settingsViewController = [SettingsViewController new];
-    UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:settingsViewController];
-    
-    [rootController presentViewController:navigationController animated:YES completion:nil];
-
-    return;
+    [self presentViewController:alert animated:YES completion:nil];
 }
 %end
 
