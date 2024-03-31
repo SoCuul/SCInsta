@@ -3,52 +3,73 @@
 #import "../../Controllers/SettingsViewController.h"
 
 // Workaround to show BHInsta settings by clicking on Instagram logo
-%hook IGMainAppHeaderView
-- (void)_logoButtonTapped {
-    NSLog(@"[BHInsta] Displaying BHInsta settings modal");
+// %hook IGMainAppHeaderView
+// - (void)_logoButtonTapped {
+//     NSLog(@"[BHInsta] Displaying BHInsta settings modal");
 
+//     UIViewController *rootController = [[UIApplication sharedApplication] delegate].window.rootViewController;
+//     SettingsViewController *settingsViewController = [SettingsViewController new];
+//     UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:settingsViewController];
+    
+//     [rootController presentViewController:navigationController animated:YES completion:nil];
+
+//     return;
+// }
+// %end
+
+// show settings by holding on the settings icon for ~1 second
+%hook IGBadgedNavigationButton
+- (instancetype)initWithIcon:(UIImage *)icon target:(id)target action:(SEL)action buttonType:(NSUInteger)type {
+    self = %orig;
+
+    if ([[icon ig_imageName] isEqualToString:@"ig_icon_menu_pano_outline_24"]) {
+        UILongPressGestureRecognizer *longPress = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(handleLongPress)];
+        [self addGestureRecognizer:longPress];
+    }
+
+    return self;
+}
+
+%new - (void)handleLongPress {
     UIViewController *rootController = [[UIApplication sharedApplication] delegate].window.rootViewController;
-    SettingsViewController *settingsViewController = [SettingsViewController new];
-    UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:settingsViewController];
+    UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[SettingsViewController new]];
     
     [rootController presentViewController:navigationController animated:YES completion:nil];
-
-    return;
 }
 %end
 
 // Legacy (as of March 13th 2023)
-%hook IGProfileMenuSheetViewController
-- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    return 9;
-}
+// %hook IGProfileMenuSheetViewController
+// - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
+//     return 9;
+// }
 
-- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-    if (indexPath.section == 0 && indexPath.row == 8) {
-        IGProfileSheetTableViewCell *bhinstacell = [[%c(IGProfileSheetTableViewCell) alloc] initWithReuseIdentifier:@"bhinsta_settings"];
+// - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
+//     if (indexPath.section == 0 && indexPath.row == 8) {
+//         IGProfileSheetTableViewCell *bhinstacell = [[%c(IGProfileSheetTableViewCell) alloc] initWithReuseIdentifier:@"bhinsta_settings"];
 
-        UIImageSymbolConfiguration *configuration = [UIImageSymbolConfiguration configurationWithWeight:UIImageSymbolWeightBold];
-        UIImage *gear = [UIImage systemImageNamed:@"gearshape.fill" withConfiguration:configuration];
+//         UIImageSymbolConfiguration *configuration = [UIImageSymbolConfiguration configurationWithWeight:UIImageSymbolWeightBold];
+//         UIImage *gear = [UIImage systemImageNamed:@"gearshape.fill" withConfiguration:configuration];
 
-        [bhinstacell.imageView setImage:gear];
-        [bhinstacell.imageView setTintColor:[UIColor labelColor]];
-        [bhinstacell.textLabel setText:@" BHInsta Settings"];
+//         [bhinstacell.imageView setImage:gear];
+//         [bhinstacell.imageView setTintColor:[UIColor labelColor]];
+//         [bhinstacell.textLabel setText:@" BHInsta Settings"];
 
-        return bhinstacell;
-    }
+//         return bhinstacell;
+//     }
 
-    return %orig;
-}
-- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-    if (indexPath.section == 0 && indexPath.row == 8) {
-        UINavigationController *navVC = [[UINavigationController alloc] initWithRootViewController:[[SettingsViewController alloc] init]];
-        [self _superPresentViewController:navVC animated:true completion:nil];
-        [tableView deselectRowAtIndexPath:indexPath animated:true];
-    } else {
-        return %orig;
-    }
-}
-%end
+//     return %orig;
+// }
+// - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
+//     if (indexPath.section == 0 && indexPath.row == 8) {
+//         UINavigationController *navVC = [[UINavigationController alloc] initWithRootViewController:[[SettingsViewController alloc] init]];
+//         [self _superPresentViewController:navVC animated:true completion:nil];
+//         [tableView deselectRowAtIndexPath:indexPath animated:true];
+//     } else {
+//         return %orig;
+//     }
+// }
+// %end
 
 // TODO: Add BHInsta settings button to profile header navbar icons
 /* %hook IGStackLayout
