@@ -19,14 +19,6 @@
 - (void)_superPresentViewController:(UIViewController *)viewController animated:(BOOL)animated completion:(id)completion; // new
 @end
 
-@interface IGBadgedNavigationButton: UIView
-- (void)handleLongPress; // new
-@end
-
-@interface UIImage ()
-- (NSString *)ig_imageName;
-@end
-
 @interface IGProfileMenuSheetViewController: IGViewController
 @end
 
