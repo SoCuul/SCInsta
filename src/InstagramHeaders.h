@@ -345,6 +345,9 @@
 @interface IGUnifiedVideoCollectionView : UIScrollView
 @end
 
+@interface IGMainAppSurfaceIntent:NSObject
+@end
+
 
 /////////////////////////////////////////////////////////////////////////////
 
