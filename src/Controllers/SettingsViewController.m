@@ -96,6 +96,7 @@
             [self newSwitchCellWithTitle:@"Hide trending searches" detailTitle:@"Hides the trending searches under the explore search bar" key:@"hide_trending_searches" defaultValue:true changeAction:nil],
             [self newSwitchCellWithTitle:@"No suggested chats" detailTitle:@"Hides the suggested broadcast channels in direct messages" key:@"no_suggested_chats" defaultValue:true changeAction:nil],
             [self newSwitchCellWithTitle:@"No suggested users" detailTitle:@"Hides the suggested users for you to follow" key:@"no_suggested_users" defaultValue:false changeAction:nil],
+            [self newSwitchCellWithTitle:@"Show Control Hider Button" detailTitle:@"Adds button to hide Reel Controls" key:@"hide_controls" defaultValue:false changeAction:nil],
 
             // Section 2: Feed
             [self newSectionWithTitle:@"Feed" footer:nil],
