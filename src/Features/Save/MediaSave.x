@@ -30,7 +30,7 @@
             NSLog(@"[SCInsta] Save media: Preparing alert");
 
             IGFeedItemPagePhotoCell *currentCell = self.delegate;
-            IGPostItem *currentPost = [currentCell post];
+            IGPostItem *currentPost = [currentCell post] ?: currentCell.pagePhotoPost; // Attempt to fix Carousel items download
 
             NSSet <NSString *> *knownImageURLIdentifiers = [currentPost.photo valueForKey:@"_knownImageURLIdentifiers"];
             NSArray *knownImageURLIdentifiersArray = [knownImageURLIdentifiers allObjects];
