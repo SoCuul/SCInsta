@@ -75,7 +75,7 @@ A feature-rich tweak for Instagram on iOS!\
 - [Homebrew](https://brew.sh/#install)
 - [CMake](https://formulae.brew.sh/formula/cmake#default) (`brew install cmake`)
 - [Theos](https://theos.dev/docs/installation)
-- [pyzule](https://github.com/asdfzxcvbn/pyzule?tab=readme-ov-file#installation) **\*only required for sideloading**
+- [cyan](https://github.com/asdfzxcvbn/pyzule-rw?tab=readme-ov-file#install-instructions) **\*only required for sideloading**
 
 ### Setup
 1. Install iOS 14.5 frameworks for theos
