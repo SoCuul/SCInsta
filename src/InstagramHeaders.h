@@ -122,11 +122,19 @@
 @interface IGFeedPhotoView () <SCIDownloadDelegate>
 @end
 
-@interface IGSundialViewerVideoCell : UIView
+@interface IGSundialFeedViewController : UIViewController
+- (void)animateCurrentVideoControllerVideoCellControlsOverlayVisible:(BOOL)a;
+@end
+
+@interface IGSundialViewerVideoCell : UICollectionViewCell
 - (void)addHandleLongPress; // new
 - (void)handleLongPress:(UILongPressGestureRecognizer *)sender; // new
-@property (nonatomic, strong) JGProgressHUD *hud;
+- (void)addControlsHiderButton; // new
+- (void)ControlsHiderButtonHandler:(UIButton *)sender; // new
+@property (nonatomic, strong) JGProgressHUD *hud; 
 @property(readonly, nonatomic) IGMedia *video;
+@property (nonatomic, assign, readonly) IGSundialFeedViewController *viewController; // new property
+@property(nonatomic, assign) BOOL controlsHidden; // new property
 @end
 
 @interface IGSundialViewerVideoCell () <SCIDownloadDelegate>
@@ -337,6 +345,8 @@
 @interface IGUnifiedVideoCollectionView : UIScrollView
 @end
 
+@interface IGMainAppSurfaceIntent:NSObject
+@end
 
 
 /////////////////////////////////////////////////////////////////////////////
