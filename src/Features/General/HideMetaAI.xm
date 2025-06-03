@@ -193,35 +193,37 @@
     }
 }
 %end
-
-/* %hook IGGrowingTextView
-
-%end */
-
-%hook IGSearchBar
-- (void)_setupTextView {
-    %orig;
-
-    IGGrowingTextView *_textView = MSHookIvar<IGGrowingTextView *>(self, "_textView");
-
-    if ([SCIManager getPref:@"hide_meta_ai"]) {
-        // Get rid of meta ai search text
-        if ([[_textView placeholderText] containsString:@"Meta AI"]) {
-            [_textView setPlaceholderText:@"Search"];
-        }
-    }
-}
-%end
-
-%hook IGAnimatablePlaceholderTextFieldContainer
-- (id)initWithConfig:(id)arg1 {
-    NSLog(@"[SCInsta Test] %@", arg1);
-    
-    return %orig;
-}
-%end
-
 /////////////////////////////////////////////////////////////////////////////
+
+// Meta AI-branded search bars
+%hook IGSearchBar
+- (id)initWithConfig:(IGSearchBarConfig *)arg1 {
+    return %orig([self sanitizePlaceholderForConfig:arg1]);
+}
+
+- (id)initWithConfig:(IGSearchBarConfig *)arg1 userSession:(id)arg2 {
+    return %orig([self sanitizePlaceholderForConfig:arg1], arg2);
+}
+
+- (void)setConfig:(IGSearchBarConfig *)arg1 {
+    %orig([self sanitizePlaceholderForConfig:arg1]);
+
+    return;
+}
+
+%new - (IGSearchBarConfig *)sanitizePlaceholderForConfig:(IGSearchBarConfig *)config {
+    NSString *placeholder = [config valueForKey:@"placeholder"];
+
+    if ([placeholder containsString:@"Meta AI"]) {
+        [config setValue:@"Search" forKey:@"placeholder"];
+        [config setValue:0 forKey:@"shouldAnimatePlaceholder"];
+
+        NSLog(@"[SCInsta] Changed search bar placeholder from: \"%@\" to \"%@\"", placeholder, [config valueForKey:@"placeholder"]);
+    }
+
+    return [config copy];
+}
+%end
 
 // Themed in-app buttons
 %hook IGTapButton

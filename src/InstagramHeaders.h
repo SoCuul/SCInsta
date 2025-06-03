@@ -341,6 +341,16 @@
 - (void)addLongPressGestureRecognizer; // new
 @end
 
+@interface IGSearchBar : UIView
+- (NSObject *)sanitizePlaceholderForConfig:(NSObject *)config; // new
+@end
+
+@interface IGSearchBarConfig : NSObject
+@end
+
+@interface IGAnimatablePlaceholderTextFieldContainer : UIView
+@end
+
 
 
 /////////////////////////////////////////////////////////////////////////////
