@@ -169,9 +169,11 @@ static BOOL isAuthenticationShowed = FALSE;
 // Direct suggested chats (in search bar)
 %hook IGDirectInboxSearchListAdapterDataSource
 - (id)objectsForListAdapter:(id)arg1 {
-    NSMutableArray *newObjs = [%orig mutableCopy];
+    NSArray *originalObjs = %orig();
+    NSMutableArray *filteredObjs = [NSMutableArray arrayWithCapacity:[originalObjs count]];
 
-    [newObjs enumerateObjectsWithOptions:NSEnumerationReverse usingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+    for (id obj in originalObjs) {
+        BOOL shouldHide = NO;
 
         // Section header 
         if ([obj isKindOfClass:%c(IGLabelItemViewModel)]) {
@@ -181,7 +183,7 @@ static BOOL isAuthenticationShowed = FALSE;
                 if ([SCIManager getPref:@"no_suggested_chats"]) {
                     NSLog(@"[SCInsta] Hiding suggested chats (header)");
 
-                    [newObjs removeObjectAtIndex:idx];
+                    shouldHide = YES;
                 }
             }
 
@@ -190,7 +192,7 @@ static BOOL isAuthenticationShowed = FALSE;
                 if ([SCIManager getPref:@"hide_meta_ai"]) {
                     NSLog(@"[SCInsta] Hiding meta ai suggested chats (header)");
 
-                    [newObjs removeObjectAtIndex:idx];
+                    shouldHide = YES;
                 }
             }
 
@@ -199,7 +201,7 @@ static BOOL isAuthenticationShowed = FALSE;
                 if ([SCIManager getPref:@"hide_meta_ai"]) {
                     NSLog(@"[SCInsta] Hiding ai suggested chats (header)");
 
-                    [newObjs removeObjectAtIndex:idx];
+                    shouldHide = YES;
                 }
             }
             
@@ -214,7 +216,7 @@ static BOOL isAuthenticationShowed = FALSE;
             if ([SCIManager getPref:@"hide_meta_ai"]) {
                 NSLog(@"[SCInsta] Hiding suggested chats (ai agents)");
 
-                [newObjs removeObjectAtIndex:idx];
+                shouldHide = YES;
             }
 
         }
@@ -227,7 +229,7 @@ static BOOL isAuthenticationShowed = FALSE;
                 if ([SCIManager getPref:@"no_suggested_chats"]) {
                     NSLog(@"[SCInsta] Hiding suggested chats (broadcast channels recipient)");
 
-                    [newObjs removeObjectAtIndex:idx];
+                    shouldHide = YES;
                 }
             }
             
@@ -236,7 +238,7 @@ static BOOL isAuthenticationShowed = FALSE;
                 if ([SCIManager getPref:@"hide_meta_ai"]) {
                     NSLog(@"[SCInsta] Hiding meta ai suggested chats (meta ai recipient)");
 
-                    [newObjs removeObjectAtIndex:idx];
+                    shouldHide = YES;
                 }
             }
 
@@ -245,23 +247,31 @@ static BOOL isAuthenticationShowed = FALSE;
                 if ([SCIManager getPref:@"hide_meta_ai"]) {
                     NSLog(@"[SCInsta] Hiding meta ai suggested chats (meta ai recipient)");
 
-                    [newObjs removeObjectAtIndex:idx];
+                    shouldHide = YES;
                 }
             }
         }
 
-    }];
+        // Populate new objs array
+        if (!shouldHide) {
+            [filteredObjs addObject:obj];
+        }
 
-    return [newObjs copy];
+    }
+
+    return [filteredObjs copy];
 }
 %end
 
 // Explore page results
 %hook IGSearchListKitDataSource
 - (id)objectsForListAdapter:(id)arg1 {
-    NSMutableArray *newObjs = [%orig mutableCopy];
+    NSArray *originalObjs = %orig();
+    NSMutableArray *filteredObjs = [NSMutableArray arrayWithCapacity:[originalObjs count]];
 
-    [newObjs enumerateObjectsWithOptions:NSEnumerationReverse usingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+    for (id obj in originalObjs) {
+        BOOL shouldHide = NO;
+
         // Meta AI
         if ([SCIManager getPref:@"hide_meta_ai"]) {
 
@@ -270,19 +280,19 @@ static BOOL isAuthenticationShowed = FALSE;
 
                 // "Ask Meta AI" search results header
                 if ([[obj labelTitle] isEqualToString:@"Ask Meta AI"]) {
-                    [newObjs removeObjectAtIndex:idx];
+                    shouldHide = YES;
                 }
 
             }
 
             // Empty search bar upsell view
             else if ([obj isKindOfClass:%c(IGSearchNullStateUpsellViewModel)]) {
-                [newObjs removeObjectAtIndex:idx];
+                shouldHide = YES;
             }
 
             // Meta AI search suggestions
             else if ([obj isKindOfClass:%c(IGSearchResultNestedGroupViewModel)]) {
-                [newObjs removeObjectAtIndex:idx];
+                shouldHide = YES;
             }
 
             // Meta AI suggested search results
@@ -291,7 +301,7 @@ static BOOL isAuthenticationShowed = FALSE;
                 // itemType 6 is meta ai suggestions
                 if ([obj itemType] == 6) {
                     if ([SCIManager getPref:@"hide_meta_ai"]) {
-                        [newObjs removeObjectAtIndex:idx];
+                        shouldHide = YES;
                     }
                     
                 }
@@ -299,7 +309,7 @@ static BOOL isAuthenticationShowed = FALSE;
                 // Meta AI user account in search results
                 else if ([[[obj title] string] isEqualToString:@"meta.ai"]) {
                     if ([SCIManager getPref:@"hide_meta_ai"]) {
-                        [newObjs removeObjectAtIndex:idx];
+                        shouldHide = YES;
                     }
                 }
 
@@ -315,26 +325,31 @@ static BOOL isAuthenticationShowed = FALSE;
 
                 // "Suggested for you" search results header
                 if ([[obj labelTitle] isEqualToString:@"Suggested for you"]) {
-                    [newObjs removeObjectAtIndex:idx];
+                    shouldHide = YES;
                 }
 
             }
 
             // Instagram users
             else if ([obj isKindOfClass:%c(IGDiscoverPeopleItemConfiguration)]) {
-                [newObjs removeObjectAtIndex:idx];
+                shouldHide = YES;
             }
 
             // See all suggested users
             else if ([obj isKindOfClass:%c(IGSeeAllItemConfiguration)]) {
-                [newObjs removeObjectAtIndex:idx];
+                shouldHide = YES;
             }
 
         }
 
-    }];
+        // Populate new objs array
+        if (!shouldHide) {
+            [filteredObjs addObject:obj];
+        }
 
-    return [newObjs copy];
+    }
+
+    return [filteredObjs copy];
 }
 %end
 

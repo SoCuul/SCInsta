@@ -21,9 +21,11 @@
 // Messaages dms tab (suggestions header)
 %hook IGDirectInboxListAdapterDataSource
 - (id)objectsForListAdapter:(id)arg1 {
-    NSMutableArray *newObjs = [%orig mutableCopy];
+    NSArray *originalObjs = %orig();
+    NSMutableArray *filteredObjs = [NSMutableArray arrayWithCapacity:[originalObjs count]];
 
-    [newObjs enumerateObjectsWithOptions:NSEnumerationReverse usingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+    for (id obj in originalObjs) {
+        BOOL shouldHide = NO;
 
         // Section header
         if ([obj isKindOfClass:%c(IGDirectInboxHeaderCellViewModel)]) {
@@ -33,7 +35,7 @@
                 if ([SCIManager getPref:@"hide_meta_ai"]) {
                     NSLog(@"[SCInsta] Hiding suggested chats (header: messages tab)");
 
-                    [newObjs removeObjectAtIndex:idx];
+                    shouldHide = YES;
                 }
             }
 
@@ -44,12 +46,17 @@
             if ([SCIManager getPref:@"hide_meta_ai"]) {
                 NSLog(@"[SCInsta] Hiding suggested chats (recipients: channels tab)");
 
-                [newObjs removeObjectAtIndex:idx];
+                shouldHide = YES;
             }
         }
 
-    }];
+        // Populate new objs array
+        if (!shouldHide) {
+            [filteredObjs addObject:obj];
+        }
 
-    return [newObjs copy];
+    }
+
+    return [filteredObjs copy];
 }
 %end
