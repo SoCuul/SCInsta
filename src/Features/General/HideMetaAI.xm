@@ -246,13 +246,20 @@
 }
 
 %new - (IGSearchBarConfig *)sanitizePlaceholderForConfig:(IGSearchBarConfig *)config {
-    NSString *placeholder = [config valueForKey:@"placeholder"];
+    if ([SCIManager getPref:@"hide_meta_ai"]) {
 
-    if ([placeholder containsString:@"Meta AI"]) {
-        [config setValue:@"Search" forKey:@"placeholder"];
-        [config setValue:0 forKey:@"shouldAnimatePlaceholder"];
+        NSString *placeholder = [config valueForKey:@"placeholder"];
 
-        NSLog(@"[SCInsta] Changed search bar placeholder from: \"%@\" to \"%@\"", placeholder, [config valueForKey:@"placeholder"]);
+        if ([placeholder containsString:@"Meta AI"]) {
+            [config setValue:@"Search" forKey:@"placeholder"];
+            [config setValue:0 forKey:@"shouldAnimatePlaceholder"];
+            
+            NSLog(@"[SCInsta] Changed search bar placeholder from: \"%@\" to \"%@\"", placeholder, [config valueForKey:@"placeholder"]);
+
+            [config setValue:0 forKey:@"leftIconStyle"];
+            [config setValue:0 forKey:@"rightButtonStyle"];
+        }
+
     }
 
     return [config copy];
