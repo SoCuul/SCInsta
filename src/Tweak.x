@@ -105,7 +105,12 @@ static BOOL isAuthenticationShowed = FALSE;
 %end
 
 
-// Instagram DM visual messages / IG stories
+// Disable anti-screenshot feature on visual messages
+%hook IGStoryViewerContainerView
+- (void)setShouldBlockScreenshot:(BOOL)arg1 viewModel:(id)arg2 { VOID_HANDLESCREENSHOT(%orig); }
+%end
+
+// Disable screenshot logging/detection
 %hook IGDirectVisualMessageViewerSession
 - (id)visualMessageViewerController:(id)arg1 didDetectScreenshotForVisualMessage:(id)arg2 atIndex:(NSInteger)arg3 { NONVOID_HANDLESCREENSHOT(%orig); }
 - (id)visualMessageViewerController:(id)arg1 didEndPlaybackForVisualMessage:(id)arg2 atIndex:(NSInteger)arg3 forNavType:(NSInteger)arg4 { NONVOID_HANDLEREPLAY(%orig); }
@@ -121,14 +126,33 @@ static BOOL isAuthenticationShowed = FALSE;
 - (id)visualMessageViewerController:(id)arg1 didEndPlaybackForVisualMessage:(id)arg2 atIndex:(NSInteger)arg3 forNavType:(NSInteger)arg4 { NONVOID_HANDLEREPLAY(%orig); }
 %end
 
-%hook IGDirectVisualMessageViewerController
+%hook IGScreenshotObserver
+- (id)initForController:(id)arg1 { NONVOID_HANDLESCREENSHOT(%orig); }
+%end
+
+%hook IGScreenshotObserverDelegate
 - (void)screenshotObserverDidSeeScreenshotTaken:(id)arg1 { VOID_HANDLESCREENSHOT(%orig); }
 - (void)screenshotObserverDidSeeActiveScreenCapture:(id)arg1 event:(NSInteger)arg2 { VOID_HANDLESCREENSHOT(%orig); }
 %end
 
-// Instagram Screenshot Observer
-%hook IGScreenshotObserver
-- (id)initForController:(id)arg1 { NONVOID_HANDLESCREENSHOT(%orig); }
+%hook IGDirectMediaViewerViewController
+- (void)screenshotObserverDidSeeScreenshotTaken:(id)arg1 { VOID_HANDLESCREENSHOT(%orig); }
+- (void)screenshotObserverDidSeeActiveScreenCapture:(id)arg1 event:(NSInteger)arg2 { VOID_HANDLESCREENSHOT(%orig); }
+%end
+
+%hook IGStoryViewerViewController
+- (void)screenshotObserverDidSeeScreenshotTaken:(id)arg1 { VOID_HANDLESCREENSHOT(%orig); }
+- (void)screenshotObserverDidSeeActiveScreenCapture:(id)arg1 event:(NSInteger)arg2 { VOID_HANDLESCREENSHOT(%orig); }
+%end
+
+%hook IGSundialFeedViewController
+- (void)screenshotObserverDidSeeScreenshotTaken:(id)arg1 { VOID_HANDLESCREENSHOT(%orig); }
+- (void)screenshotObserverDidSeeActiveScreenCapture:(id)arg1 event:(NSInteger)arg2 { VOID_HANDLESCREENSHOT(%orig); }
+%end
+
+%hook IGDirectVisualMessageViewerController
+- (void)screenshotObserverDidSeeScreenshotTaken:(id)arg1 { VOID_HANDLESCREENSHOT(%orig); }
+- (void)screenshotObserverDidSeeActiveScreenCapture:(id)arg1 event:(NSInteger)arg2 { VOID_HANDLESCREENSHOT(%orig); }
 %end
 
 // Remove notes tray

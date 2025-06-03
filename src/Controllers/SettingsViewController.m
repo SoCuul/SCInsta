@@ -130,7 +130,7 @@
             [self newSwitchCellWithTitle:@"Keep deleted message" detailTitle:@"Keeps deleted direct messages in the chat" key:@"keep_deleted_message" defaultValue:true changeAction:nil],
             [self newSwitchCellWithTitle:@"Unlimited replay of direct stories" detailTitle:@"Replays direct messages normal/once stories unlimited times" key:@"unlimited_replay" defaultValue:false changeAction:nil],
             [self newSwitchCellWithTitle:@"Disable sending read receipts" detailTitle:@"Removes the seen text for others when you view a message" key:@"remove_lastseen" defaultValue:false changeAction:nil],
-            [self newSwitchCellWithTitle:@"Remove screenshot alert" detailTitle:@"Removes the alert notifying others that you screenshotted a direct story" key:@"remove_screenshot_alert" defaultValue:true changeAction:nil],
+            [self newSwitchCellWithTitle:@"Disable screenshot detection" detailTitle:@"Removes the screenshot-prevention features for visual messages" key:@"remove_screenshot_alert" defaultValue:true changeAction:nil],
             [self newSwitchCellWithTitle:@"Disable story seen receipt" detailTitle:@"Hides the notification for others when you view their story" key:@"no_seen_receipt" defaultValue:false changeAction:nil],
 
             // Section 6: Security
