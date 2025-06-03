@@ -152,6 +152,37 @@
 
 // Explore
 
+// Meta AI explore search summary
+%hook IGDiscoveryListKitDataSource
+- (id)objectsForListAdapter:(id)arg1 {
+    NSArray *originalObjs = %orig();
+    NSMutableArray *filteredObjs = [NSMutableArray arrayWithCapacity:[originalObjs count]];
+
+    for (id obj in originalObjs) {
+        BOOL shouldHide = NO;
+
+        // Meta AI summary
+        if ([obj isKindOfClass:%c(IGSearchMetaAIHCMModel)]) {
+            
+            if ([SCIManager getPref:@"hide_meta_ai"]) {
+                NSLog(@"[SCInsta] Hiding explore meta ai search summary");
+
+                shouldHide = YES;
+            }
+
+        }
+
+        // Populate new objs array
+        if (!shouldHide) {
+            [filteredObjs addObject:obj];
+        }
+
+    }
+
+    return [filteredObjs copy];
+}
+%end
+
 // Meta AI search bar ring button
 %hook IGSearchBarDonutButton
 - (void)didMoveToWindow {
