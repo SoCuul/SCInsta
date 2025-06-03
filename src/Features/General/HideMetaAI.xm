@@ -89,29 +89,6 @@
 }
 %end
 
-// Meta AI direct search suggested topics header
-%hook IGLabelItemViewModel
-- (id)initWithLabelTitle:(id)arg1
-                     tag:(NSInteger)arg2
-        uniqueIdentifier:(id)arg3
-           configuration:(id)arg4
-     accessibilityTraits:(NSUInteger)arg5 {
-    self = %orig;
-
-    if ([[self labelTitle] isEqualToString:@"Ask Meta AI"]) {
-
-        if ([SCIManager getPref:@"hide_meta_ai"]) {
-            NSLog(@"[SCInsta] Hiding meta ai: explore suggested topics header");
-
-            return nil;
-        }
-
-    }
-
-    return self;
-}
-%end
-
 // Meta AI direct search prompt suggestions in search results
 %hook IGDirectInboxSearchAIAgentsSuggestedPromptRowCell
 - (void)didMoveToWindow {
