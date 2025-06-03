@@ -3,7 +3,7 @@
 set -e
 
 echo 'Note: This script is meant to be used while developing the tweak.'
-echo '      This does not build "libsciFLEX", it must be done manually and moved to ./packages'
+echo '      This does not build "libflex" or "FLEXing", they must be built manually and moved to ./packages'
 echo
 
 ./build.sh sideload --dev
