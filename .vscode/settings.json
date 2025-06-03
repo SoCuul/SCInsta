@@ -14,6 +14,7 @@
 
     "search.exclude": {
         "modules/": true,
-        "dump/": true
+        "dumps/": true,
+        "src/InstagramHeaders.h": true
     }
 }
