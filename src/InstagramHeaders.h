@@ -337,6 +337,10 @@
 @interface IGUnifiedVideoCollectionView : UIScrollView
 @end
 
+@interface IGBadgedNavigationButton : UIView
+- (void)addLongPressGestureRecognizer; // new
+@end
+
 
 
 /////////////////////////////////////////////////////////////////////////////
