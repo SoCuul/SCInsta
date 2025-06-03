@@ -1,0 +1,10 @@
+CompileFlags:
+  Add: [
+    "-isysroot",
+    "/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS.sdk",
+    "-fmodules",
+    "-fcxx-modules",
+    "-fobjc-arc",
+    "-I/opt/theos/include",
+    "-I/opt/theos/vendor/include"
+  ]

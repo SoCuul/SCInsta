@@ -3,6 +3,7 @@
 set -e
 
 CMAKE_OSX_ARCHITECTURES="arm64e;arm64"
+CMAKE_OSX_SYSROOT="iphoneos"
 
 # Prerequisites
 if [ -z "$(ls -A modules/FLEXing)" ]; then
