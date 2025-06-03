@@ -56,7 +56,7 @@
 
 // Follow button on reels
 %hook IGUnifiedVideoFollowButton
-- (void)_hackilyHandleOurOwnButtonTaps:(id)arg1 {
+- (void)_hackilyHandleOurOwnButtonTaps:(id)arg1 event:(id)arg2 {
     CONFIRMFOLLOW(%orig);
 }
 %end
