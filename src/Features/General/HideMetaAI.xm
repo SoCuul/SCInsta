@@ -196,6 +196,22 @@
 
 /////////////////////////////////////////////////////////////////////////////
 
+// Reels/Sundial
+
+// Suggested AI searches in comment section
+%hook IGCommentThreadAICarousel
+- (id)initWithLauncherSet:(id)arg1 {
+    if ([SCIManager getPref:@"hide_meta_ai"]) {
+        return nil;
+    }
+
+    return %orig;
+}
+%end
+%end
+
+/////////////////////////////////////////////////////////////////////////////
+
 // Other
 
 // Meta AI-branded search bars
