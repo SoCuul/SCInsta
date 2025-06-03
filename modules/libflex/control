@@ -1,9 +1,0 @@
-Package: libsciFLEX
-Name: libsciFLEX
-Pre-Depends: firmware (>= 9.0)
-Version: 1.0.0
-Architecture: iphoneos-arm
-Description: Dynamically loads FLEX for SCInsta 
-Maintainer: SoCuul
-Author: SoCuul
-Section: Tweaks

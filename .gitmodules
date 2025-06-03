@@ -1,3 +1,3 @@
-[submodule "modules/libflex/FLEX"]
-	path = modules/libflex/FLEX
-	url = https://github.com/FLEXTool/FLEX
+[submodule "modules/FLEXing"]
+	path = modules/FLEXing
+	url = https://github.com/SoCuul/FLEXing
