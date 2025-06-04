@@ -28,6 +28,7 @@ A feature-rich tweak for Instagram on iOS!\
 - Do not save recent searches
 - Hide explore posts grid
 - Hide trending searches
+- Hide friends map
 - No suggested chats (in dms)
 - Hide notes tray
 
