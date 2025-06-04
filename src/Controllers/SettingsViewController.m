@@ -98,7 +98,6 @@
             [self newSwitchCellWithTitle:@"No suggested users" detailTitle:@"Hides the suggested users for you to follow" key:@"no_suggested_users" defaultValue:false changeAction:nil],
             [self newSwitchCellWithTitle:@"Hide notes tray" detailTitle:@"Hides the notes tray in the inbox" key:@"hide_notes_tray" defaultValue:false changeAction:nil],
 
-
             // Section 2: Feed
             [self newSectionWithTitle:@"Feed" footer:nil],
             [self newSwitchCellWithTitle:@"Hide ads" detailTitle:@"Removes all ads from the Instagram app" key:@"hide_ads" defaultValue:true changeAction:nil],
