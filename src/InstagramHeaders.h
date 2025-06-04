@@ -354,6 +354,12 @@
 @interface IGDirectInboxConfig : NSObject
 @end
 
+@interface IGDirectMediaPickerConfig : NSObject
+@end
+
+@interface IGDirectMediaPickerGalleryConfig : NSObject
+@end
+
 
 
 /////////////////////////////////////////////////////////////////////////////

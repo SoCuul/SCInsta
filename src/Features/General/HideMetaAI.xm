@@ -171,6 +171,34 @@
     return %orig(arg1, arg2, arg3, [config copy], arg5, arg6);
 }
 %end
+
+// Meta AI "imagine" in media picker
+%hook IGDirectMediaPickerViewController
+- (id)initWithUserSession:(id)arg1
+                   config:(IGDirectMediaPickerConfig *)config
+             capabilities:(id)arg3
+           threadMetadata:(id)arg4
+            messageSender:(id)arg5
+    threadAnalyticsLogger:(id)arg6
+     multimodalPerfLogger:(id)arg7
+     localSendSpeedLogger:(id)arg8
+   sendAttributionFactory:(id)arg9 
+{
+    if ([SCIManager getPref:@"hide_meta_ai"]) {
+        NSLog(@"[SCInsta] Hiding meta ai: imagine tile in media picker");
+
+        @try {
+            IGDirectMediaPickerGalleryConfig *galleryConfig = [config valueForKey:@"galleryConfig"];
+
+            [galleryConfig setValue:0 forKey:@"isImagineEntryPointEnabled"];
+        }
+        @catch (NSException *exception) {
+            NSLog(@"[SCInsta] WARNING: %@\n\nFull object: %@", exception.reason, config);
+        }
+    }
+
+    return %orig(arg1, [config copy], arg3, arg4, arg5, arg6, arg7, arg8, arg9);
+}
 %end
 
 /////////////////////////////////////////////////////////////////////////////
