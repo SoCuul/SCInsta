@@ -227,6 +227,8 @@
 %hook IGCommentThreadAICarousel
 - (id)initWithLauncherSet:(id)arg1 {
     if ([SCIManager getPref:@"hide_meta_ai"]) {
+        NSLog(@"[SCInsta] Hiding meta ai: suggested ai searches comment carousel");
+
         return nil;
     }
 
@@ -257,16 +259,45 @@
 %new - (IGSearchBarConfig *)sanitizePlaceholderForConfig:(IGSearchBarConfig *)config {
     if ([SCIManager getPref:@"hide_meta_ai"]) {
 
+        NSLog(@"[SCInsta] Hiding meta ai: reconfiguring search bar");
+
         NSString *placeholder = [config valueForKey:@"placeholder"];
 
         if ([placeholder containsString:@"Meta AI"]) {
-            [config setValue:@"Search" forKey:@"placeholder"];
-            [config setValue:0 forKey:@"shouldAnimatePlaceholder"];
-            
+
+            // placeholder
+            @try {
+                [config setValue:@"Search" forKey:@"placeholder"];
+            }
+            @catch (NSException *exception) {
+                NSLog(@"[SCInsta] WARNING: %@\n\nFull object: %@", exception.reason, config);
+            }
+
+            // shouldAnimatePlaceholder
+            @try {
+                [config setValue:0 forKey:@"shouldAnimatePlaceholder"];
+            }
+            @catch (NSException *exception) {
+                NSLog(@"[SCInsta] WARNING: %@\n\nFull object: %@", exception.reason, config);
+            }
+
             NSLog(@"[SCInsta] Changed search bar placeholder from: \"%@\" to \"%@\"", placeholder, [config valueForKey:@"placeholder"]);
 
-            [config setValue:0 forKey:@"leftIconStyle"];
-            [config setValue:0 forKey:@"rightButtonStyle"];
+            // leftIconStyle
+            @try {
+                [config setValue:0 forKey:@"leftIconStyle"];
+            }
+            @catch (NSException *exception) {
+                NSLog(@"[SCInsta] WARNING: %@\n\nFull object: %@", exception.reason, config);
+            }
+
+            // rightButtonStyle
+            @try {
+                [config setValue:0 forKey:@"rightButtonStyle"];
+            }
+            @catch (NSException *exception) {
+                NSLog(@"[SCInsta] WARNING: %@\n\nFull object: %@", exception.reason, config);
+            }
         }
 
     }

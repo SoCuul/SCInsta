@@ -351,6 +351,9 @@
 @interface IGAnimatablePlaceholderTextFieldContainer : UIView
 @end
 
+@interface IGDirectInboxConfig : NSObject
+@end
+
 
 
 /////////////////////////////////////////////////////////////////////////////
