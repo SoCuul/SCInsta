@@ -1,7 +1,6 @@
 #import "../../InstagramHeaders.h"
 #import "../../Manager.h"
 
-// Hide reels tab
 %hook IGTabBar
 - (void)didMoveToWindow {
     %orig;
