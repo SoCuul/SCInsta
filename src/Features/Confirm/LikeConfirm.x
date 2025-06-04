@@ -91,6 +91,9 @@
 
 // Liking stories
 %hook IGStoryFullscreenDefaultFooterView
+- (void)_handleLikeTapped {
+    CONFIRMPOSTLIKE(%orig);
+}
 - (void)_likeTapped {
     CONFIRMPOSTLIKE(%orig);
 }
