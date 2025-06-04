@@ -148,6 +148,31 @@
 }
 %end
 
+// Suggested AI chats in direct inbox header
+%hook IGDirectInboxNavigationHeaderView
+- (id)initWithFrame:(CGRect)arg1
+              title:(id)arg2
+          titleView:(id)arg3
+  directInboxConfig:(IGDirectInboxConfig *)config
+        userSession:(id)arg5
+    loggingDelegate:(id)arg6
+{
+    if ([SCIManager getPref:@"hide_meta_ai"]) {
+        NSLog(@"[SCInsta] Hiding meta ai: suggested ai chats in direct inbox header");
+
+        @try {
+            [config setValue:0 forKey:@"shouldShowAIChatsEntrypointButton"];
+        }
+        @catch (NSException *exception) {
+            NSLog(@"[SCInsta] WARNING: %@\n\nFull object: %@", exception.reason, config);
+        }
+    }
+
+    return %orig(arg1, arg2, arg3, [config copy], arg5, arg6);
+}
+%end
+%end
+
 /////////////////////////////////////////////////////////////////////////////
 
 // Explore
@@ -206,22 +231,6 @@
     }
 
     return %orig;
-}
-%end
-
-%hook IGDirectInboxNavigationHeaderView
-- (id)initWithFrame:(CGRect)arg1
-              title:(id)arg2
-          titleView:(id)arg3
-  directInboxConfig:(IGDirectInboxConfig *)config
-        userSession:(id)arg5
-    loggingDelegate:(id)arg6
-{
-    if ([SCIManager getPref:@"hide_meta_ai"]) {
-        [config setValue:0 forKey:@"shouldShowAIChatsEntrypointButton"];
-    }
-
-    return %orig(arg1, arg2, arg3, [config copy], arg5, arg6);
 }
 %end
 
