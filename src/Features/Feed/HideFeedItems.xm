@@ -44,10 +44,21 @@ static NSArray *removeItemsInList(NSArray *list, BOOL isFeed) {
             }
         }
         
-        // Remove suggested for you (accounts)
+        // Remove suggested for you (accounts) in feed
         if (isFeed && [SCIManager getPref:@"no_suggested_account"]) {
             if ([obj isKindOfClass:%c(IGHScrollAYMFModel)]) {
-                NSLog(@"[SCInsta] Hiding suggested for you");
+                NSLog(@"[SCInsta] Hiding accounts suggested for you (feed)");
+
+                shouldHide = YES;
+
+                continue;
+            }
+        }
+
+        // Remove suggested for you (accounts) in reels
+        if ([SCIManager getPref:@"no_suggested_account"]) {
+            if ([obj isKindOfClass:%c(IGSuggestedUserInReelsModel)]) {
+                NSLog(@"[SCInsta] Hiding accounts suggested for you (reels)");
 
                 shouldHide = YES;
 
@@ -108,10 +119,15 @@ static NSArray *removeItemsInList(NSArray *list, BOOL isFeed) {
     return [filteredObjs copy];
 }
 
-// Suggested posts
+// Suggested posts/reels
 %hook IGMainFeedListAdapterDataSource
 - (NSArray *)objectsForListAdapter:(id)arg1 {
     return removeItemsInList(%orig, YES);
+}
+%end
+%hook IGSundialFeedDataSource
+- (NSArray *)objectsForListAdapter:(id)arg1 {
+    return removeItemsInList(%orig, NO);
 }
 %end
 %hook IGContextualFeedViewController
