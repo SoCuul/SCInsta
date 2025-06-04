@@ -117,6 +117,7 @@
             [self newSwitchCellWithTitle:@"Confirm follow" detailTitle:@"Shows an alert when you click the follow button to confirm the follow" key:@"follow_confirm" defaultValue:false changeAction:nil],
             [self newSwitchCellWithTitle:@"Confirm call" detailTitle:@"Shows an alert when you click the audio/video call button to confirm before calling" key:@"call_confirm" defaultValue:true changeAction:nil],
             [self newSwitchCellWithTitle:@"Confirm voice messages" detailTitle:@"Shows an alert to confirm before sending a voice message" key:@"voice_message_confirm" defaultValue:true changeAction:nil],
+            [self newSwitchCellWithTitle:@"Confirm shh mode" detailTitle:@"Shows an alert to confirm before toggling disappearing messages" key:@"shh_mode_confirm" defaultValue:false changeAction:nil],
             [self newSwitchCellWithTitle:@"Confirm sticker interaction" detailTitle:@"Shows an alert when you click a sticker on someone's story to confirm the action" key:@"sticker_interact_confirm" defaultValue:false changeAction:nil],
             [self newSwitchCellWithTitle:@"Confirm posting comment" detailTitle:@"Shows an alert when you click the post comment button to confirm" key:@"post_comment_confirm" defaultValue:false changeAction:nil],
             [self newSwitchCellWithTitle:@"Confirm changing theme" detailTitle:@"Shows an alert when you change a dm channel theme to confirm" key:@"change_direct_theme_confirm" defaultValue:false changeAction:nil],

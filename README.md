@@ -47,6 +47,7 @@ A feature-rich tweak for Instagram on iOS!\
 - Confirm follow
 - Confirm call
 - Confirm voice messages
+- Confirm shh mode (disappearing messages)
 - Confirm sticker interaction
 - Confirm posting comment
 - Confirm changing theme
