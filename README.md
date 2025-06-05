@@ -30,6 +30,7 @@ A feature-rich tweak for Instagram on iOS!\
 - Hide trending searches
 - Hide friends map
 - No suggested chats (in dms)
+- Hide notes tray
 
 ### Feed
 - Hide ads
