@@ -97,7 +97,7 @@
             [self newSwitchCellWithTitle:@"Hide friends map" detailTitle:@"Hides the friends map icon in the notes tray" key:@"hide_friends_map" defaultValue:false changeAction:nil],
             [self newSwitchCellWithTitle:@"No suggested chats" detailTitle:@"Hides the suggested broadcast channels in direct messages" key:@"no_suggested_chats" defaultValue:false changeAction:nil],
             [self newSwitchCellWithTitle:@"No suggested users" detailTitle:@"Hides the suggested users for you to follow" key:@"no_suggested_users" defaultValue:false changeAction:nil],
-            [self newSwitchCellWithTitle:@"Hide notes tray" detailTitle:@"Hides the notes tray in the inbox" key:@"hide_notes_tray" defaultValue:false changeAction:nil],
+            [self newSwitchCellWithTitle:@"Hide notes tray" detailTitle:@"Hides the notes tray in the direct messages inbox" key:@"hide_notes_tray" defaultValue:false changeAction:nil],
 
             // Section 2: Feed
             [self newSectionWithTitle:@"Feed" footer:nil],
