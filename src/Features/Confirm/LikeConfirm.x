@@ -57,7 +57,20 @@
 - (void)controlsOverlayControllerDidLongPressLikeButton:(id)arg1 gestureRecognizer:(id)arg2 {
     CONFIRMREELSLIKE(%orig);
 }
-- (void)controlsOverlayControllerDidTapLikedBySocialContextButton:(id)arg1 button:(id)arg2 {
+- (void)gestureController:(id)arg1 didObserveDoubleTap:(id)arg2 {
+    CONFIRMREELSLIKE(%orig);
+}
+%end
+%hook IGSundialViewerPhotoCell
+- (void)controlsOverlayControllerDidTapLikeButton:(id)arg1 {
+    CONFIRMREELSLIKE(%orig);
+}
+- (void)gestureController:(id)arg1 didObserveDoubleTap:(id)arg2 {
+    CONFIRMREELSLIKE(%orig);
+}
+%end
+%hook IGSundialViewerCarouselCell
+- (void)controlsOverlayControllerDidTapLikeButton:(id)arg1 {
     CONFIRMREELSLIKE(%orig);
 }
 - (void)gestureController:(id)arg1 didObserveDoubleTap:(id)arg2 {

@@ -53,12 +53,13 @@ BOOL dmVisualMsgsViewedButtonEnabled = false;
 
             [[NSUserDefaults standardUserDefaults] setValue:@"SCInstaFirstRun" forKey:@"SCInstaFirstRun"];
             [[NSUserDefaults standardUserDefaults] setBool:true forKey:@"hide_ads"];
+            [[NSUserDefaults standardUserDefaults] setBool:true forKey:@"copy_description"];
+            [[NSUserDefaults standardUserDefaults] setBool:true forKey:@"detailed_color_picker"];
             [[NSUserDefaults standardUserDefaults] setBool:true forKey:@"dw_videos"];
             [[NSUserDefaults standardUserDefaults] setBool:true forKey:@"save_profile"];
             [[NSUserDefaults standardUserDefaults] setBool:true forKey:@"remove_screenshot_alert"];
             [[NSUserDefaults standardUserDefaults] setBool:true forKey:@"call_confirm"];
-            [[NSUserDefaults standardUserDefaults] setBool:true forKey:@"no_suggested_chats"];
-            [[NSUserDefaults standardUserDefaults] setBool:true forKey:@"no_suggested_threads"];
+            [[NSUserDefaults standardUserDefaults] setBool:true forKey:@"keep_deleted_message"];
 
             // Display settings modal on screen
             NSLog(@"[SCInsta] Displaying SCInsta first-time settings modal");
@@ -179,7 +180,7 @@ static BOOL isAuthenticationShowed = FALSE;
         if ([obj isKindOfClass:%c(IGLabelItemViewModel)]) {
 
             // Broadcast channels
-            if ([[obj labelTitle] isEqualToString:@"Suggested channels"]) {
+            if ([[obj uniqueIdentifier] isEqualToString:@"channels"]) {
                 if ([SCIManager getPref:@"no_suggested_chats"]) {
                     NSLog(@"[SCInsta] Hiding suggested chats (header)");
 
@@ -210,6 +211,7 @@ static BOOL isAuthenticationShowed = FALSE;
         // AI agents section
         else if (
             [obj isKindOfClass:%c(IGDirectInboxSearchAIAgentsPillsSectionViewModel)]
+         || [obj isKindOfClass:%c(IGDirectInboxSearchAIAgentsSuggestedPromptViewModel)]
          || [obj isKindOfClass:%c(IGDirectInboxSearchAIAgentsSuggestedPromptLoggingViewModel)]
         ) {
 

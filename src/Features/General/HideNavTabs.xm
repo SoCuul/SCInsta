@@ -6,6 +6,8 @@
     %orig;
 
     NSMutableArray *_tabButtons = MSHookIvar<NSArray *>(self, "_tabButtons");
+    if (_tabButtons == nil) return;
+
     NSMutableArray *filteredObjs = [NSMutableArray arrayWithCapacity:[_tabButtons count]];
 
     for (UIView *obj in _tabButtons) {

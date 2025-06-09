@@ -23,6 +23,7 @@ A feature-rich tweak for Instagram on iOS!\
 ### General
 - Hide Meta AI
 - Copy description
+- Use detailed color picker
 - Hide reels tab
 - Disable scrolling reels
 - Do not save recent searches

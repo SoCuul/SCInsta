@@ -76,32 +76,6 @@
 }
 %end
 
-// Meta AI direct search suggested topics clouds
-%hook IGDirectInboxSearchAIAgentsPillsContainerCell
-- (void)didMoveToWindow {
-    %orig;
-
-    if ([SCIManager getPref:@"hide_meta_ai"]) {
-        NSLog(@"[SCInsta] Hiding meta ai: direct search suggested topics clouds");
-
-        [self removeFromSuperview];
-    }
-}
-%end
-
-// Meta AI direct search prompt suggestions in search results
-%hook IGDirectInboxSearchAIAgentsSuggestedPromptRowCell
-- (void)didMoveToWindow {
-    %orig;
-
-    if ([SCIManager getPref:@"hide_meta_ai"]) {
-        NSLog(@"[SCInsta] Hiding meta ai: direct search ai prompt suggestions");
-
-        [self removeFromSuperview];
-    }
-}
-%end
-
 // Meta AI in message composer
 %hook IGDirectCommandSystemListViewController
 - (id)objectsForListAdapter:(id)arg1 {
@@ -114,26 +88,28 @@
         if ([SCIManager getPref:@"hide_meta_ai"]) {
 
             if ([obj isKindOfClass:%c(IGDirectCommandSystemViewModel)]) {
-
                 IGDirectCommandSystemViewModel *typedObj = (IGDirectCommandSystemViewModel *)obj;
                 IGDirectCommandSystemRow *cmdSystemRow = (IGDirectCommandSystemRow *)[typedObj row];
 
                 IGDirectCommandSystemResult *_commandResult_command = MSHookIvar<IGDirectCommandSystemResult *>(cmdSystemRow, "_commandResult_command");
 
-                // Meta AI
-                if ([[_commandResult_command title] isEqualToString:@"Meta AI"]) {
-                    NSLog(@"[SCInsta] Hiding meta ai: direct message composer suggestion");
+                if (_commandResult_command != nil) {
+                    
+                    // Meta AI
+                    if ([[_commandResult_command title] isEqualToString:@"Meta AI"]) {
+                        NSLog(@"[SCInsta] Hiding meta ai: direct message composer suggestion");
 
-                    shouldHide = YES;
+                        shouldHide = YES;
+                    }
+
+                    // Meta AI (Imagine)
+                    else if ([[_commandResult_command commandString] isEqualToString:@"/imagine"]) {
+                        NSLog(@"[SCInsta] Hiding meta ai: direct message composer /imagine suggestion");
+
+                        shouldHide = YES;
+                    }
+                    
                 }
-
-                // Meta AI (Imagine)
-                else if ([[_commandResult_command commandString] isEqualToString:@"/imagine"]) {
-                    NSLog(@"[SCInsta] Hiding meta ai: direct message composer /imagine suggestion");
-
-                    shouldHide = YES;
-                }
-
             }
             
         }
@@ -326,6 +302,7 @@
             @catch (NSException *exception) {
                 NSLog(@"[SCInsta] WARNING: %@\n\nFull object: %@", exception.reason, config);
             }
+
         }
 
     }
