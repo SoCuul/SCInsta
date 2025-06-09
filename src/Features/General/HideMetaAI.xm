@@ -328,3 +328,14 @@
     }
 }
 %end
+
+// Home feed meta ai button
+%hook IGFloatingActionButton.IGFloatingActionButton
+- (void)didMoveToSuperview {
+    %orig;
+    if ([SCIManager getPref:@"hide_meta_ai"]) {
+        [self removeFromSuperview];
+        NSLog(@"[SCInsta] Hiding meta ai: home feed meta ai button"); 
+    }
+}
+%end
