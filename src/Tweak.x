@@ -361,8 +361,8 @@ shouldPersistLastBugReportId:(id)arg6
                 }
             }
 
-            // "Accounts to follow" header
-            else if ([[obj title] isEqualToString:@"Accounts to follow"]) {
+            // "Accounts to follow/message" header
+            else if ([[obj title] hasPrefix:@"Accounts to"]) {
                 if ([SCIManager getBoolPref:@"no_suggested_users"]) {
                     NSLog(@"[SCInsta] Hiding suggested users: (header: inbox view)");
 
