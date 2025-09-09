@@ -140,6 +140,7 @@
             [self newSwitchCellWithTitle:@"Confirm sticker interaction" detailTitle:@"Shows an alert when you click a sticker on someone's story to confirm the action" key:@"sticker_interact_confirm" changeAction:nil],
             [self newSwitchCellWithTitle:@"Confirm posting comment" detailTitle:@"Shows an alert when you click the post comment button to confirm" key:@"post_comment_confirm" changeAction:nil],
             [self newSwitchCellWithTitle:@"Confirm changing theme" detailTitle:@"Shows an alert when you change a dm channel theme to confirm" key:@"change_direct_theme_confirm" changeAction:nil],
+            [self newSwitchCellWithTitle:@"Confirm follow requests" detailTitle:@"Shows an alert when you accept/decline a follow request" key:@"follow_request_confirm" changeAction:nil],
             
             // Section 6: Focus/Distractions
             [self newSectionWithTitle:@"Focus/Distractions" footer:nil],
