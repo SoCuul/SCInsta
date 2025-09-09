@@ -17,15 +17,7 @@ CCFLAGS += -std=c++11
 
 include $(THEOS_MAKE_PATH)/tweak.mk
 
-# Dev mode (skip building FLEX)
-ifdef DEV
-	$(TWEAK_NAME)_SUBPROJECTS += modules/sideloadfix
-else
-
-	ifdef SIDELOAD
-		$(TWEAK_NAME)_SUBPROJECTS += modules/sideloadfix modules/flexing
-	else
-		$(TWEAK_NAME)_SUBPROJECTS += modules/flexing
-	endif
-
+# Build FLEXing for sideloading (not building in dev-mode)
+ifdef SIDELOAD
+	$(TWEAK_NAME)_SUBPROJECTS += modules/flexing
 endif
