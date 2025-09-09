@@ -134,6 +134,7 @@
             [self newSwitchCellWithTitle:@"Confirm like: Posts" detailTitle:@"Shows an alert when you click the like button on posts or stories to confirm the like" key:@"like_confirm" changeAction:nil],
             [self newSwitchCellWithTitle:@"Confirm like: Reels" detailTitle:@"Shows an alert when you click the like button on reels to confirm the like" key:@"like_confirm_reels" changeAction:nil],
             [self newSwitchCellWithTitle:@"Confirm follow" detailTitle:@"Shows an alert when you click the follow button to confirm the follow" key:@"follow_confirm" changeAction:nil],
+            [self newSwitchCellWithTitle:@"Confirm repost" detailTitle:@"Shows an alert when you click the repost button to confirm before resposting" key:@"repost_confirm" changeAction:nil],
             [self newSwitchCellWithTitle:@"Confirm call" detailTitle:@"Shows an alert when you click the audio/video call button to confirm before calling" key:@"call_confirm" changeAction:nil],
             [self newSwitchCellWithTitle:@"Confirm voice messages" detailTitle:@"Shows an alert to confirm before sending a voice message" key:@"voice_message_confirm" changeAction:nil],
             [self newSwitchCellWithTitle:@"Confirm shh mode" detailTitle:@"Shows an alert to confirm before toggling disappearing messages" key:@"shh_mode_confirm" changeAction:nil],

@@ -183,6 +183,10 @@ shouldPersistLastBugReportId:(id)arg6
 - (void)screenshotObserverDidSeeActiveScreenCapture:(id)arg1 event:(NSInteger)arg2 { VOID_HANDLESCREENSHOT(%orig); }
 %end
 
+/////////////////////////////////////////////////////////////////////////////
+
+// Hide items
+
 // Direct suggested chats (in search bar)
 %hook IGDirectInboxSearchListAdapterDataSource
 - (id)objectsForListAdapter:(id)arg1 {
@@ -484,6 +488,67 @@ shouldPersistLastBugReportId:(id)arg6
     }
 
     return [filteredObjs copy];
+}
+%end
+
+/////////////////////////////////////////////////////////////////////////////
+
+// Confirm buttons
+
+static BOOL showingRepostConfirm = NO;
+
+%hook IGFeedItemUFICell
+- (void)UFIButtonBarDidTapOnLike:(id)arg1 {
+    if ([SCIManager getBoolPref:@"like_confirm"]) {
+        NSLog(@"[SCInsta] Confirm post like triggered");
+
+        [SCIUtils showConfirmation:^(void) { %orig; }];
+    }
+    else {
+        return %orig;
+    }  
+}
+
+- (void)UFIButtonBarDidTapOnRepost:(id)arg1 {
+    if ([SCIManager getBoolPref:@"repost_confirm"]) {
+        NSLog(@"[SCInsta] Confirm post repost triggered");
+
+        [SCIUtils showConfirmation:^(void) { %orig; }];
+    }
+    else {
+        return %orig;
+    }
+}
+%end
+
+%hook IGSundialViewerVerticalUFI
+- (void)_didTapRepostButton:(id)arg1 {
+    if (showingRepostConfirm) return;
+
+    if ([SCIManager getBoolPref:@"repost_confirm"]) {
+        NSLog(@"[SCInsta] Confirm post repost triggered");
+
+        showingRepostConfirm = YES;
+
+        [SCIUtils showConfirmation:^(void) { %orig; showingRepostConfirm = NO; }
+                     cancelHandler:^(void) { showingRepostConfirm = NO; }];
+    }
+    else {
+        return %orig;
+    }
+}
+
+// this gets called whenever you move your finger for some reason
+// so instead pretend to click button as workaround
+- (void)_didLongPressRepostButton:(id)arg1 {
+    if ([SCIManager getBoolPref:@"repost_confirm"]) {
+        NSLog(@"[SCInsta] Confirm post repost triggered (long press hack)");
+
+        [self _didTapRepostButton:nil];
+    }
+    else {
+        return %orig;
+    }
 }
 %end
 

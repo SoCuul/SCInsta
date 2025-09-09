@@ -123,6 +123,21 @@
 
     return nil;
 };
++ (BOOL)showConfirmation:(void(^)(void))okHandler cancelHandler:(void(^)(void))cancelHandler {
+    UIAlertController* alert = [UIAlertController alertControllerWithTitle:nil message:@"Are you sure?" preferredStyle:UIAlertControllerStyleAlert];
+    [alert addAction:[UIAlertAction actionWithTitle:@"Yes" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+        okHandler();
+    }]];
+    [alert addAction:[UIAlertAction actionWithTitle:@"No!" style:UIAlertActionStyleCancel handler:^(UIAlertAction * _Nonnull action) {
+        if (cancelHandler != nil) {
+            cancelHandler();
+        }
+    }]];
+
+    [topMostController() presentViewController:alert animated:YES completion:nil];
+
+    return nil;
+};
 + (void)prepareAlertPopoverIfNeeded:(UIAlertController*)alert inView:(UIView*)view {
     if (alert.popoverPresentationController) {
         // UIAlertController is a popover on iPad. Display it in the center of a view.

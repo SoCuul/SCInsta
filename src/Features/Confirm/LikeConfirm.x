@@ -43,11 +43,6 @@
     CONFIRMPOSTLIKE(%orig);
 }
 %end
-%hook IGFeedItemUFICell
-- (void)UFIButtonBarDidTapOnLike:(id)arg1 {
-    CONFIRMPOSTLIKE(%orig);
-}
-%end
 
 // Liking reels
 %hook IGSundialViewerVideoCell

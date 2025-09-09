@@ -352,6 +352,9 @@
 @property(nonatomic, copy, readwrite) NSArray *tools;
 @end
 
+@interface IGSundialViewerVerticalUFI : UIView
+- (void)_didTapRepostButton:(id)arg1; // new
+@end
 
 /////////////////////////////////////////////////////////////////////////////
 
