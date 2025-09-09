@@ -336,6 +336,67 @@ shouldPersistLastBugReportId:(id)arg6
 }
 %end
 
+// Direct suggested chats (inbox view)
+%hook IGDirectInboxListAdapterDataSource
+- (id)objectsForListAdapter:(id)arg1 {
+    NSArray *originalObjs = %orig();
+    NSMutableArray *filteredObjs = [NSMutableArray arrayWithCapacity:[originalObjs count]];
+
+    for (id obj in originalObjs) {
+        BOOL shouldHide = NO;
+
+        // Section header
+        if ([obj isKindOfClass:%c(IGDirectInboxHeaderCellViewModel)]) {
+            
+            // "Suggestions" header
+            if ([[obj title] isEqualToString:@"Suggestions"]) {
+                if ([SCIManager getBoolPref:@"hide_meta_ai"]) {
+                    NSLog(@"[SCInsta] Hiding suggested chats (header: messages tab)");
+
+                    shouldHide = YES;
+                }
+            }
+
+            // "Accounts to follow" header
+            else if ([[obj title] isEqualToString:@"Accounts to follow"]) {
+                if ([SCIManager getBoolPref:@"no_suggested_users"]) {
+                    NSLog(@"[SCInsta] Hiding suggested users: (header: inbox view)");
+
+                    shouldHide = YES;
+                }
+            }
+
+        }
+
+        // Suggested recipients
+        else if ([obj isKindOfClass:%c(IGDirectInboxSuggestedThreadCellViewModel)]) {
+            if ([SCIManager getBoolPref:@"hide_meta_ai"]) {
+                NSLog(@"[SCInsta] Hiding suggested chats (recipients: channels tab)");
+
+                shouldHide = YES;
+            }
+        }
+
+        // "Accounts to follow" recipients
+        else if ([obj isKindOfClass:%c(IGDiscoverPeopleItemConfiguration)] || [obj isKindOfClass:%c(IGDiscoverPeopleConnectionItemConfiguration)]) {
+            if ([SCIManager getBoolPref:@"no_suggested_users"]) {
+                NSLog(@"[SCInsta] Hiding suggested chats: (recipients: inbox view)");
+
+                shouldHide = YES;
+            }
+        }
+
+        // Populate new objs array
+        if (!shouldHide) {
+            [filteredObjs addObject:obj];
+        }
+
+    }
+
+    return [filteredObjs copy];
+}
+%end
+
 // Explore page results
 %hook IGSearchListKitDataSource
 - (id)objectsForListAdapter:(id)arg1 {
