@@ -29,6 +29,19 @@
                 "panel": "dedicated",
                 "clear": true
             }
+        },
+        {
+            "label": "Launch pymobiledevice3 device tunnel (for quick dev builds)",
+            "type": "shell",
+            "command": "sudo pymobiledevice3 remote tunneld",
+            "group": {
+                "kind": "build",
+            },
+            "presentation": {
+                "reveal": "silent",
+                "panel": "dedicated",
+                "clear": true
+            }
         }
     ]
   }
