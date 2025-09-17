@@ -59,15 +59,23 @@ then
 
     make $MAKEARGS
 
+    # Only build libs (for future use in dev build mode)
     if [ "$2" == "--buildonly" ];
     then
         exit
     fi
 
+    SCINSTAPATH=".theos/obj/debug/SCInsta.dylib"
+    if [ "$2" == "--devquick" ];
+    then
+        # Exclude SCInsta.dylib from ipa for livecontainer quick builds
+        SCINSTAPATH=""
+    fi
+
     # Create IPA File
     echo -e '\033[1m\033[32mCreating the IPA file...\033[0m'
     rm -f packages/SCInsta-sideloaded.ipa
-    cyan -i "packages/${ipaFile}" -o packages/SCInsta-sideloaded.ipa -f .theos/obj/debug/SCInsta.dylib $FLEXPATH -c $COMPRESSION -m 15.0 -du
+    cyan -i "packages/${ipaFile}" -o packages/SCInsta-sideloaded.ipa -f $SCINSTAPATH $FLEXPATH -c $COMPRESSION -m 15.0 -du
     
     # Patch IPA for sideloading
     ipapatch --input "packages/SCInsta-sideloaded.ipa" --inplace --noconfirm
