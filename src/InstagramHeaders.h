@@ -55,7 +55,7 @@
 @end
 
 @interface IGVideo : NSObject
-- (id)allVideoUrls;
+- (id)allVideoURLs;
 @end
 
 @interface IGPhoto : NSObject
