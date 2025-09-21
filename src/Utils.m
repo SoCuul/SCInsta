@@ -51,15 +51,8 @@
 
 + (NSURL *)getVideoUrl:(IGVideo *)video {
     if (!video) return nil;
-
-    // Sort videos by quality
-    NSArray<NSDictionary *> *sortedVideoUrls = [video sortedVideoURLsBySize];
-    if ([sortedVideoUrls count] < 1 || sortedVideoUrls[0] == nil) return nil;
-
-    // First element in array is highest quality
-    NSURL *videoUrl = [NSURL URLWithString:[sortedVideoUrls[0] objectForKey:@"url"]];
-
-    return videoUrl;
+    NSSet *allVideoSet = [video allVideoURLs];
+    return [allVideoSet anyObject];
 }
 + (NSURL *)getVideoUrlForMedia:(IGMedia *)media {
     if (!media) return nil;
