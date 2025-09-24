@@ -55,7 +55,8 @@
 @end
 
 @interface IGVideo : NSObject
-- (id)allVideoURLs;
+- (id)sortedVideoURLsBySize; // Before Instagram v398
+- (id)allVideoURLs; // After Instagram v398
 @end
 
 @interface IGPhoto : NSObject
