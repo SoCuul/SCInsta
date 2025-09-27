@@ -48,29 +48,23 @@
 
     return [SCIUtils getPhotoUrl:photo];
 }
-
 + (NSURL *)getVideoUrl:(IGVideo *)video {
     if (!video) return nil;
-    
-    // Before Instagram v398
+
+    // The past (pre v398)
     if ([video respondsToSelector:@selector(sortedVideoURLsBySize)]) {
-        // Sort videos by quality
-        NSArray<NSDictionary *> *sortedVideoUrls = [video sortedVideoURLsBySize];
-        if ([sortedVideoUrls count] < 1 || sortedVideoUrls[0] == nil) return nil;
-    
-        // First element in array is highest quality
-        NSURL *videoUrl = [NSURL URLWithString:[sortedVideoUrls[0] objectForKey:@"url"]];
-    
-        return videoUrl;
+        NSArray<NSDictionary *> *sorted = [video sortedVideoURLsBySize];
+        NSString *urlString = sorted.firstObject[@"url"];
+        return urlString.length ? [NSURL URLWithString:urlString] : nil;
     }
-    
-    // After Instagram v398
-    else if ([video respondsToSelector:@selector(allVideoURLs)]) {
-        // Get first video url, using janky workaround
-        NSSet *allVideoSet = [video allVideoURLs];
-        
-        return [allVideoSet anyObject];
+
+    // The present (post v398)
+    if ([video respondsToSelector:@selector(allVideoURLs)]) {
+        return [[video allVideoURLs] anyObject];
     }
+
+    // The future
+    return nil;
 }
 + (NSURL *)getVideoUrlForMedia:(IGMedia *)media {
     if (!media) return nil;
