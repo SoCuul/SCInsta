@@ -2,108 +2,156 @@
 
 set -e
 
-CMAKE_OSX_ARCHITECTURES="arm64e;arm64"
-CMAKE_OSX_SYSROOT="iphoneos"
+export CMAKE_OSX_ARCHITECTURES="arm64e;arm64"
+export CMAKE_OSX_SYSROOT="iphoneos"
 
-# Prerequisites
-if [ -z "$(ls -A modules/FLEXing)" ]; then
-    echo -e '\033[1m\033[0;31mFLEXing submodule not found.\nPlease run the following command to checkout submodules:\n\n\033[0m    git submodule update --init --recursive'
+# --- Functions ---
+
+show_usage() {
+    echo "Usage: ./build.sh <sideload|rootless|rootful>"
+}
+
+clean_artifacts() {
+    echo "Cleaning previous build artifacts..."
+    make clean > /dev/null 2>&1
+    rm -rf .theos
+}
+
+check_submodules() {
+    if [ -z "$(ls -A modules/FLEXing)" ]; then
+        echo "FLEXing submodule not found."
+        exit 1
+    fi
+}
+
+handle_plugins() {
+    local original_ipa="packages/instagram.ipa"
+    local temp_dir="packages/temp_unzip"
+    
+    echo "Processing IPA plugins (removing all by default)..." >&2
+    
+    unzip -q "$original_ipa" -d "$temp_dir"
+    
+    local app_path="$temp_dir/Payload/Instagram.app"
+    
+    if [ "${KEEP_SHARE}" != "true" ]; then
+        echo "  - Removing Share Extension" >&2
+        rm -rf "${app_path}/Plugins/InstagramShareExtension.appex"
+    else
+        echo "  - Keeping Share Extension" >&2
+    fi
+
+    if [ "${KEEP_WIDGET}" != "true" ]; then
+        echo "  - Removing Widget Extension" >&2
+        rm -rf "${app_path}/Plugins/InstagramWidgetExtension.appex"
+    else
+        echo "  - Keeping Widget Extension" >&2
+    fi
+
+    if [ "${KEEP_NOTIFICATION}" != "true" ]; then
+        echo "  - Removing Notification Extensions" >&2
+        rm -rf "${app_path}/Plugins/InstagramNotificationContentExtension.appex"
+        rm -rf "${app_path}/Plugins/InstagramNotificationExtension.appex"
+    else
+        echo "  - Keeping Notification Extensions" >&2
+    fi
+
+    if [ "${KEEP_LIVEACTIVITIES}" != "true" ]; then
+        echo "  - Removing Live Activities Extension" >&2
+        rm -rf "${app_path}/Plugins/InstagramWidgetExtensionLiveActivities.appex"
+    else
+        echo "  - Keeping Live Activities Extension" >&2
+    fi
+
+    if [ "${KEEP_BROADCAST}" != "true" ]; then
+        echo "  - Removing Broadcast Extension" >&2
+        rm -rf "${app_path}/Plugins/InstagramBroadcastSampleHandlerExtension.appex"
+    else
+        echo "  - Keeping Broadcast Extension" >&2
+    fi
+
+    if [ "${KEEP_LOCKSCREEN_WIDGET}" != "true" ]; then
+        echo "  - Removing Lock Screen Widget" >&2
+        rm -rf "${app_path}/Plugins/InstagramWidgetExtensionLockScreenCameraControl.appex"
+    else
+        echo "  - Keeping Lock Screen Widget" >&2
+    fi
+    
+    if [ "${KEEP_LOCKSCREEN_CAMERA}" != "true" ]; then
+        echo "  - Removing Lock Screen Camera Extension" >&2
+        rm -rf "${app_path}/Extensions/InstagramExtensionLockScreenCamera.appex"
+    else
+        echo "  - Keeping Lock Screen Camera Extension" >&2
+    fi
+    
+    echo "Re-packaging cleaned IPA..." >&2
+    
+    (cd "$temp_dir" && zip -qr "../instagram-cleaned.ipa" .)
+    
+    rm -rf "$temp_dir"
+    
+    echo "packages/instagram-cleaned.ipa"
+}
+
+
+# --- Main Build Logic ---
+
+check_submodules
+
+if [ -z "$1" ]; then
+    show_usage
     exit 1
 fi
 
-# Building modes
-if [ "$1" == "sideload" ];
-then
-
-    # Check if building with dev mode
-    if [ "$2" == "--dev" ];
-    then
-        # Cache pre-built FLEX libs
-        mkdir -p "packages/cache"
-        cp -f ".theos/obj/debug/FLEXing.dylib" "packages/cache/FLEXing.dylib" 2>/dev/null || true
-        cp -f ".theos/obj/debug/libflex.dylib" "packages/cache/libflex.dylib" 2>/dev/null || true
-
-        if [[ ! -f "packages/cache/FLEXing.dylib" || ! -f "packages/cache/libflex.dylib" ]]; then
-            echo -e '\033[1m\033[0;33mCould not find cached pre-built FLEX libs, building prerequisite binaries\033[0m'
-            echo
-
-            ./build.sh sideload --buildonly
-            ./build-dev.sh
-            exit
+case "$1" in
+    sideload)
+        clean_artifacts
+        
+        if [ ! -f "packages/instagram.ipa" ]; then
+            echo "packages/instagram.ipa not found." >&2
+            exit 1
         fi
-
-        MAKEARGS='DEV=1'
-        FLEXPATH='packages/cache/FLEXing.dylib packages/cache/libflex.dylib'
-        COMPRESSION=0
-    else
-        # Clear cached FLEX libs
-        rm -rf "packages/cache"
-
+        
+        ipaFile=$(handle_plugins)
+        
+        echo "Building SCInsta for sideloading..." >&2
+        
         MAKEARGS='SIDELOAD=1'
         FLEXPATH='.theos/obj/debug/FLEXing.dylib .theos/obj/debug/libflex.dylib'
         COMPRESSION=9
-    fi
 
-    # Clean build artifacts
-    make clean
-    rm -rf .theos
+        make $MAKEARGS
 
-    # Check for decrypted instagram ipa
-    ipaFile="$(find ./packages/*com.burbn.instagram*.ipa -type f -exec basename {} \;)"
-    if [ -z "${ipaFile}" ]; then
-        echo -e '\033[1m\033[0;31m./packages/com.burbn.instagram.ipa not found.\nPlease put a decrypted Instagram IPA in its path.\033[0m'
+        echo "Creating the final IPA file..." >&2
+        rm -f packages/SCInsta-sideloaded.ipa
+        
+        cyan -i "${ipaFile}" \
+             -o packages/SCInsta-sideloaded.ipa \
+             -n "${APP_NAME:-Instagram}" \
+             -b "${BUNDLE_ID:-com.burbn.instagram}" \
+             -f .theos/obj/debug/SCInsta.dylib .theos/obj/debug/sideloadfix.dylib $FLEXPATH \
+             -c $COMPRESSION -m 15.0 -du
+        ;;
+
+    rootless)
+        clean_artifacts
+        echo "Building SCInsta for rootless..." >&2
+        export THEOS_PACKAGE_SCHEME=rootless
+        make package
+        ;;
+
+    rootful)
+        clean_artifacts
+        echo "Building SCInsta for rootful..." >&2
+        unset THEOS_PACKAGE_SCHEME
+        make package
+        ;;
+
+    *)
+        echo "Error: Unknown build mode '$1'" >&2
+        show_usage
         exit 1
-    fi
+        ;;
+esac
 
-    echo -e '\033[1m\033[32mBuilding SCInsta tweak for sideloading (as IPA)\033[0m'
-
-    make $MAKEARGS
-
-    if [ "$2" == "--buildonly" ];
-    then
-        exit
-    fi
-
-    # Create IPA File
-    echo -e '\033[1m\033[32mCreating the IPA file...\033[0m'
-    rm -f packages/SCInsta-sideloaded.ipa
-    cyan -i "packages/${ipaFile}" -o packages/SCInsta-sideloaded.ipa -f .theos/obj/debug/SCInsta.dylib .theos/obj/debug/sideloadfix.dylib $FLEXPATH -c $COMPRESSION -m 15.0 -du
-    
-    echo -e "\033[1m\033[32mDone, we hope you enjoy SCInsta!\033[0m\n\nYou can find the ipa file at: $(pwd)/packages"
-
-elif [ "$1" == "rootless" ];
-then
-    
-    # Clean build artifacts
-    make clean
-    rm -rf .theos
-
-    echo -e '\033[1m\033[32mBuilding SCInsta tweak for rootless\033[0m'
-
-    export THEOS_PACKAGE_SCHEME=rootless
-    make package
-
-    echo -e "\033[1m\033[32mDone, we hope you enjoy SCInsta!\033[0m\n\nYou can find the deb file at: $(pwd)/packages"
-
-elif [ "$1" == "rootful" ];
-then
-
-    # Clean build artifacts
-    make clean
-    rm -rf .theos
-
-    echo -e '\033[1m\033[32mBuilding SCInsta tweak for rootful\033[0m'
-
-    unset THEOS_PACKAGE_SCHEME
-    make package
-
-    echo -e "\033[1m\033[32mDone, we hope you enjoy SCInsta!\033[0m\n\nYou can find the deb file at: $(pwd)/packages"
-
-else
-    echo '+--------------------+'
-    echo '|SCInsta Build Script|'
-    echo '+--------------------+'
-    echo
-    echo 'Usage: ./build.sh <sideload/rootless/rootful>'
-    exit 1
-fi
+echo "Build finished successfully!" >&2

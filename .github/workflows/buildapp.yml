@@ -6,120 +6,174 @@
 name: Build and Package SCInsta
 
 on:
-    workflow_dispatch:
-        inputs:
-            decrypted_instagram_url:
-                description: "The direct URL to the decrypted Instagram IPA"
-                default: ""
-                required: true
-                type: string
-            upload_artifact:
-                description: "Upload Artifact"
-                default: true
-                required: false
-                type: boolean
-  
+  workflow_dispatch:
+    inputs:
+      decrypted_instagram_url:
+        description: "URL to the decrypted Instagram IPA"
+        required: true
+        type: string
+      display_name:
+        description: "Custom App Name"
+        default: "Instagram"
+        required: true
+        type: string
+      bundle_id:
+        description: "Custom BundleID"
+        default: "com.burbn.instagram"
+        required: true
+        type: string
+      keep_share_extension:
+        description: "Keep the Share Extension"
+        type: boolean
+        default: false
+      keep_widget_extension:
+        description: "Keep the Widget Extension"
+        type: boolean
+        default: false
+      keep_notification_extension:
+        description: "Keep the Notification Extension"
+        type: boolean
+        default: false
+      keep_liveactivities_extension:
+        description: "Keep the Live Activities Extension"
+        type: boolean
+        default: false
+      keep_broadcast_extension:
+        description: "Keep Broadcast Sample Handler"
+        type: boolean
+        default: false
+      keep_lockscreen_widget:
+        description: "Keep Lock Screen Widget Control"
+        type: boolean
+        default: false
+      keep_lockscreen_camera_extension:
+        description: "Keep Lock Screen Camera Extension"
+        type: boolean
+        default: false
+
 concurrency:
-    group: ${{ github.workflow }}-${{ github.ref }}
-    cancel-in-progress: true
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
-    build:
-        name: Build SCInsta
-        runs-on: macos-latest
-        permissions:
-            contents: write
+  build:
+    name: Build SCInsta
+    runs-on: macos-latest
+    permissions:
+      contents: write
 
-        steps:
-            - name: Checkout Main
-              uses: actions/checkout@v4
-              with:
-                path: main
-                submodules: recursive
+    steps:
+      - name: Checkout Main
+        uses: actions/checkout@v4
+        with:
+          path: main
+          submodules: recursive
 
-            - name: Install Dependencies
-              run: brew install ldid dpkg make
+      - name: Hide sensitive inputs
+        uses: levibostian/action-hide-sensitive-inputs@v1
+        with:
+          exclude_inputs: display_name,bundle_id,keep_share_extension,keep_widget_extension,keep_notification_extension,keep_liveactivities_extension,keep_broadcast_extension,keep_lockscreen_widget,keep_lockscreen_camera_extension
 
-            - name: Set PATH environment variable
-              run: echo "$(brew --prefix make)/libexec/gnubin" >> $GITHUB_PATH 
+      - name: Install Dependencies
+        run: brew install ldid dpkg make
 
-            - name: Setup Theos
-              uses: actions/checkout@v4
-              with:
-                repository: theos/theos
-                ref: master
-                path: ${{ github.workspace }}/theos
-                submodules: recursive
-        
-            - name: SDK Caching
-              id: SDK
-              uses: actions/cache@v4
-              env:
-                cache-name: iPhoneOS14.5.sdk
-              with:
-                path: ${{ github.workspace }}/theos/sdks/
-                key: ${{ env.cache-name }}
-                restore-keys: ${{ env.cache-name }}
+      - name: Set PATH environment variable
+        run: echo "$(brew --prefix make)/libexec/gnubin" >> $GITHUB_PATH
 
-            - name: Download iOS SDK
-              if: steps.SDK.outputs.cache-hit != 'true'
-              run: |
-                git clone --quiet -n --depth=1 --filter=tree:0 https://github.com/xybp888/iOS-SDKs/
-                cd iOS-SDKs
-                git sparse-checkout set --no-cone iPhoneOS14.5.sdk
-                git checkout
-                mv *.sdk $THEOS/sdks
-              env:
-                THEOS: ${{ github.workspace }}/theos
+      - name: Download and Validate Instagram IPA
+        run: |
+          mkdir -p ${{ github.workspace }}/main/packages
+          wget "${{ inputs.decrypted_instagram_url }}" --no-verbose -O "${{ github.workspace }}/main/packages/instagram.ipa"
+          
+          file_type=$(file --mime-type -b "${{ github.workspace }}/main/packages/instagram.ipa")
+          if [[ "$file_type" != "application/x-ios-app" && "$file_type" != "application/zip" ]]; then
+            echo "::error::Validation failed: The downloaded file is not a valid IPA."
+            exit 1
+          fi
+          echo "IPA validation successful."
 
-            - name: Prepare Instagram IPA
-              run: |
-                cd main
+      - name: Get Instagram Version from IPA
+        id: ipa_version
+        run: |
+          unzip -p ${{ github.workspace }}/main/packages/instagram.ipa 'Payload/*.app/Info.plist' > /tmp/Info.plist
+          VERSION=$(/usr/libexec/PlistBuddy -c "Print CFBundleShortVersionString" /tmp/Info.plist)
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
 
-                mkdir -p packages
-                wget "$Instagram_URL" --no-verbose -O packages/com.burbn.instagram.ipa
+      - name: Cache Theos
+        id: theos-cache
+        uses: actions/cache@v4
+        with:
+          path: ${{ github.workspace }}/theos
+          key: theos-cache-${{ runner.os }}
 
-                ls -la packages
-                
-              env:
-                THEOS: ${{ github.workspace }}/theos
-                Instagram_URL: ${{ inputs.decrypted_instagram_url }}
+      - name: Setup Theos
+        if: steps.theos-cache.outputs.cache-hit != 'true'
+        uses: actions/checkout@v4
+        with:
+          repository: theos/theos
+          path: ${{ github.workspace }}/theos
+          submodules: recursive
 
-            - name: Get SCInsta Version
-              id: scinsta_version
-              run: |
-                SCINSTA_VERSION=$(awk '/Version:/ {print $2}' main/control)
+      - name: Cache iOS SDK
+        id: sdk-cache
+        uses: actions/cache@v4
+        with:
+          path: ${{ github.workspace }}/theos/sdks/
+          key: iphoneos-14.5-sdk
 
-                echo "SCINSTA_VERSION=${SCINSTA_VERSION}" >> "$GITHUB_ENV"
-                echo "version=${SCINSTA_VERSION}" >> "$GITHUB_OUTPUT"
-            
-            - name: Build SCInsta tweak for sideloading (as IPA)
-              run: |
-                pip install --force-reinstall https://github.com/asdfzxcvbn/pyzule-rw/archive/main.zip
-                
-                cd main
-                ls -la
+      - name: Download iOS SDK
+        if: steps.sdk-cache.outputs.cache-hit != 'true'
+        run: |
+          git clone --quiet -n --depth=1 --filter=tree:0 https://github.com/xybp888/iOS-SDKs/
+          cd iOS-SDKs
+          git sparse-checkout set --no-cone iPhoneOS14.5.sdk
+          git checkout
+          mv *.sdk $THEOS/sdks
+        env:
+          THEOS: ${{ github.workspace }}/theos
 
-                ./build.sh sideload
+      - name: Get SCInsta Version
+        id: scinsta_version
+        run: |
+          SCINSTA_VERSION=$(awk '/Version:/ {print $2}' main/control)
+          echo "version=${SCINSTA_VERSION}" >> "$GITHUB_OUTPUT"
+          
+      - name: Build SCInsta tweak for sideloading (as IPA)
+        run: |
+          pip install --force-reinstall https://github.com/asdfzxcvbn/pyzule-rw/archive/main.zip
+          
+          cd main
+          ./build.sh sideload
+        env:
+          THEOS: ${{ github.workspace }}/theos
+          APP_NAME: ${{ inputs.display_name }}
+          BUNDLE_ID: ${{ inputs.bundle_id }}
+          KEEP_SHARE: ${{ inputs.keep_share_extension }}
+          KEEP_WIDGET: ${{ inputs.keep_widget_extension }}
+          KEEP_NOTIFICATION: ${{ inputs.keep_notification_extension }}
+          KEEP_LIVEACTIVITIES: ${{ inputs.keep_liveactivities_extension }}
+          KEEP_BROADCAST: ${{ inputs.keep_broadcast_extension }}
+          KEEP_LOCKSCREEN_WIDGET: ${{ inputs.keep_lockscreen_widget }}
+          KEEP_LOCKSCREEN_CAMERA: ${{ inputs.keep_lockscreen_camera_extension }}
 
-                ls -la packages
-                
-              env:
-                THEOS: ${{ github.workspace }}/theos
+      - name: Prepare IPA for Release
+        id: final_ipa
+        run: |
+          cd main/packages
+          LATEST_IPA=$(ls -t *.ipa | head -n1)
+          FINAL_NAME="SCInsta_v${{ steps.scinsta_version.outputs.version }}_i${{ steps.ipa_version.outputs.version }}.ipa"
+          mv "$LATEST_IPA" "$FINAL_NAME"
+          echo "path=${{ github.workspace }}/main/packages/${FINAL_NAME}" >> "$GITHUB_OUTPUT"
+          echo "name=${FINAL_NAME}" >> "$GITHUB_OUTPUT"
 
-            - name: Rename IPA to include version info
-              run: |
-                cd main/packages
-                mv "$(ls -t | head -n1)" "SCInsta_sideloaded_v${SCINSTA_VERSION}.ipa"
-
-            - name: Pass package name to upload action
-              id: package_name
-              run: |
-                echo "package=$(ls -t main/packages |  head -n1)" >> "$GITHUB_OUTPUT"
-
-            - name: Upload Artifact
-              if: ${{ inputs.upload_artifact }}
-              uses: actions/upload-artifact@v4
-              with:
-                name: SCInsta_sideloaded_v${{ steps.scinsta_version.outputs.version }}
-                path: ${{ github.workspace }}/main/packages/${{ steps.package_name.outputs.package }}
-                if-no-files-found: error
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: scinsta-${{ github.run_number }}
+          name: SCInsta v${{ steps.scinsta_version.outputs.version }} (Instagram v${{ steps.ipa_version.outputs.version }})
+          files: ${{ steps.final_ipa.outputs.path }}
+          draft: true
+          
+      - name: Output Release URL
+        run: |
+          echo "::notice::Draft release created. Find it at: https://github.com/${{ github.repository }}/releases"
