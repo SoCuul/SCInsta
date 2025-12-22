@@ -194,20 +194,23 @@ static void initDownloaders () {
         return;
     }
     
-    // Fallback: Try fetching from web
-    // Fallback: Try fetching from web
+    // Fallback 1: Try Cache/Player (Immediate Check)
+    // This is often faster and works for whatever is playing
+    NSURL *cachedUrl = [SCIUtils getCachedVideoUrlForView:self];
+    if (cachedUrl) {
+        NSLog(@"[SCInsta] Found cached video URL: %@", cachedUrl);
+        startDownload(cachedUrl);
+        return;
+    }
+    
+    // Fallback 2: Try fetching from web
+    [SCIUtils showErrorHUDWithDescription:@"Fetching video info..."];
     [SCIUtils requestWebVideoUrlForMedia:self.video completion:^(NSURL *webUrl) {
         dispatch_async(dispatch_get_main_queue(), ^{
             if (webUrl) {
                  startDownload(webUrl);
             } else {
-                 // Final Fallback: Try cache/player
-                 NSURL *cachedUrl = [SCIUtils getCachedVideoUrlForView:self];
-                 if (cachedUrl) {
-                     startDownload(cachedUrl);
-                 } else {
-                     [SCIUtils showErrorHUDWithDescription:@"Download failed. Enable FLEX to debug."];
-                 }
+                 [SCIUtils showErrorHUDWithDescription:@"Download failed. Enable FLEX to debug."];
             }
         });
     }];
@@ -280,82 +283,85 @@ static void initDownloaders () {
 
     NSURL *videoUrl;
 
-    IGStoryFullscreenSectionController *captionDelegate = nil;
-    if ([self respondsToSelector:@selector(captionDelegate)]) {
-        captionDelegate = self.captionDelegate;
-    }
-    
-    if (captionDelegate) {
-        if ([captionDelegate respondsToSelector:@selector(currentStoryItem)]) {
-            videoUrl = [SCIUtils getVideoUrlForMedia:captionDelegate.currentStoryItem];
-        } else {
-             NSLog(@"[SCInsta] Error: captionDelegate does not respond to currentStoryItem");
-        }
-    }
-    else {
-        // Direct messages video player
-        id parentVC = [SCIUtils nearestViewControllerForView:self];
-        if (!parentVC || ![parentVC isKindOfClass:%c(IGDirectVisualMessageViewerController)]) return;
-
-        IGDirectVisualMessageViewerViewModeAwareDataSource *_dataSource = MSHookIvar<IGDirectVisualMessageViewerViewModeAwareDataSource *>(parentVC, "_dataSource");
-        if (!_dataSource) return;
+    @try {
+        IGStoryFullscreenSectionController *captionDelegate = nil;
         
-        IGDirectVisualMessage *_currentMessage = MSHookIvar<IGDirectVisualMessage *>(_dataSource, "_currentMessage"); 
-        if (!_currentMessage) return;
-        
-        // Check for rawVideo property
-        if ([_currentMessage respondsToSelector:@selector(rawVideo)]) {
-             IGVideo *rawVideo = _currentMessage.rawVideo;
-             if (rawVideo) {
-                 videoUrl = [SCIUtils getVideoUrl:rawVideo];
-             }
+        // Safety check for delegate
+        if ([self respondsToSelector:@selector(captionDelegate)]) {
+            captionDelegate = self.captionDelegate;
         }
-    }
-    
-    // Helper block to start download
-    void (^startDownload)(NSURL *) = ^(NSURL *url) {
-        initDownloaders();
-        [videoDownloadDelegate downloadFileWithURL:url
-                                     fileExtension:[[url lastPathComponent] pathExtension]
-                                          hudLabel:nil];
-    };
-
-    if (videoUrl) {
-        startDownload(videoUrl);
-        return;
-    }
-    
-    // Fallback if we have a media item (Stories)
-    if (captionDelegate && [captionDelegate respondsToSelector:@selector(currentStoryItem)]) {
-        IGMedia *mediaItem = captionDelegate.currentStoryItem;
-        if (mediaItem) {
-            [SCIUtils requestWebVideoUrlForMedia:mediaItem completion:^(NSURL *webUrl) {
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    if (webUrl) {
-                         startDownload(webUrl);
-                    } else {
-                         // Cache fallback
-                         NSURL *cachedUrl = [SCIUtils getCachedVideoUrlForView:self];
-                         if (cachedUrl) {
-                             startDownload(cachedUrl);
-                         } else {
-                             [SCIUtils showErrorHUDWithDescription:@"Could not extract video url from story"];
-                         }
+        
+        if (captionDelegate) {
+            if ([captionDelegate respondsToSelector:@selector(currentStoryItem)]) {
+                IGMedia *media = captionDelegate.currentStoryItem;
+                if (media) {
+                    videoUrl = [SCIUtils getVideoUrlForMedia:media];
+                }
+            }
+        }
+        else {
+            // Direct messages video player logic remains same but safer
+            id parentVC = [SCIUtils nearestViewControllerForView:self];
+            if (parentVC && [parentVC isKindOfClass:%c(IGDirectVisualMessageViewerController)]) {
+                // Use MSHookIvar safely? we can't try/catch hooks easily but we can check pointers
+                IGDirectVisualMessageViewerViewModeAwareDataSource *_dataSource = MSHookIvar<IGDirectVisualMessageViewerViewModeAwareDataSource *>(parentVC, "_dataSource");
+                if (_dataSource) {
+                    IGDirectVisualMessage *_currentMessage = MSHookIvar<IGDirectVisualMessage *>(_dataSource, "_currentMessage");
+                    if (_currentMessage && [_currentMessage respondsToSelector:@selector(rawVideo)]) {
+                        IGVideo *rawVideo = _currentMessage.rawVideo;
+                        if (rawVideo) {
+                            videoUrl = [SCIUtils getVideoUrl:rawVideo];
+                        }
                     }
-                });
-            }];
+                }
+            }
+        }
+        
+        // Helper block to start download
+        void (^startDownload)(NSURL *) = ^(NSURL *url) {
+            initDownloaders();
+            [videoDownloadDelegate downloadFileWithURL:url
+                                         fileExtension:[[url lastPathComponent] pathExtension]
+                                              hudLabel:nil];
+        };
+
+        if (videoUrl) {
+            startDownload(videoUrl);
             return;
         }
+        
+        // Fallback 1: Try Cache/Player
+        NSURL *cachedUrl = [SCIUtils getCachedVideoUrlForView:self];
+        if (cachedUrl) {
+            NSLog(@"[SCInsta] Found cached story video URL: %@", cachedUrl);
+            startDownload(cachedUrl);
+            return;
+        }
+        
+        // Fallback 2: Try Web
+        if (captionDelegate && [captionDelegate respondsToSelector:@selector(currentStoryItem)]) {
+            IGMedia *mediaItem = captionDelegate.currentStoryItem;
+            if (mediaItem) {
+                [SCIUtils showErrorHUDWithDescription:@"Fetching video info..."];
+                [SCIUtils requestWebVideoUrlForMedia:mediaItem completion:^(NSURL *webUrl) {
+                    dispatch_async(dispatch_get_main_queue(), ^{
+                         if (webUrl) {
+                              startDownload(webUrl);
+                         } else {
+                              [SCIUtils showErrorHUDWithDescription:@"Could not extract video url from story"];
+                         }
+                    });
+                }];
+                return;
+            }
+        }
+        
+        [SCIUtils showErrorHUDWithDescription:@"Could not extract video url from story"];
+        
+    } @catch (NSException *exception) {
+        NSLog(@"[SCInsta] Critical Error in Story Download: %@", exception);
+        [SCIUtils showErrorHUDWithDescription:@"Error: Story download crashed (Log sent)"];
     }
-    
-    // Final attempt with cache
-    NSURL *cachedUrl = [SCIUtils getCachedVideoUrlForView:self];
-    if (cachedUrl) {
-        startDownload(cachedUrl);
-        return;
-    }
-    
-    [SCIUtils showErrorHUDWithDescription:@"Could not extract video url from story"];
 }
 %end
 

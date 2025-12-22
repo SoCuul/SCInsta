@@ -178,39 +178,52 @@
 + (NSURL *)getCachedVideoUrlForView:(UIView *)view {
     if (!view) return nil;
     
-    // Check for AVPlayerLayer
+    // 1. Check for AVPlayerLayer directly
     if ([view.layer isKindOfClass:[AVPlayerLayer class]]) {
         AVPlayerLayer *playerLayer = (AVPlayerLayer *)view.layer;
         AVPlayer *player = playerLayer.player;
         if (player) {
             NSURL *url = [self getUrlFromPlayer:player];
-            if (url) return url;
+            if (url) {
+                NSLog(@"[SCInsta] Found URL in AVPlayerLayer: %@", url);
+                return url;
+            }
         }
     }
     
-    // Check for "player" property
-    if ([view respondsToSelector:@selector(player)]) {
-        id player = [view valueForKey:@"player"];
-        if (player && [player isKindOfClass:[AVPlayer class]]) {
-            NSURL *url = [self getUrlFromPlayer:player];
-            if (url) return url;
+    // 2. Check common property names for players or wrappers
+    NSArray *playerKeys = @[@"player", @"videoPlayer", @"avPlayer", @"contentPlayer", @"mediaPlayer"];
+    
+    for (NSString *key in playerKeys) {
+        if ([view respondsToSelector:NSSelectorFromString(key)]) {
+            id playerObj = [view valueForKey:key];
+            
+            // It might be an AVPlayer
+            if (playerObj && [playerObj isKindOfClass:[AVPlayer class]]) {
+                NSURL *url = [self getUrlFromPlayer:(AVPlayer *)playerObj];
+                if (url) {
+                    NSLog(@"[SCInsta] Found URL in property '%@': %@", key, url);
+                    return url;
+                }
+            }
+            
+            // It might be a wrapper (like IGVideoPlayer) that HAS an avPlayer
+            if (playerObj && [playerObj respondsToSelector:@selector(avPlayer)]) {
+                id innerPlayer = [playerObj valueForKey:@"avPlayer"];
+                if (innerPlayer && [innerPlayer isKindOfClass:[AVPlayer class]]) {
+                    NSURL *url = [self getUrlFromPlayer:(AVPlayer *)innerPlayer];
+                    if (url) {
+                         NSLog(@"[SCInsta] Found URL in property '%@.avPlayer': %@", key, url);
+                         return url;
+                    }
+                }
+            }
         }
     }
     
-    // Check for "videoPlayer" property
-    if ([view respondsToSelector:@selector(videoPlayer)]) {
-        id player = [view valueForKey:@"videoPlayer"];
-        // Some IG players wrap AVPlayer
-        if ([player respondsToSelector:@selector(avPlayer)]) {
-            player = [player valueForKey:@"avPlayer"];
-        }
-        if (player && [player isKindOfClass:[AVPlayer class]]) {
-             NSURL *url = [self getUrlFromPlayer:player];
-             if (url) return url;
-        }
-    }
-    
-    // Recursively check subviews
+    // 3. Recursively check subviews
+    // Breadth-first might be better but depth-first is easier to write standardly. 
+    // Given the hierarchy isn't infinite, this is fine.
     for (UIView *subview in view.subviews) {
         NSURL *url = [self getCachedVideoUrlForView:subview];
         if (url) return url;
