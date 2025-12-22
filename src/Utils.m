@@ -51,40 +51,114 @@
 
 + (NSURL *)getVideoUrl:(IGVideo *)video {
     if (!video) return nil;
-
-    // Check if the video object responds to sortedVideoURLsBySize (may not exist in newer IG versions)
-    if (![video respondsToSelector:@selector(sortedVideoURLsBySize)]) {
-        NSLog(@"[SCInsta] Error: video object does not respond to sortedVideoURLsBySize. Instagram version may be unsupported.");
-        return nil;
-    }
-
-    // Sort videos by quality
-    NSArray<NSDictionary *> *sortedVideoUrls = [video sortedVideoURLsBySize];
     
-    // Safety check: ensure array is not nil and has elements
-    if (!sortedVideoUrls || ![sortedVideoUrls isKindOfClass:[NSArray class]] || [sortedVideoUrls count] < 1) {
-        NSLog(@"[SCInsta] Error: sortedVideoURLsBySize returned invalid or empty array.");
-        return nil;
+    // Try multiple method names in order of likelihood
+    // Instagram changes internal method names between versions
+    NSArray *methodsToTry = @[
+        @"sortedVideoURLsBySize",   // Old method (pre v398)
+        @"videoVersions",           // Common alternative
+        @"videoURLs",               // Another possibility
+        @"versions",                // Short form
+        @"playbackURL",             // Direct URL property
+        @"url"                      // Simple URL property
+    ];
+    
+    for (NSString *method in methodsToTry) {
+        SEL selector = NSSelectorFromString(method);
+        if ([video respondsToSelector:selector]) {
+            NSLog(@"[SCInsta] Trying method: %@", method);
+            
+            #pragma clang diagnostic push
+            #pragma clang diagnostic ignored "-Warc-performSelector-leaks"
+            id result = [video performSelector:selector];
+            #pragma clang diagnostic pop
+            
+            if (!result) continue;
+            
+            // Handle different return types
+            NSURL *extractedUrl = [self extractURLFromVideoResult:result];
+            if (extractedUrl) {
+                NSLog(@"[SCInsta] Successfully extracted URL using method: %@", method);
+                return extractedUrl;
+            }
+        }
     }
     
-    NSDictionary *bestQualityVideo = sortedVideoUrls[0];
+    NSLog(@"[SCInsta] Error: Could not extract video URL using any known method.");
+    return nil;
+}
+
+// Helper method to extract URL from various result types
++ (NSURL *)extractURLFromVideoResult:(id)result {
+    if (!result) return nil;
     
-    // Safety check: ensure element is a dictionary
-    if (![bestQualityVideo isKindOfClass:[NSDictionary class]]) {
-        NSLog(@"[SCInsta] Error: First element in sortedVideoURLsBySize is not a dictionary.");
-        return nil;
+    // Case 1: Result is already an NSURL
+    if ([result isKindOfClass:[NSURL class]]) {
+        return result;
     }
-
-    NSString *urlString = [bestQualityVideo objectForKey:@"url"];
-    if (!urlString || ![urlString isKindOfClass:[NSString class]]) {
-        NSLog(@"[SCInsta] Error: 'url' key missing or not a string in video dictionary.");
-        return nil;
+    
+    // Case 2: Result is a string URL
+    if ([result isKindOfClass:[NSString class]]) {
+        return [NSURL URLWithString:result];
     }
-
-    // First element in array is highest quality
-    NSURL *videoUrl = [NSURL URLWithString:urlString];
-
-    return videoUrl;
+    
+    // Case 3: Result is an array (like sortedVideoURLsBySize)
+    if ([result isKindOfClass:[NSArray class]]) {
+        NSArray *array = (NSArray *)result;
+        if (array.count < 1) return nil;
+        
+        // First element is usually highest quality
+        id firstElement = array[0];
+        
+        // Could be a dictionary with "url" key
+        if ([firstElement isKindOfClass:[NSDictionary class]]) {
+            NSDictionary *dict = (NSDictionary *)firstElement;
+            id urlValue = dict[@"url"];
+            if ([urlValue isKindOfClass:[NSString class]]) {
+                return [NSURL URLWithString:urlValue];
+            }
+            if ([urlValue isKindOfClass:[NSURL class]]) {
+                return urlValue;
+            }
+        }
+        
+        // Could be a direct URL or string
+        if ([firstElement isKindOfClass:[NSURL class]]) {
+            return firstElement;
+        }
+        if ([firstElement isKindOfClass:[NSString class]]) {
+            return [NSURL URLWithString:firstElement];
+        }
+        
+        // Could be an object with "url" property
+        if ([firstElement respondsToSelector:@selector(url)]) {
+            #pragma clang diagnostic push
+            #pragma clang diagnostic ignored "-Warc-performSelector-leaks"
+            id urlResult = [firstElement performSelector:@selector(url)];
+            #pragma clang diagnostic pop
+            return [self extractURLFromVideoResult:urlResult];
+        }
+    }
+    
+    // Case 4: Result is a dictionary
+    if ([result isKindOfClass:[NSDictionary class]]) {
+        NSDictionary *dict = (NSDictionary *)result;
+        id urlValue = dict[@"url"] ?: dict[@"playbackUrl"] ?: dict[@"videoUrl"];
+        if (urlValue) {
+            return [self extractURLFromVideoResult:urlValue];
+        }
+    }
+    
+    // Case 5: Result has a "url" property
+    if ([result respondsToSelector:@selector(url)]) {
+        #pragma clang diagnostic push
+        #pragma clang diagnostic ignored "-Warc-performSelector-leaks"
+        id urlResult = [result performSelector:@selector(url)];
+        #pragma clang diagnostic pop
+        return [self extractURLFromVideoResult:urlResult];
+    }
+    
+    return nil;
 }
 + (NSURL *)getVideoUrlForMedia:(IGMedia *)media {
     if (!media) return nil;

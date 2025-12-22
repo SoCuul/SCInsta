@@ -181,7 +181,7 @@ static void initDownloaders () {
 
     NSURL *videoUrl = [SCIUtils getVideoUrlForMedia:self.video];
     if (!videoUrl) {
-        [SCIUtils showErrorHUDWithDescription:@"Download failed: Unsupported IG version"];
+        [SCIUtils showErrorHUDWithDescription:@"Download failed. Enable FLEX to debug."];
 
         return;
     }
