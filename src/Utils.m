@@ -54,10 +54,29 @@
 
     // Sort videos by quality
     NSArray<NSDictionary *> *sortedVideoUrls = [video sortedVideoURLsBySize];
-    if ([sortedVideoUrls count] < 1 || sortedVideoUrls[0] == nil) return nil;
+    
+    // Safety check: ensure array is not nil and has elements
+    if (!sortedVideoUrls || ![sortedVideoUrls isKindOfClass:[NSArray class]] || [sortedVideoUrls count] < 1) {
+        NSLog(@"[SCInsta] Error: sortedVideoURLsBySize returned invalid or empty array.");
+        return nil;
+    }
+    
+    NSDictionary *bestQualityVideo = sortedVideoUrls[0];
+    
+    // Safety check: ensure element is a dictionary
+    if (![bestQualityVideo isKindOfClass:[NSDictionary class]]) {
+        NSLog(@"[SCInsta] Error: First element in sortedVideoURLsBySize is not a dictionary.");
+        return nil;
+    }
+
+    NSString *urlString = [bestQualityVideo objectForKey:@"url"];
+    if (!urlString || ![urlString isKindOfClass:[NSString class]]) {
+        NSLog(@"[SCInsta] Error: 'url' key missing or not a string in video dictionary.");
+        return nil;
+    }
 
     // First element in array is highest quality
-    NSURL *videoUrl = [NSURL URLWithString:[sortedVideoUrls[0] objectForKey:@"url"]];
+    NSURL *videoUrl = [NSURL URLWithString:urlString];
 
     return videoUrl;
 }

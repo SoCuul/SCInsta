@@ -174,6 +174,11 @@ static void initDownloaders () {
 %new - (void)handleLongPress:(UILongPressGestureRecognizer *)sender {
     if (sender.state != UIGestureRecognizerStateBegan) return;
     
+    if (![self respondsToSelector:@selector(video)]) {
+        [SCIUtils showErrorHUDWithDescription:@"Error: Reel media not found (unsupported version?)"];
+        return;
+    }
+
     NSURL *videoUrl = [SCIUtils getVideoUrlForMedia:self.video];
     if (!videoUrl) {
         [SCIUtils showErrorHUDWithDescription:@"Could not extract video url from reel"];
