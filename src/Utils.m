@@ -1,4 +1,5 @@
 #import <UIKit/UIKit.h>
+#import <AVFoundation/AVFoundation.h>
 #import "Utils.h"
 #import "InstagramHeaders.h"
 
@@ -28,6 +29,10 @@
 
     [hud showInView:topMostController().view];
     [hud dismissAfterDelay:4.0];
+    
+    hud.tapOnHUDViewBlock = ^(JGProgressHUD * _Nonnull hud) {
+        [hud dismiss];
+    };
 
     return hud;
 }
@@ -169,12 +174,68 @@
     return [SCIUtils getVideoUrl:video];
 }
 
+// Search recursively for a player in subviews
++ (NSURL *)getCachedVideoUrlForView:(UIView *)view {
+    if (!view) return nil;
+    
+    // Check for AVPlayerLayer
+    if ([view.layer isKindOfClass:[AVPlayerLayer class]]) {
+        AVPlayerLayer *playerLayer = (AVPlayerLayer *)view.layer;
+        AVPlayer *player = playerLayer.player;
+        if (player) {
+            NSURL *url = [self getUrlFromPlayer:player];
+            if (url) return url;
+        }
+    }
+    
+    // Check for "player" property
+    if ([view respondsToSelector:@selector(player)]) {
+        id player = [view valueForKey:@"player"];
+        if (player && [player isKindOfClass:[AVPlayer class]]) {
+            NSURL *url = [self getUrlFromPlayer:player];
+            if (url) return url;
+        }
+    }
+    
+    // Check for "videoPlayer" property
+    if ([view respondsToSelector:@selector(videoPlayer)]) {
+        id player = [view valueForKey:@"videoPlayer"];
+        // Some IG players wrap AVPlayer
+        if ([player respondsToSelector:@selector(avPlayer)]) {
+            player = [player valueForKey:@"avPlayer"];
+        }
+        if (player && [player isKindOfClass:[AVPlayer class]]) {
+             NSURL *url = [self getUrlFromPlayer:player];
+             if (url) return url;
+        }
+    }
+    
+    // Recursively check subviews
+    for (UIView *subview in view.subviews) {
+        NSURL *url = [self getCachedVideoUrlForView:subview];
+        if (url) return url;
+    }
+    
+    return nil;
+}
+
++ (NSURL *)getUrlFromPlayer:(AVPlayer *)player {
+    AVPlayerItem *currentItem = player.currentItem;
+    if (!currentItem) return nil;
+    
+    AVAsset *asset = currentItem.asset;
+    if ([asset isKindOfClass:[AVURLAsset class]]) {
+        return [(AVURLAsset *)asset URL];
+    }
+    return nil;
+}
+
 + (void)requestWebVideoUrlForMedia:(IGMedia *)media completion:(void(^)(NSURL *url))completion {
     if (!media) {
         if (completion) completion(nil);
         return;
     }
-    
+
     // Try to get the shortcode (usually "code" property)
     NSString *shortcode = nil;
     if ([media respondsToSelector:@selector(code)]) {

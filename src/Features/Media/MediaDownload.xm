@@ -195,12 +195,19 @@ static void initDownloaders () {
     }
     
     // Fallback: Try fetching from web
+    // Fallback: Try fetching from web
     [SCIUtils requestWebVideoUrlForMedia:self.video completion:^(NSURL *webUrl) {
         dispatch_async(dispatch_get_main_queue(), ^{
             if (webUrl) {
                  startDownload(webUrl);
             } else {
-                 [SCIUtils showErrorHUDWithDescription:@"Download failed. Enable FLEX to debug."];
+                 // Final Fallback: Try cache/player
+                 NSURL *cachedUrl = [SCIUtils getCachedVideoUrlForView:self];
+                 if (cachedUrl) {
+                     startDownload(cachedUrl);
+                 } else {
+                     [SCIUtils showErrorHUDWithDescription:@"Download failed. Enable FLEX to debug."];
+                 }
             }
         });
     }];
@@ -327,12 +334,25 @@ static void initDownloaders () {
                     if (webUrl) {
                          startDownload(webUrl);
                     } else {
-                         [SCIUtils showErrorHUDWithDescription:@"Could not extract video url from story"];
+                         // Cache fallback
+                         NSURL *cachedUrl = [SCIUtils getCachedVideoUrlForView:self];
+                         if (cachedUrl) {
+                             startDownload(cachedUrl);
+                         } else {
+                             [SCIUtils showErrorHUDWithDescription:@"Could not extract video url from story"];
+                         }
                     }
                 });
             }];
             return;
         }
+    }
+    
+    // Final attempt with cache
+    NSURL *cachedUrl = [SCIUtils getCachedVideoUrlForView:self];
+    if (cachedUrl) {
+        startDownload(cachedUrl);
+        return;
     }
     
     [SCIUtils showErrorHUDWithDescription:@"Could not extract video url from story"];
