@@ -21,6 +21,7 @@
 
 + (NSURL *)getVideoUrl:(IGVideo *)video;
 + (NSURL *)getVideoUrlForMedia:(IGMedia *)media;
++ (void)requestWebVideoUrlForMedia:(IGMedia *)media completion:(void(^)(NSURL *url))completion;
 
 // View Controllers
 + (UIViewController *)viewControllerForView:(UIView *)view;

@@ -169,6 +169,78 @@
     return [SCIUtils getVideoUrl:video];
 }
 
++ (void)requestWebVideoUrlForMedia:(IGMedia *)media completion:(void(^)(NSURL *url))completion {
+    if (!media) {
+        if (completion) completion(nil);
+        return;
+    }
+    
+    // Try to get the shortcode (usually "code" property)
+    NSString *shortcode = nil;
+    if ([media respondsToSelector:@selector(code)]) {
+        shortcode = [media valueForKey:@"code"]; // IGMedia often has this
+    } else if ([media respondsToSelector:@selector(pk)]) {
+         // PK is numeric ID, converting to shortcode is complex, skip for now or try to use direct link if possible
+         // But often "pk" is all we have. For now if no code, fail.
+    }
+    
+    if (!shortcode || ![shortcode isKindOfClass:[NSString class]] || shortcode.length == 0) {
+        NSLog(@"[SCInsta] Web Fallback: Could not find shortcode for media.");
+        if (completion) completion(nil);
+        return;
+    }
+    
+    NSLog(@"[SCInsta] Web Fallback: Found shortcode: %@", shortcode);
+    NSURL *webUrl = [NSURL URLWithString:[NSString stringWithFormat:@"https://www.instagram.com/p/%@/", shortcode]];
+    
+    NSURLSession *session = [NSURLSession sharedSession];
+    [[session dataTaskWithURL:webUrl completionHandler:^(NSData * _Nullable data, NSURLResponse * _Nullable response, NSError * _Nullable error) {
+        if (error || !data) {
+            NSLog(@"[SCInsta] Web Fallback: Request failed: %@", error);
+            if (completion) completion(nil);
+            return;
+        }
+        
+        NSString *html = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+        if (!html) {
+             if (completion) completion(nil);
+             return;
+        }
+        
+        // Regex to find og:video
+        // <meta property="og:video" content="https://..." />
+        NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:@"property=\"og:video\" content=\"([^\"]+)\"" options:0 error:nil];
+        NSTextCheckingResult *match = [regex firstMatchInString:html options:0 range:NSMakeRange(0, html.length)];
+        
+        if (match && match.range.location != NSNotFound) {
+            NSString *videoUrlString = [html substringWithRange:[match rangeAtIndex:1]];
+            
+            // Decode HTML entities if needed (usually not for og:video content but good practice)
+            // For now assume standard URL
+            
+            NSLog(@"[SCInsta] Web Fallback: Found video URL: %@", videoUrlString);
+            if (completion) completion([NSURL URLWithString:videoUrlString]);
+        } else {
+            NSLog(@"[SCInsta] Web Fallback: No og:video tag found.");
+            
+            // Try searching for "video_url" in JSON
+            NSRegularExpression *jsonRegex = [NSRegularExpression regularExpressionWithPattern:@"\"video_url\":\"([^\"]+)\"" options:0 error:nil];
+            NSTextCheckingResult *jsonMatch = [jsonRegex firstMatchInString:html options:0 range:NSMakeRange(0, html.length)];
+            
+            if (jsonMatch && jsonMatch.range.location != NSNotFound) {
+                 NSString *jsonUrlString = [html substringWithRange:[jsonMatch rangeAtIndex:1]];
+                 // JSON URLs often have \u0026 instead of &
+                 jsonUrlString = [jsonUrlString stringByReplacingOccurrencesOfString:@"\\u0026" withString:@"&"];
+                 
+                 NSLog(@"[SCInsta] Web Fallback: Found JSON video URL: %@", jsonUrlString);
+                 if (completion) completion([NSURL URLWithString:jsonUrlString]);
+            } else {
+                 if (completion) completion(nil);
+            }
+        }
+    }] resume];
+}
+
 // View Controllers
 + (UIViewController *)viewControllerForView:(UIView *)view {
     NSString *viewDelegate = @"viewDelegate";

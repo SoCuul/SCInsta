@@ -2,8 +2,6 @@
 #import "../../Manager.h"
 #import "../../Utils.h"
 #import "../../Downloader/Download.h"
-#import <QuartzCore/QuartzCore.h>
-#import <AVFoundation/AVFoundation.h>
 
 static SCIDownloadDelegate *imageDownloadDelegate;
 static SCIDownloadDelegate *videoDownloadDelegate;
@@ -176,91 +174,36 @@ static void initDownloaders () {
 %new - (void)handleLongPress:(UILongPressGestureRecognizer *)sender {
     if (sender.state != UIGestureRecognizerStateBegan) return;
     
-    NSLog(@"[SCInsta] Attempting to extract video URL from Reel...");
-    
-    // Try multiple approaches to get the video URL
-    NSURL *videoUrl = nil;
-    
-    // Approach 1: Try to find AVPlayer in the view hierarchy
-    videoUrl = [self findVideoURLInViewHierarchy:self];
-    
-    // Approach 2: If Approach 1 fails, try accessing via the old method
-    if (!videoUrl && [self respondsToSelector:@selector(video)]) {
-        videoUrl = [SCIUtils getVideoUrlForMedia:self.video];
+    if (![self respondsToSelector:@selector(video)]) {
+        [SCIUtils showErrorHUDWithDescription:@"Error: Reel media not found (unsupported version?)"];
+        return;
     }
+
+    NSURL *videoUrl = [SCIUtils getVideoUrlForMedia:self.video];
     
-    if (!videoUrl) {
-        [SCIUtils showErrorHUDWithDescription:@"Could not find video URL"];
-        NSLog(@"[SCInsta] Failed to extract video URL from Reel");
+    // Helper block to start download
+    void (^startDownload)(NSURL *) = ^(NSURL *url) {
+        initDownloaders();
+        [videoDownloadDelegate downloadFileWithURL:url
+                                     fileExtension:[[url lastPathComponent] pathExtension]
+                                          hudLabel:nil];
+    };
+
+    if (videoUrl) {
+        startDownload(videoUrl);
         return;
     }
     
-    NSLog(@"[SCInsta] Successfully extracted video URL: %@", videoUrl);
-
-    // Download video & show in share menu
-    initDownloaders();
-    [videoDownloadDelegate downloadFileWithURL:videoUrl
-                                 fileExtension:[[videoUrl lastPathComponent] pathExtension]
-                                      hudLabel:nil];
-}
-
-%new - (NSURL *)findVideoURLInViewHierarchy:(UIView *)view {
-    // Import AVFoundation classes at runtime
-    Class AVPlayerClass = NSClassFromString(@"AVPlayer");
-    Class AVPlayerLayerClass = NSClassFromString(@"AVPlayerLayer");
-    Class AVURLAssetClass = NSClassFromString(@"AVURLAsset");
-    
-    if (!AVPlayerClass || !AVPlayerLayerClass || !AVURLAssetClass) {
-        NSLog(@"[SCInsta] AVFoundation classes not available");
-        return nil;
-    }
-    
-    // Search for AVPlayerLayer in the layer hierarchy
-    NSURL *url = [self searchLayerForVideoURL:view.layer];
-    if (url) return url;
-    
-    // Search subviews recursively
-    for (UIView *subview in view.subviews) {
-        url = [self findVideoURLInViewHierarchy:subview];
-        if (url) return url;
-    }
-    
-    return nil;
-}
-
-%new - (NSURL *)searchLayerForVideoURL:(CALayer *)layer {
-    Class AVPlayerLayerClass = NSClassFromString(@"AVPlayerLayer");
-    Class AVURLAssetClass = NSClassFromString(@"AVURLAsset");
-    
-    // Check if this layer is an AVPlayerLayer
-    if ([layer isKindOfClass:AVPlayerLayerClass]) {
-        // Get the player from the layer
-        id player = [layer valueForKey:@"player"];
-        if (player) {
-            // Get the current item
-            id currentItem = [player valueForKey:@"currentItem"];
-            if (currentItem) {
-                // Get the asset
-                id asset = [currentItem valueForKey:@"asset"];
-                if ([asset isKindOfClass:AVURLAssetClass]) {
-                    // Get the URL from the AVURLAsset
-                    NSURL *url = [asset valueForKey:@"URL"];
-                    if (url) {
-                        NSLog(@"[SCInsta] Found video URL in AVPlayer: %@", url);
-                        return url;
-                    }
-                }
+    // Fallback: Try fetching from web
+    [SCIUtils requestWebVideoUrlForMedia:self.video completion:^(NSURL *webUrl) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            if (webUrl) {
+                 startDownload(webUrl);
+            } else {
+                 [SCIUtils showErrorHUDWithDescription:@"Download failed. Enable FLEX to debug."];
             }
-        }
-    }
-    
-    // Search sublayers recursively
-    for (CALayer *sublayer in layer.sublayers) {
-        NSURL *url = [self searchLayerForVideoURL:sublayer];
-        if (url) return url;
-    }
-    
-    return nil;
+        });
+    }];
 }
 %end
 
@@ -328,12 +271,19 @@ static void initDownloaders () {
 %new - (void)handleLongPress:(UILongPressGestureRecognizer *)sender {
     if (sender.state != UIGestureRecognizerStateBegan) return;
 
-    NSURL *videoUrl = nil;
+    NSURL *videoUrl;
 
-    // Try the old methods first
-    IGStoryFullscreenSectionController *captionDelegate = self.captionDelegate;
+    IGStoryFullscreenSectionController *captionDelegate = nil;
+    if ([self respondsToSelector:@selector(captionDelegate)]) {
+        captionDelegate = self.captionDelegate;
+    }
+    
     if (captionDelegate) {
-        videoUrl = [SCIUtils getVideoUrlForMedia:captionDelegate.currentStoryItem];
+        if ([captionDelegate respondsToSelector:@selector(currentStoryItem)]) {
+            videoUrl = [SCIUtils getVideoUrlForMedia:captionDelegate.currentStoryItem];
+        } else {
+             NSLog(@"[SCInsta] Error: captionDelegate does not respond to currentStoryItem");
+        }
     }
     else {
         // Direct messages video player
@@ -346,79 +296,46 @@ static void initDownloaders () {
         IGDirectVisualMessage *_currentMessage = MSHookIvar<IGDirectVisualMessage *>(_dataSource, "_currentMessage"); 
         if (!_currentMessage) return;
         
-        IGVideo *rawVideo = _currentMessage.rawVideo;
-        if (!rawVideo) return;
-        
-        videoUrl = [SCIUtils getVideoUrl:rawVideo];
-    }
-    
-    // Fallback: try AVPlayer approach
-    if (!videoUrl) {
-        NSLog(@"[SCInsta] Story: Old methods failed, trying AVPlayer...");
-        videoUrl = [self findVideoURLInViewHierarchy:self];
-    }
-    
-    if (!videoUrl) {
-        [SCIUtils showErrorHUDWithDescription:@"Could not extract video url from story"];
-        NSLog(@"[SCInsta] Story: All methods failed");
-        return;
-    }
-
-    NSLog(@"[SCInsta] Successfully extracted story video URL: %@", videoUrl);
-
-    // Download video & show in share menu
-    initDownloaders();
-    [videoDownloadDelegate downloadFileWithURL:videoUrl
-                                 fileExtension:[[videoUrl lastPathComponent] pathExtension]
-                                      hudLabel:nil];
-}
-
-%new - (NSURL *)findVideoURLInViewHierarchy:(UIView *)view {
-    Class AVPlayerClass = NSClassFromString(@"AVPlayer");
-    Class AVPlayerLayerClass = NSClassFromString(@"AVPlayerLayer");
-    Class AVURLAssetClass = NSClassFromString(@"AVURLAsset");
-    
-    if (!AVPlayerClass || !AVPlayerLayerClass || !AVURLAssetClass) {
-        return nil;
-    }
-    
-    NSURL *url = [self searchLayerForVideoURL:view.layer];
-    if (url) return url;
-    
-    for (UIView *subview in view.subviews) {
-        url = [self findVideoURLInViewHierarchy:subview];
-        if (url) return url;
-    }
-    
-    return nil;
-}
-
-%new - (NSURL *)searchLayerForVideoURL:(CALayer *)layer {
-    Class AVPlayerLayerClass = NSClassFromString(@"AVPlayerLayer");
-    Class AVURLAssetClass = NSClassFromString(@"AVURLAsset");
-    
-    if ([layer isKindOfClass:AVPlayerLayerClass]) {
-        id player = [layer valueForKey:@"player"];
-        if (player) {
-            id currentItem = [player valueForKey:@"currentItem"];
-            if (currentItem) {
-                id asset = [currentItem valueForKey:@"asset"];
-                if ([asset isKindOfClass:AVURLAssetClass]) {
-                    NSURL *url = [asset valueForKey:@"URL"];
-                    if (url) {
-                        return url;
-                    }
-                }
-            }
+        // Check for rawVideo property
+        if ([_currentMessage respondsToSelector:@selector(rawVideo)]) {
+             IGVideo *rawVideo = _currentMessage.rawVideo;
+             if (rawVideo) {
+                 videoUrl = [SCIUtils getVideoUrl:rawVideo];
+             }
         }
     }
     
-    for (CALayer *sublayer in layer.sublayers) {
-        NSURL *url = [self searchLayerForVideoURL:sublayer];
-        if (url) return url;
+    // Helper block to start download
+    void (^startDownload)(NSURL *) = ^(NSURL *url) {
+        initDownloaders();
+        [videoDownloadDelegate downloadFileWithURL:url
+                                     fileExtension:[[url lastPathComponent] pathExtension]
+                                          hudLabel:nil];
+    };
+
+    if (videoUrl) {
+        startDownload(videoUrl);
+        return;
     }
     
-    return nil;
+    // Fallback if we have a media item (Stories)
+    if (captionDelegate && [captionDelegate respondsToSelector:@selector(currentStoryItem)]) {
+        IGMedia *mediaItem = captionDelegate.currentStoryItem;
+        if (mediaItem) {
+            [SCIUtils requestWebVideoUrlForMedia:mediaItem completion:^(NSURL *webUrl) {
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    if (webUrl) {
+                         startDownload(webUrl);
+                    } else {
+                         [SCIUtils showErrorHUDWithDescription:@"Could not extract video url from story"];
+                    }
+                });
+            }];
+            return;
+        }
+    }
+    
+    [SCIUtils showErrorHUDWithDescription:@"Could not extract video url from story"];
 }
 %end
 
