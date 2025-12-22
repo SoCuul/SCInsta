@@ -52,6 +52,12 @@
 + (NSURL *)getVideoUrl:(IGVideo *)video {
     if (!video) return nil;
 
+    // Check if the video object responds to sortedVideoURLsBySize (may not exist in newer IG versions)
+    if (![video respondsToSelector:@selector(sortedVideoURLsBySize)]) {
+        NSLog(@"[SCInsta] Error: video object does not respond to sortedVideoURLsBySize. Instagram version may be unsupported.");
+        return nil;
+    }
+
     // Sort videos by quality
     NSArray<NSDictionary *> *sortedVideoUrls = [video sortedVideoURLsBySize];
     

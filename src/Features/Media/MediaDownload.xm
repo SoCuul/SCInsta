@@ -181,7 +181,7 @@ static void initDownloaders () {
 
     NSURL *videoUrl = [SCIUtils getVideoUrlForMedia:self.video];
     if (!videoUrl) {
-        [SCIUtils showErrorHUDWithDescription:@"Could not extract video url from reel"];
+        [SCIUtils showErrorHUDWithDescription:@"Download failed: Unsupported IG version"];
 
         return;
     }
