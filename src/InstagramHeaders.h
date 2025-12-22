@@ -54,22 +54,38 @@
 @property(readonly, nonatomic) NSURL *url;
 @end
 
-@interface IGVideo : NSObject
+// IGImageURL - used in _originalImageVersions array
+@interface IGImageURL : NSObject
+@property(readonly, nonatomic) NSURL *url;
+@property(readonly, nonatomic) CGFloat width;
+@property(readonly, nonatomic) CGFloat height;
+@end
+
+@interface IGVideo : NSObject {
+    NSSet *_allVideoURLs;
+    NSArray *_videoVersionDictionaries;
+}
+@property(readonly, nonatomic) NSSet *allVideoURLs;
 - (id)sortedVideoURLsBySize;
 @end
 
-@interface IGPhoto : NSObject
+@interface IGPhoto : NSObject {
+    NSArray *_originalImageVersions; // Array of IGImageURL
+}
 - (id)imageURLForWidth:(CGFloat)width;
 @end
 
 @interface IGMedia : NSObject
 @property(readonly) IGVideo *video;
 @property(readonly) IGPhoto *photo;
+@property(readonly, strong) NSArray *items; // Array of IGPostItem for carousels
+- (BOOL)isPhotoMedia;
 @end
 
 @interface IGPostItem : NSObject
 @property(readonly) IGVideo *video;
 @property(readonly) IGPhoto *photo;
+@property(readonly, nonatomic) NSInteger mediaType; // 1: photo, 2: video
 @end
 
 @interface IGPageMediaView : UIView

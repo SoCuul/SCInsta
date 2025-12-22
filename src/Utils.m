@@ -44,10 +44,34 @@
 + (NSURL *)getPhotoUrl:(IGPhoto *)photo {
     if (!photo) return nil;
 
-    // Get highest quality photo link
-    NSURL *photoUrl = [photo imageURLForWidth:100000.00];
+    // BHInstagram's method: access _originalImageVersions ivar
+    // This contains an array of IGImageURL objects
+    NSArray *originalImageVersions = [photo valueForKey:@"_originalImageVersions"];
+    
+    if (originalImageVersions && [originalImageVersions isKindOfClass:[NSArray class]] && originalImageVersions.count > 0) {
+        // Get the first (usually highest quality) version
+        id imageVersion = originalImageVersions[0];
+        // IGImageURL has a url property
+        if ([imageVersion respondsToSelector:@selector(url)]) {
+            NSURL *url = [imageVersion valueForKey:@"url"];
+            if (url && [url isKindOfClass:[NSURL class]]) {
+                NSLog(@"[SCInsta] Found photo URL via _originalImageVersions: %@", url);
+                return url;
+            }
+        }
+    }
+    
+    // Fallback: Try old method
+    if ([photo respondsToSelector:@selector(imageURLForWidth:)]) {
+        NSURL *photoUrl = [photo imageURLForWidth:100000.00];
+        if (photoUrl) {
+            NSLog(@"[SCInsta] Found photo URL via imageURLForWidth: %@", photoUrl);
+            return photoUrl;
+        }
+    }
 
-    return photoUrl;
+    NSLog(@"[SCInsta] Error: Could not extract photo URL.");
+    return nil;
 }
 + (NSURL *)getPhotoUrlForMedia:(IGMedia *)media {
     if (!media) return nil;
@@ -60,39 +84,33 @@
 + (NSURL *)getVideoUrl:(IGVideo *)video {
     if (!video) return nil;
     
-    // Try multiple method names in order of likelihood
-    // Instagram changes internal method names between versions
-    NSArray *methodsToTry = @[
-        @"sortedVideoURLsBySize",   // Old method (pre v398)
-        @"videoVersions",           // Common alternative
-        @"videoURLs",               // Another possibility
-        @"versions",                // Short form
-        @"playbackURL",             // Direct URL property
-        @"url"                      // Simple URL property
-    ];
+    // BHInstagram's working method: access _videoVersionDictionaries ivar
+    // This contains an array of dictionaries with url, width, height keys
+    NSArray *videoVersionDictionaries = [video valueForKey:@"_videoVersionDictionaries"];
     
-    for (NSString *method in methodsToTry) {
-        SEL selector = NSSelectorFromString(method);
-        if ([video respondsToSelector:selector]) {
-            NSLog(@"[SCInsta] Trying method: %@", method);
-            
-            #pragma clang diagnostic push
-            #pragma clang diagnostic ignored "-Warc-performSelector-leaks"
-            id result = [video performSelector:selector];
-            #pragma clang diagnostic pop
-            
-            if (!result) continue;
-            
-            // Handle different return types
-            NSURL *extractedUrl = [self extractURLFromVideoResult:result];
-            if (extractedUrl) {
-                NSLog(@"[SCInsta] Successfully extracted URL using method: %@", method);
-                return extractedUrl;
+    if (videoVersionDictionaries && [videoVersionDictionaries isKindOfClass:[NSArray class]] && videoVersionDictionaries.count > 0) {
+        // Get the first (usually highest quality) version
+        NSDictionary *videoVersion = videoVersionDictionaries[0];
+        if ([videoVersion isKindOfClass:[NSDictionary class]]) {
+            NSString *urlString = videoVersion[@"url"];
+            if (urlString && [urlString isKindOfClass:[NSString class]]) {
+                NSLog(@"[SCInsta] Found video URL via _videoVersionDictionaries: %@", urlString);
+                return [NSURL URLWithString:urlString];
             }
         }
     }
     
-    NSLog(@"[SCInsta] Error: Could not extract video URL using any known method.");
+    // Fallback: Try _allVideoURLs (NSSet of URLs)
+    NSSet *allVideoURLs = [video valueForKey:@"_allVideoURLs"];
+    if (allVideoURLs && [allVideoURLs isKindOfClass:[NSSet class]] && allVideoURLs.count > 0) {
+        NSURL *url = [allVideoURLs anyObject];
+        if (url && [url isKindOfClass:[NSURL class]]) {
+            NSLog(@"[SCInsta] Found video URL via _allVideoURLs: %@", url);
+            return url;
+        }
+    }
+    
+    NSLog(@"[SCInsta] Error: Could not extract video URL.");
     return nil;
 }
 
