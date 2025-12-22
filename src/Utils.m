@@ -27,8 +27,11 @@
     hud.textLabel.text = errorDesc;
     hud.indicatorView = [[JGProgressHUDErrorIndicatorView alloc] init];
 
+    // Make HUD non-blocking so user can continue to interact
+    hud.interactionType = JGProgressHUDInteractionTypeBlockNoTouches;
+    
     [hud showInView:topMostController().view];
-    [hud dismissAfterDelay:4.0];
+    [hud dismissAfterDelay:3.0]; // Reduced delay
     
     hud.tapOnHUDViewBlock = ^(JGProgressHUD * _Nonnull hud) {
         [hud dismiss];
@@ -174,9 +177,14 @@
     return [SCIUtils getVideoUrl:video];
 }
 
-// Search recursively for a player in subviews
+// Search recursively for a player in subviews (Wrapper)
 + (NSURL *)getCachedVideoUrlForView:(UIView *)view {
-    if (!view) return nil;
+    return [self getCachedVideoUrlForView:view depth:0];
+}
+
+// Recursive implementation with depth limit
++ (NSURL *)getCachedVideoUrlForView:(UIView *)view depth:(NSInteger)depth {
+    if (!view || depth > 5) return nil; // Limit depth to prevent UI freeze
     
     // 1. Check for AVPlayerLayer directly
     if ([view.layer isKindOfClass:[AVPlayerLayer class]]) {
@@ -185,14 +193,15 @@
         if (player) {
             NSURL *url = [self getUrlFromPlayer:player];
             if (url) {
-                NSLog(@"[SCInsta] Found URL in AVPlayerLayer: %@", url);
+                // NSLog(@"[SCInsta] Found URL in AVPlayerLayer: %@", url);
                 return url;
             }
         }
     }
     
     // 2. Check common property names for players or wrappers
-    NSArray *playerKeys = @[@"player", @"videoPlayer", @"avPlayer", @"contentPlayer", @"mediaPlayer"];
+    // Reduced search keys for performance
+    NSArray *playerKeys = @[@"player", @"videoPlayer", @"avPlayer"];
     
     for (NSString *key in playerKeys) {
         if ([view respondsToSelector:NSSelectorFromString(key)]) {
@@ -201,31 +210,23 @@
             // It might be an AVPlayer
             if (playerObj && [playerObj isKindOfClass:[AVPlayer class]]) {
                 NSURL *url = [self getUrlFromPlayer:(AVPlayer *)playerObj];
-                if (url) {
-                    NSLog(@"[SCInsta] Found URL in property '%@': %@", key, url);
-                    return url;
-                }
+                if (url) return url;
             }
             
-            // It might be a wrapper (like IGVideoPlayer) that HAS an avPlayer
+            // It might be a wrapper
             if (playerObj && [playerObj respondsToSelector:@selector(avPlayer)]) {
                 id innerPlayer = [playerObj valueForKey:@"avPlayer"];
                 if (innerPlayer && [innerPlayer isKindOfClass:[AVPlayer class]]) {
                     NSURL *url = [self getUrlFromPlayer:(AVPlayer *)innerPlayer];
-                    if (url) {
-                         NSLog(@"[SCInsta] Found URL in property '%@.avPlayer': %@", key, url);
-                         return url;
-                    }
+                    if (url) return url;
                 }
             }
         }
     }
     
     // 3. Recursively check subviews
-    // Breadth-first might be better but depth-first is easier to write standardly. 
-    // Given the hierarchy isn't infinite, this is fine.
     for (UIView *subview in view.subviews) {
-        NSURL *url = [self getCachedVideoUrlForView:subview];
+        NSURL *url = [self getCachedVideoUrlForView:subview depth:depth + 1];
         if (url) return url;
     }
     
