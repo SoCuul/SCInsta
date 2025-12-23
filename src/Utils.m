@@ -140,7 +140,7 @@
                                  if ([url isKindOfClass:[NSURL class]]) return url;
                                  if ([url isKindOfClass:[NSString class]]) return [NSURL URLWithString:url];
                              }
-                             // Check if it IS a URL
+                             // Check for object with "url" property
                              if ([first isKindOfClass:[NSURL class]]) return first;
                          }
                     }
@@ -229,7 +229,26 @@
 + (NSURL *)getVideoUrlForMedia:(IGMedia *)media {
     if (!media) return nil;
 
-    IGVideo *video = media.video;
+    // Check if the object itself acts like a video (has video versions)
+    Class IGVideoClass = NSClassFromString(@"IGVideo");
+    if ((IGVideoClass && [media isKindOfClass:IGVideoClass]) || 
+        [media valueForKey:@"_videoVersionDictionaries"] != nil ||
+        [media respondsToSelector:@selector(videoVersionDictionaries)]) {
+        return [SCIUtils getVideoUrl:(IGVideo *)media];
+    }
+
+    IGVideo *video = nil;
+    if ([media respondsToSelector:@selector(video)]) {
+        video = media.video;
+    }
+    
+    // Fallback: Try accessing _video ivar directly
+    if (!video) {
+        @try {
+            video = [media valueForKey:@"_video"];
+        } @catch (NSException *e) {}
+    }
+
     if (!video) return nil;
 
     return [SCIUtils getVideoUrl:video];
@@ -259,7 +278,9 @@
     
     // 2. Check common property names for players or wrappers
     // Reduced search keys for performance
-    NSArray *playerKeys = @[@"player", @"videoPlayer", @"avPlayer"];
+    // 2. Check common property names for players or wrappers
+    // Reduced search keys for performance
+    NSArray *playerKeys = @[@"player", @"videoPlayer", @"avPlayer", @"_player", @"_videoPlayer", @"videoPlayerView", @"_videoPlayerView", @"fnfPlayer"];
     
     for (NSString *key in playerKeys) {
         if ([view respondsToSelector:NSSelectorFromString(key)]) {
