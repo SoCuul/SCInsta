@@ -44,30 +44,34 @@
 + (NSURL *)getPhotoUrl:(IGPhoto *)photo {
     if (!photo) return nil;
 
-    // BHInstagram's method: access _originalImageVersions ivar
-    // This contains an array of IGImageURL objects
-    NSArray *originalImageVersions = [photo valueForKey:@"_originalImageVersions"];
-    
-    if (originalImageVersions && [originalImageVersions isKindOfClass:[NSArray class]] && originalImageVersions.count > 0) {
-        // Get the first (usually highest quality) version
-        id imageVersion = originalImageVersions[0];
-        // IGImageURL has a url property
-        if ([imageVersion respondsToSelector:@selector(url)]) {
-            NSURL *url = [imageVersion valueForKey:@"url"];
-            if (url && [url isKindOfClass:[NSURL class]]) {
-                NSLog(@"[SCInsta] Found photo URL via _originalImageVersions: %@", url);
-                return url;
+    @try {
+        // BHInstagram's method: access _originalImageVersions ivar
+        // This contains an array of IGImageURL objects
+        NSArray *originalImageVersions = [photo valueForKey:@"_originalImageVersions"];
+        
+        if (originalImageVersions && [originalImageVersions isKindOfClass:[NSArray class]] && originalImageVersions.count > 0) {
+            // Get the first (usually highest quality) version
+            id imageVersion = originalImageVersions[0];
+            // IGImageURL has a url property
+            if ([imageVersion respondsToSelector:@selector(url)]) {
+                NSURL *url = [imageVersion valueForKey:@"url"];
+                if (url && [url isKindOfClass:[NSURL class]]) {
+                    NSLog(@"[SCInsta] Found photo URL via _originalImageVersions");
+                    return url;
+                }
             }
         }
-    }
-    
-    // Fallback: Try old method
-    if ([photo respondsToSelector:@selector(imageURLForWidth:)]) {
-        NSURL *photoUrl = [photo imageURLForWidth:100000.00];
-        if (photoUrl) {
-            NSLog(@"[SCInsta] Found photo URL via imageURLForWidth: %@", photoUrl);
-            return photoUrl;
+        
+        // Fallback: Try old method
+        if ([photo respondsToSelector:@selector(imageURLForWidth:)]) {
+            NSURL *photoUrl = [photo imageURLForWidth:100000.00];
+            if (photoUrl) {
+                NSLog(@"[SCInsta] Found photo URL via imageURLForWidth");
+                return photoUrl;
+            }
         }
+    } @catch (NSException *exception) {
+        NSLog(@"[SCInsta] Exception in getPhotoUrl: %@", exception);
     }
 
     NSLog(@"[SCInsta] Error: Could not extract photo URL.");
@@ -84,33 +88,69 @@
 + (NSURL *)getVideoUrl:(IGVideo *)video {
     if (!video) return nil;
     
-    // BHInstagram's working method: access _videoVersionDictionaries ivar
-    // This contains an array of dictionaries with url, width, height keys
-    NSArray *videoVersionDictionaries = [video valueForKey:@"_videoVersionDictionaries"];
-    
-    if (videoVersionDictionaries && [videoVersionDictionaries isKindOfClass:[NSArray class]] && videoVersionDictionaries.count > 0) {
-        // Get the first (usually highest quality) version
-        NSDictionary *videoVersion = videoVersionDictionaries[0];
-        if ([videoVersion isKindOfClass:[NSDictionary class]]) {
-            NSString *urlString = videoVersion[@"url"];
-            if (urlString && [urlString isKindOfClass:[NSString class]]) {
-                NSLog(@"[SCInsta] Found video URL via _videoVersionDictionaries: %@", urlString);
-                return [NSURL URLWithString:urlString];
+    // 1. Try BHInstagram Method (Ivar Access)
+    @try {
+        NSArray *videoVersionDictionaries = [video valueForKey:@"_videoVersionDictionaries"];
+        if (videoVersionDictionaries && [videoVersionDictionaries isKindOfClass:[NSArray class]] && videoVersionDictionaries.count > 0) {
+            id firstVersion = videoVersionDictionaries[0];
+            if ([firstVersion isKindOfClass:[NSDictionary class]]) {
+                id urlValue = ((NSDictionary *)firstVersion)[@"url"];
+                if (urlValue && [urlValue isKindOfClass:[NSString class]]) {
+                     return [NSURL URLWithString:(NSString *)urlValue];
+                }
             }
         }
-    }
+    } @catch (NSException *e) { /* Ignore */ }
     
-    // Fallback: Try _allVideoURLs (NSSet of URLs)
-    NSSet *allVideoURLs = [video valueForKey:@"_allVideoURLs"];
-    if (allVideoURLs && [allVideoURLs isKindOfClass:[NSSet class]] && allVideoURLs.count > 0) {
-        NSURL *url = [allVideoURLs anyObject];
-        if (url && [url isKindOfClass:[NSURL class]]) {
-            NSLog(@"[SCInsta] Found video URL via _allVideoURLs: %@", url);
-            return url;
+    // 2. Try _allVideoURLs Ivar
+    @try {
+        NSSet *allVideoURLs = [video valueForKey:@"_allVideoURLs"];
+        if (allVideoURLs && [allVideoURLs isKindOfClass:[NSSet class]]) {
+            NSURL *url = [allVideoURLs anyObject];
+            if (url) return url;
         }
-    }
+    } @catch (NSException *e) { /* Ignore */ }
     
-    NSLog(@"[SCInsta] Error: Could not extract video URL.");
+    // 3. Try known method names
+    NSArray *methods = @[@"sortedVideoURLsBySize", @"videoVersions", @"videoURLs", @"versions", @"playbackURL"];
+    for (NSString *method in methods) {
+        @try {
+            SEL selector = NSSelectorFromString(method);
+            if ([video respondsToSelector:selector]) {
+                #pragma clang diagnostic push
+                #pragma clang diagnostic ignored "-Warc-performSelector-leaks"
+                id result = [video performSelector:selector];
+                #pragma clang diagnostic pop
+                
+                if (result) {
+                    // Handle array result
+                    if ([result isKindOfClass:[NSArray class]]) {
+                         NSArray *arr = (NSArray *)result;
+                         if (arr.count > 0) {
+                             id first = arr[0];
+                             // Check for dictionary with "url"
+                             if ([first isKindOfClass:[NSDictionary class]]) {
+                                 id url = first[@"url"];
+                                 if ([url isKindOfClass:[NSString class]]) return [NSURL URLWithString:url];
+                                 if ([url isKindOfClass:[NSURL class]]) return url;
+                             }
+                             // Check for object with "url" property
+                             if ([first respondsToSelector:@selector(url)]) {
+                                 id url = [first valueForKey:@"url"];
+                                 if ([url isKindOfClass:[NSURL class]]) return url;
+                                 if ([url isKindOfClass:[NSString class]]) return [NSURL URLWithString:url];
+                             }
+                             // Check if it IS a URL
+                             if ([first isKindOfClass:[NSURL class]]) return first;
+                         }
+                    }
+                    // Handle URL result
+                    if ([result isKindOfClass:[NSURL class]]) return result;
+                }
+            }
+        } @catch (NSException *e) { /* Ignore */ }
+    }
+
     return nil;
 }
 

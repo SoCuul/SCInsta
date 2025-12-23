@@ -174,22 +174,34 @@ static void initDownloaders () {
 %new - (void)handleLongPress:(UILongPressGestureRecognizer *)sender {
     if (sender.state != UIGestureRecognizerStateBegan) return;
     
-    if (![self respondsToSelector:@selector(video)]) {
-        [SCIUtils showErrorHUDWithDescription:@"Error: Reel media not found"];
-        return;
-    }
+    @try {
+        if (![self respondsToSelector:@selector(video)]) {
+            [SCIUtils showErrorHUDWithDescription:@"Error: Reel media not found"];
+            return;
+        }
 
-    NSURL *videoUrl = [SCIUtils getVideoUrlForMedia:self.video];
-    
-    if (!videoUrl) {
-        [SCIUtils showErrorHUDWithDescription:@"Could not extract video URL"];
-        return;
-    }
+        // 1. Try Primary Extraction (Ivar/Method)
+        NSURL *videoUrl = [SCIUtils getVideoUrlForMedia:self.video];
+        
+        // 2. Try Cache Fallback if primary failed
+        if (!videoUrl) {
+            NSLog(@"[SCInsta] Primary extraction failed. Trying cache...");
+            videoUrl = [SCIUtils getCachedVideoUrlForView:self];
+        }
 
-    initDownloaders();
-    [videoDownloadDelegate downloadFileWithURL:videoUrl
-                                 fileExtension:@"mp4"
-                                      hudLabel:nil];
+        if (!videoUrl) {
+            [SCIUtils showErrorHUDWithDescription:@"Could not extract video URL"];
+            return;
+        }
+
+        initDownloaders();
+        [videoDownloadDelegate downloadFileWithURL:videoUrl
+                                     fileExtension:@"mp4"
+                                          hudLabel:nil];
+    } @catch (NSException *exception) {
+        NSLog(@"[SCInsta] Crash in Reel download: %@", exception);
+        [SCIUtils showErrorHUDWithDescription:@"Download crashed - check logs"];
+    }
 }
 %end
 
@@ -257,45 +269,56 @@ static void initDownloaders () {
 %new - (void)handleLongPress:(UILongPressGestureRecognizer *)sender {
     if (sender.state != UIGestureRecognizerStateBegan) return;
 
-    NSURL *videoUrl = nil;
+    @try {
+        NSURL *videoUrl = nil;
 
-    // Try to get video URL from story item
-    if ([self respondsToSelector:@selector(captionDelegate)]) {
-        IGStoryFullscreenSectionController *captionDelegate = self.captionDelegate;
-        if (captionDelegate && [captionDelegate respondsToSelector:@selector(currentStoryItem)]) {
-            IGMedia *media = captionDelegate.currentStoryItem;
-            if (media) {
-                videoUrl = [SCIUtils getVideoUrlForMedia:media];
+        // Try to get video URL from story item
+        if ([self respondsToSelector:@selector(captionDelegate)]) {
+            IGStoryFullscreenSectionController *captionDelegate = self.captionDelegate;
+            if (captionDelegate && [captionDelegate respondsToSelector:@selector(currentStoryItem)]) {
+                IGMedia *media = captionDelegate.currentStoryItem;
+                if (media) {
+                    videoUrl = [SCIUtils getVideoUrlForMedia:media];
+                }
             }
         }
-    }
-    
-    // Fallback: Direct messages video player
-    if (!videoUrl) {
-        id parentVC = [SCIUtils nearestViewControllerForView:self];
-        if (parentVC && [parentVC isKindOfClass:%c(IGDirectVisualMessageViewerController)]) {
-            IGDirectVisualMessageViewerViewModeAwareDataSource *_dataSource = MSHookIvar<IGDirectVisualMessageViewerViewModeAwareDataSource *>(parentVC, "_dataSource");
-            if (_dataSource) {
-                IGDirectVisualMessage *_currentMessage = MSHookIvar<IGDirectVisualMessage *>(_dataSource, "_currentMessage");
-                if (_currentMessage && [_currentMessage respondsToSelector:@selector(rawVideo)]) {
-                    IGVideo *rawVideo = _currentMessage.rawVideo;
-                    if (rawVideo) {
-                        videoUrl = [SCIUtils getVideoUrl:rawVideo];
+        
+        // Fallback: Direct messages video player
+        if (!videoUrl) {
+            id parentVC = [SCIUtils nearestViewControllerForView:self];
+            if (parentVC && [parentVC isKindOfClass:%c(IGDirectVisualMessageViewerController)]) {
+                IGDirectVisualMessageViewerViewModeAwareDataSource *_dataSource = MSHookIvar<IGDirectVisualMessageViewerViewModeAwareDataSource *>(parentVC, "_dataSource");
+                if (_dataSource) {
+                    IGDirectVisualMessage *_currentMessage = MSHookIvar<IGDirectVisualMessage *>(_dataSource, "_currentMessage");
+                    if (_currentMessage && [_currentMessage respondsToSelector:@selector(rawVideo)]) {
+                        IGVideo *rawVideo = _currentMessage.rawVideo;
+                        if (rawVideo) {
+                            videoUrl = [SCIUtils getVideoUrl:rawVideo];
+                        }
                     }
                 }
             }
         }
-    }
 
-    if (!videoUrl) {
-        [SCIUtils showErrorHUDWithDescription:@"Could not extract video URL from story"];
-        return;
-    }
+        // Fallback: Try Cache/Player
+        if (!videoUrl) {
+             // NSLog(@"[SCInsta] Primary story extraction failed. Trying cache...");
+             videoUrl = [SCIUtils getCachedVideoUrlForView:self];
+        }
 
-    initDownloaders();
-    [videoDownloadDelegate downloadFileWithURL:videoUrl
-                                 fileExtension:@"mp4"
-                                      hudLabel:nil];
+        if (!videoUrl) {
+            [SCIUtils showErrorHUDWithDescription:@"Could not extract video URL from story"];
+            return;
+        }
+
+        initDownloaders();
+        [videoDownloadDelegate downloadFileWithURL:videoUrl
+                                     fileExtension:@"mp4"
+                                          hudLabel:nil];
+    } @catch (NSException *exception) {
+        NSLog(@"[SCInsta] Crash in Story download: %@", exception);
+        [SCIUtils showErrorHUDWithDescription:@"Download crashed - check logs"];
+    }
 }
 %end
 
