@@ -273,7 +273,24 @@ static void initDownloaders () {
         NSURL *videoUrl = nil;
 
         // Try to get video URL from story item
-        if ([self respondsToSelector:@selector(captionDelegate)]) {
+        // Try to get video URL from story item via Controller Traversal
+        UIResponder *responder = self;
+        while (responder) {
+            if ([responder isKindOfClass:%c(IGStoryFullscreenSectionController)]) {
+                IGStoryFullscreenSectionController *controller = (IGStoryFullscreenSectionController *)responder;
+                if ([controller respondsToSelector:@selector(currentStoryItem)]) {
+                    IGMedia *media = controller.currentStoryItem;
+                    if (media) {
+                        videoUrl = [SCIUtils getVideoUrlForMedia:media];
+                    }
+                }
+                break;
+            }
+            responder = [responder nextResponder];
+        }
+
+        // Keep captionDelegate as a backup if traversal fails
+        if (!videoUrl && [self respondsToSelector:@selector(captionDelegate)]) {
             IGStoryFullscreenSectionController *captionDelegate = self.captionDelegate;
             if (captionDelegate && [captionDelegate respondsToSelector:@selector(currentStoryItem)]) {
                 IGMedia *media = captionDelegate.currentStoryItem;
