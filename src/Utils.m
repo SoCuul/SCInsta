@@ -242,7 +242,7 @@
 
 // Recursive implementation with depth limit
 + (NSURL *)getCachedVideoUrlForView:(UIView *)view depth:(NSInteger)depth {
-    if (!view || depth > 5) return nil; // Limit depth to prevent UI freeze
+    if (!view || depth > 15) return nil; // Increased depth to 15 to find deep Story players
     
     // 1. Check for AVPlayerLayer directly
     if ([view.layer isKindOfClass:[AVPlayerLayer class]]) {
