@@ -273,65 +273,45 @@ static void initDownloaders () {
         NSURL *videoUrl = nil;
 
         // Try to get video URL from story item
-        // 0. Quick Check: Does the view itself have the item?
-        if ([self respondsToSelector:@selector(item)]) {
-             id item = [self performSelector:@selector(item)];
-             // Unwrap if needed
-             if (item && [item respondsToSelector:@selector(media)]) {
-                 id inner = [item performSelector:@selector(media)];
-                 if (inner) item = inner;
-             }
-             if (item) {
-                 videoUrl = [SCIUtils getVideoUrlForMedia:item];
-             }
-        }
+        // Try to get video URL from story item via Controller Traversal
+        NSLog(@"[SCInsta] Starting Story Download Logic on view: %@", [self class]);
         
-        // 1. Try to get video URL from story item via Controller Traversal (Duck Typing)
-        if (!videoUrl) {
-            UIResponder *responder = self;
-            while (responder) {
-                // Check for known controller class OR just the property we need (Duck Typing)
-                if ([responder isKindOfClass:%c(IGStoryFullscreenSectionController)] || 
-                    [responder respondsToSelector:@selector(currentStoryItem)] ||
-                    [responder respondsToSelector:@selector(item)]) {
+        UIResponder *responder = self;
+        int depth = 0;
+        while (responder) {
+            NSLog(@"[SCInsta] Responder Chain [%d]: %@", depth, [responder class]);
+            
+            if ([responder isKindOfClass:%c(IGStoryFullscreenSectionController)]) {
+                NSLog(@"[SCInsta] Found IGStoryFullscreenSectionController!");
+                IGStoryFullscreenSectionController *controller = (IGStoryFullscreenSectionController *)responder;
+                
+                if ([controller respondsToSelector:@selector(currentStoryItem)]) {
+                    IGMedia *media = controller.currentStoryItem;
+                    NSLog(@"[SCInsta] currentStoryItem result: %@", media);
                     
-                    id result = nil;
-                    if ([responder respondsToSelector:@selector(currentStoryItem)]) {
-                        result = [responder performSelector:@selector(currentStoryItem)];
-                    } else if ([responder respondsToSelector:@selector(item)]) {
-                        result = [responder performSelector:@selector(item)];
+                    if (media) {
+                        videoUrl = [SCIUtils getVideoUrlForMedia:media];
+                        NSLog(@"[SCInsta] URL from media: %@", videoUrl);
+                    } else {
+                        NSLog(@"[SCInsta] Error: currentStoryItem is nil");
                     }
-                    
-                    // Unwrap if the result contains a .media property (e.g. IGStoryItem wrapping IGMedia)
-                    if (result && [result respondsToSelector:@selector(media)]) {
-                        id innerMedia = [result performSelector:@selector(media)];
-                        if (innerMedia) result = innerMedia;
-                    }
-
-                    // Try to get URL from the result (whether it's IGMedia or safe to treat as such)
-                    if (result) {
-                        videoUrl = [SCIUtils getVideoUrlForMedia:result];
-                        if (videoUrl) break;
-                    }
+                } else {
+                     NSLog(@"[SCInsta] Error: Controller does not respond to currentStoryItem");
                 }
-                responder = [responder nextResponder];
+                break;
             }
+            responder = [responder nextResponder];
+            depth++;
+            if (depth > 50) break; // Safety break
         }
 
         // Keep captionDelegate as a backup if traversal fails
         if (!videoUrl && [self respondsToSelector:@selector(captionDelegate)]) {
-            id captionDelegate = self.captionDelegate;
+            IGStoryFullscreenSectionController *captionDelegate = self.captionDelegate;
             if (captionDelegate && [captionDelegate respondsToSelector:@selector(currentStoryItem)]) {
-                id result = [captionDelegate performSelector:@selector(currentStoryItem)];
-                
-                // Unwrap if needed
-                if (result && [result respondsToSelector:@selector(media)]) {
-                    id innerMedia = [result performSelector:@selector(media)];
-                    if (innerMedia) result = innerMedia;
-                }
-                
-                if (result) {
-                    videoUrl = [SCIUtils getVideoUrlForMedia:result];
+                IGMedia *media = captionDelegate.currentStoryItem;
+                if (media) {
+                    videoUrl = [SCIUtils getVideoUrlForMedia:media];
                 }
             }
         }
@@ -353,29 +333,29 @@ static void initDownloaders () {
             }
         }
 
-        // Fallback: Try Cache/Player (Subviews)
+        // 3. Fallback: Aggressive Cache Search (Reels Style)
         if (!videoUrl) {
-             videoUrl = [SCIUtils getCachedVideoUrlForView:self];
-        }
-
-        // Fallback: Try Cache/Player (Siblings/Parent)
-        // If we are an overlay, the player is likely a sibling. Search the superview.
-        if (!videoUrl && self.superview) {
-             videoUrl = [SCIUtils getCachedVideoUrlForView:self.superview];
-        }
-        
-        // Fallback: Try Cache/Player (Grandparent)
-        if (!videoUrl && self.superview && self.superview.superview) {
-             videoUrl = [SCIUtils getCachedVideoUrlForView:self.superview.superview];
-        }
-
-        // Fallback: Try Cache/Player (Entire View Controller Hierarchy)
-        // This is the "Nuclear Option". Find the owning VC and search its whole view tree.
-        if (!videoUrl) {
-            UIViewController *vc = [SCIUtils nearestViewControllerForView:self];
-            if (vc && vc.view) {
-                 videoUrl = [SCIUtils getCachedVideoUrlForView:vc.view];
+            // Check direct subviews first (fastest)
+            videoUrl = [SCIUtils getCachedVideoUrlForView:self];
+            
+            if (!videoUrl) {
+                // Check parent controller's entire view hierarchy (most robust)
+                UIViewController *parentVC = [SCIUtils nearestViewControllerForView:self];
+                if (parentVC) {
+                    NSLog(@"[SCInsta] Primary failed. Searching parent VC view: %@", [parentVC class]);
+                    videoUrl = [SCIUtils getCachedVideoUrlForView:parentVC.view];
+                }
             }
+        }
+
+        if (!videoUrl) {
+             // Last ditch: Direct property check on the view itself
+             if ([self respondsToSelector:@selector(item)]) {
+                 id item = [self performSelector:@selector(item)];
+                 if (item && [item isKindOfClass:%c(IGMedia)]) {
+                      videoUrl = [SCIUtils getVideoUrlForMedia:item];
+                 }
+             }
         }
 
         if (!videoUrl) {
@@ -388,6 +368,7 @@ static void initDownloaders () {
                                      fileExtension:@"mp4"
                                           hudLabel:nil];
     } @catch (NSException *exception) {
+        NSLog(@"[SCInsta] Crash in Story download: %@", exception);
         [SCIUtils showErrorHUDWithDescription:@"Download crashed - check logs"];
     }
 }

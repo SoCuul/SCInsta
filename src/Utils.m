@@ -50,13 +50,32 @@
         NSArray *originalImageVersions = [photo valueForKey:@"_originalImageVersions"];
         
         if (originalImageVersions && [originalImageVersions isKindOfClass:[NSArray class]] && originalImageVersions.count > 0) {
-            // Get the first (usually highest quality) version
-            id imageVersion = originalImageVersions[0];
+            // Iterate to find the highest resolution
+            id bestImageVersion = nil;
+            CGFloat maxPixels = 0;
+
+            for (id version in originalImageVersions) {
+                if ([version respondsToSelector:@selector(width)] && [version respondsToSelector:@selector(height)]) {
+                    CGFloat w = [[version valueForKey:@"width"] floatValue];
+                    CGFloat h = [[version valueForKey:@"height"] floatValue];
+                    CGFloat pixels = w * h;
+                    
+                    if (pixels >= maxPixels) {
+                        maxPixels = pixels;
+                        bestImageVersion = version;
+                    }
+                }
+            }
+            
+            // Fallback to first item if sort failed
+            if (!bestImageVersion) {
+                bestImageVersion = originalImageVersions[0];
+            }
+
             // IGImageURL has a url property
-            if ([imageVersion respondsToSelector:@selector(url)]) {
-                NSURL *url = [imageVersion valueForKey:@"url"];
+            if ([bestImageVersion respondsToSelector:@selector(url)]) {
+                NSURL *url = [bestImageVersion valueForKey:@"url"];
                 if (url && [url isKindOfClass:[NSURL class]]) {
-                    NSLog(@"[SCInsta] Found photo URL via _originalImageVersions");
                     return url;
                 }
             }
@@ -117,12 +136,14 @@
         @try {
             SEL selector = NSSelectorFromString(method);
             if ([video respondsToSelector:selector]) {
+                // NSLog(@"[SCInsta] Trying method: %@", method);
                 #pragma clang diagnostic push
                 #pragma clang diagnostic ignored "-Warc-performSelector-leaks"
                 id result = [video performSelector:selector];
                 #pragma clang diagnostic pop
                 
                 if (result) {
+                    // NSLog(@"[SCInsta] Method %@ returned: %@", method, result);
                     // Handle array result
                     if ([result isKindOfClass:[NSArray class]]) {
                          NSArray *arr = (NSArray *)result;
@@ -140,7 +161,7 @@
                                  if ([url isKindOfClass:[NSURL class]]) return url;
                                  if ([url isKindOfClass:[NSString class]]) return [NSURL URLWithString:url];
                              }
-                             // Check for object with "url" property
+                             // Check if it IS a URL
                              if ([first isKindOfClass:[NSURL class]]) return first;
                          }
                     }
@@ -150,7 +171,7 @@
             }
         } @catch (NSException *e) { /* Ignore */ }
     }
-
+    
     return nil;
 }
 
@@ -229,26 +250,7 @@
 + (NSURL *)getVideoUrlForMedia:(IGMedia *)media {
     if (!media) return nil;
 
-    // Check if the object itself acts like a video (has video versions)
-    Class IGVideoClass = NSClassFromString(@"IGVideo");
-    if ((IGVideoClass && [media isKindOfClass:IGVideoClass]) || 
-        [media valueForKey:@"_videoVersionDictionaries"] != nil ||
-        [media respondsToSelector:@selector(videoVersionDictionaries)]) {
-        return [SCIUtils getVideoUrl:(IGVideo *)media];
-    }
-
-    IGVideo *video = nil;
-    if ([media respondsToSelector:@selector(video)]) {
-        video = media.video;
-    }
-    
-    // Fallback: Try accessing _video ivar directly
-    if (!video) {
-        @try {
-            video = [media valueForKey:@"_video"];
-        } @catch (NSException *e) {}
-    }
-
+    IGVideo *video = media.video;
     if (!video) return nil;
 
     return [SCIUtils getVideoUrl:video];
@@ -278,9 +280,7 @@
     
     // 2. Check common property names for players or wrappers
     // Reduced search keys for performance
-    // 2. Check common property names for players or wrappers
-    // Reduced search keys for performance
-    NSArray *playerKeys = @[@"player", @"videoPlayer", @"avPlayer", @"_player", @"_videoPlayer", @"videoPlayerView", @"_videoPlayerView", @"fnfPlayer"];
+    NSArray *playerKeys = @[@"player", @"videoPlayer", @"avPlayer"];
     
     for (NSString *key in playerKeys) {
         if ([view respondsToSelector:NSSelectorFromString(key)]) {
