@@ -115,6 +115,24 @@
     return setting;
 }
 
+#pragma mark + buttonCellWithTitle
+
++ (instancetype)buttonCellWithTitle:(NSString *)title
+                           subtitle:(NSString *)subtitle
+                               icon:(SCISymbol *)icon
+                             action:(void (^)(void))action
+{
+    SCISetting *setting = [[self alloc] initWithType:SCITableCellButton];
+    
+    setting.title = title;
+    setting.subtitle = subtitle;
+    
+    setting.icon = icon;
+    setting.action = action;
+    
+    return setting;
+}
+
 #pragma mark + navigationCellWithTitle
 
 + (instancetype)navigationCellWithTitle:(NSString *)title

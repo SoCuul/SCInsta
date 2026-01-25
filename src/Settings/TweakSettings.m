@@ -146,49 +146,54 @@
             @"title": @"",
             @"rows": @[
                 [SCISetting navigationCellWithTitle:@"Debug"
-                                                       subtitle:@""
-                                                           icon:[SCISymbol symbolWithName:@"ladybug"]
-                                                    navSections:@[@{
-                                                        @"title": @"FLEX",
-                                                        @"rows": @[
-                                                            [SCISetting switchCellWithTitle:@"Enable FLEX gesture" subtitle:@"Allows you to hold 5 fingers on the screen to open the FLEX explorer" defaultsKey:@"flex_instagram"],
-                                                            [SCISetting switchCellWithTitle:@"Open FLEX on app launch" subtitle:@"Automatically opens the FLEX explorer when the app launches" defaultsKey:@"flex_app_launch"],
-                                                            [SCISetting switchCellWithTitle:@"Open FLEX on app focus" subtitle:@"Automatically opens the FLEX explorer when the app is focused" defaultsKey:@"flex_app_start"]
-                                                        ]
-                                                    },
-                                                    @{
-                                                        @"title": @"SCInsta",
-                                                        @"rows": @[
-                                                            [SCISetting switchCellWithTitle:@"Show tweak settings on app launch" subtitle:@"Automatically opens the SCInsta settings when the app launches" defaultsKey:@"tweak_settings_app_launch"]
-                                                        ]
-                                                    },
-                                                    @{
-                                                        @"title": @"Instagram",
-                                                        @"rows": @[
-                                                            [SCISetting switchCellWithTitle:@"Disable safe mode" subtitle:@"Makes Instagram not reset settings after subsequent crashes (at your own risk)" defaultsKey:@"disable_safe_mode"]
-                                                        ]
-                                                    },
-//                                                    @{
-//                                                        @"title": @"Example",
-//                                                        @"rows": @[
-//                                                            [SCISetting staticCellWithTitle:@"Static Cell" subtitle:@"" icon:[SCISymbol symbolWithName:@"tablecells"]],
-//                                                            [SCISetting switchCellWithTitle:@"Switch Cell" subtitle:@"Tap the switch" defaultsKey:@"test_switch_cell"],
-//                                                            [SCISetting stepperCellWithTitle:@"Stepper cell" subtitle:@"I have %@%@" defaultsKey:@"test_stepper_cell" min:-10 max:1000 step:5.5 label:@"$" singularLabel:@"$"],
-//                                                            [SCISetting linkCellWithTitle:@"Link Cell" subtitle:@"Using icon" icon:[SCISymbol symbolWithName:@"link" color:[UIColor systemTealColor] size:20.0] url:@"https://google.com"],
-//                                                            [SCISetting linkCellWithTitle:@"Link Cell" subtitle:@"Using image" imageUrl:@"https://i.imgur.com/c9CbytZ.png" url:@"https://google.com"],
-//                                                            [SCISetting navigationCellWithTitle:@"Navigation Cell"
-//                                                                                       subtitle:@""
-//                                                                                           icon:[SCISymbol symbolWithName:@"rectangle.stack"]
-//                                                                                    navSections:@[@{
-//                                                                                        @"title": @"",
-//                                                                                        @"rows": @[]
-//                                                                                    }]
-//                                                            ]
-//                                                        ],
-//                                                        @"footer": @"Example"
-//                                                    }
-                                                    ]
-                 ]
+                                           subtitle:@""
+                                               icon:[SCISymbol symbolWithName:@"ladybug"]
+                                        navSections:@[@{
+                                            @"title": @"FLEX",
+                                            @"rows": @[
+                                                [SCISetting switchCellWithTitle:@"Enable FLEX gesture" subtitle:@"Allows you to hold 5 fingers on the screen to open the FLEX explorer" defaultsKey:@"flex_instagram"],
+                                                [SCISetting switchCellWithTitle:@"Open FLEX on app launch" subtitle:@"Automatically opens the FLEX explorer when the app launches" defaultsKey:@"flex_app_launch"],
+                                                [SCISetting switchCellWithTitle:@"Open FLEX on app focus" subtitle:@"Automatically opens the FLEX explorer when the app is focused" defaultsKey:@"flex_app_start"]
+                                            ]
+                                        },
+                                        @{
+                                            @"title": @"SCInsta",
+                                            @"rows": @[
+                                                [SCISetting switchCellWithTitle:@"Show tweak settings on app launch" subtitle:@"Automatically opens the SCInsta settings when the app launches" defaultsKey:@"tweak_settings_app_launch"]
+                                            ]
+                                        },
+                                        @{
+                                            @"title": @"Instagram",
+                                            @"rows": @[
+                                                [SCISetting switchCellWithTitle:@"Disable safe mode" subtitle:@"Makes Instagram not reset settings after subsequent crashes (at your own risk)" defaultsKey:@"disable_safe_mode"]
+                                            ]
+                                        },
+                                        // @{
+                                        //     @"title": @"Example",
+                                        //     @"rows": @[
+                                        //         [SCISetting staticCellWithTitle:@"Static Cell" subtitle:@"" icon:[SCISymbol symbolWithName:@"tablecells"]],
+                                        //         [SCISetting switchCellWithTitle:@"Switch Cell" subtitle:@"Tap the switch" defaultsKey:@"test_switch_cell"],
+                                        //         [SCISetting stepperCellWithTitle:@"Stepper cell" subtitle:@"I have %@%@" defaultsKey:@"test_stepper_cell" min:-10 max:1000 step:5.5 label:@"$" singularLabel:@"$"],
+                                        //         [SCISetting linkCellWithTitle:@"Link Cell" subtitle:@"Using icon" icon:[SCISymbol symbolWithName:@"link" color:[UIColor systemTealColor] size:20.0] url:@"https://google.com"],
+                                        //         [SCISetting linkCellWithTitle:@"Link Cell" subtitle:@"Using image" imageUrl:@"https://i.imgur.com/c9CbytZ.png" url:@"https://google.com"],
+                                        //         [SCISetting buttonCellWithTitle:@"Button Cell"
+                                        //                                    subtitle:@""
+                                        //                                        icon:[SCISymbol symbolWithName:@"oval.inset.filled"]
+                                        //                                      action:^(void) { [SCIUtils showConfirmation:^(void){}]; }
+                                        //         ],
+                                        //         [SCISetting navigationCellWithTitle:@"Navigation Cell"
+                                        //                                    subtitle:@""
+                                        //                                        icon:[SCISymbol symbolWithName:@"rectangle.stack"]
+                                        //                                 navSections:@[@{
+                                        //                                     @"title": @"",
+                                        //                                     @"rows": @[]
+                                        //                                 }]
+                                        //         ]
+                                        //     ],
+                                        //     @"footer": @"Example"
+                                        // }
+                                        ]
+                ]
             ]
         },
         @{

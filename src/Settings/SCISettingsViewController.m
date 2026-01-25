@@ -41,7 +41,6 @@ static char defaultsKeyStaticRef[] = "defaultsKey";
     self.tableView.dataSource = self;
     self.tableView.contentInset = UIEdgeInsetsMake(self.reduceMargin ? -30 : -10, 0, 0, 0);
     self.tableView.delegate = self;
-    self.tableView.alwaysBounceVertical = YES;
 
     [self.view addSubview:self.tableView];
 }
@@ -133,6 +132,11 @@ static char defaultsKeyStaticRef[] = "defaultsKey";
             break;
         }
             
+        case SCITableCellButton: {
+            cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+            break;
+        }
+            
         case SCITableCellNavigation: {
             cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
             break;
@@ -168,6 +172,11 @@ static char defaultsKeyStaticRef[] = "defaultsKey";
 
     if (row.type == SCITableCellLink) {
         [[UIApplication sharedApplication] openURL:row.url options:@{} completionHandler:nil];
+    }
+    if (row.type == SCITableCellButton) {
+        if (row.action != nil) {
+            row.action();
+        }
     }
     else if (row.type == SCITableCellNavigation) {
         if (row.navSections.count > 0) {
