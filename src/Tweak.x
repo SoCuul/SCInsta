@@ -46,7 +46,10 @@ BOOL dmVisualMsgsViewedButtonEnabled = false;
     [[NSUserDefaults standardUserDefaults] registerDefaults:sciDefaults];
 
     // Open settings for first-time users
-    if ([[NSUserDefaults standardUserDefaults] objectForKey:@"SCInstaFirstRun"] == nil) {
+    if (
+        [[NSUserDefaults standardUserDefaults] objectForKey:@"SCInstaFirstRun"] == nil
+        || [SCIManager getBoolPref:@"tweak_settings_app_launch"]
+    ) {
         NSLog(@"[SCInsta] First run, initializing");
 
         // Display settings modal on screen
@@ -66,6 +69,10 @@ BOOL dmVisualMsgsViewedButtonEnabled = false;
     [SCIManager cleanCache];
 
     [self authPrompt];
+
+    if ([SCIManager getBoolPref:@"flex_app_launch"]) {
+        [[objc_getClass("FLEXManager") sharedManager] showExplorer];
+    }
 
     return true;
 }
