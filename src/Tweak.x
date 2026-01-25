@@ -3,9 +3,9 @@
 #import "Tweak.h"
 #import "Utils.h"
 #import "Manager.h"
+#import "Settings/SCISettingsViewController.h"
 
 #import "Controllers/SecurityViewController.h"
-#import "Controllers/SettingsViewController.h"
 
 ///////////////////////////////////////////////////////////
 
@@ -51,11 +51,11 @@ BOOL dmVisualMsgsViewedButtonEnabled = false;
 
         // Display settings modal on screen
         NSLog(@"[SCInsta] Displaying SCInsta first-time settings modal");
-        //UIViewController *rootController = [[self window] rootViewController];
-        //SCISettingsViewController *settingsViewController = [SCISettingsViewController new];
-        //UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:settingsViewController];
+        UIViewController *rootController = [[self window] rootViewController];
+        SCISettingsViewController *settingsViewController = [SCISettingsViewController new];
+        UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:settingsViewController];
         
-        //[rootController presentViewController:navigationController animated:YES completion:nil];
+        [rootController presentViewController:navigationController animated:YES completion:nil];
 
         // Done with first-time setup
         [[NSUserDefaults standardUserDefaults] setValue:@"SCInstaFirstRun" forKey:@"SCInstaFirstRun"];
