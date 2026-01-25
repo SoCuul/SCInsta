@@ -6,7 +6,7 @@
 @interface SCIUtils : NSObject
 
 // Colours
-+ (UIColor *)SCIColour_Primary;
++ (UIColor *)SCIColor_Primary;
 
 // Errors
 + (NSError *)errorWithDescription:(NSString *)errorDesc;

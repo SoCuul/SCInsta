@@ -5,7 +5,7 @@
 @implementation SCIUtils
 
 // Colours
-+ (UIColor *)SCIColour_Primary {
++ (UIColor *)SCIColor_Primary {
     return [UIColor colorWithRed:0/255.0 green:152/255.0 blue:254/255.0 alpha:1];
 };
 

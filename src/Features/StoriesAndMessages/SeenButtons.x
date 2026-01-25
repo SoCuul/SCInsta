@@ -16,7 +16,7 @@
         [new_items addObject:seenButton];
 
         if (seenButtonEnabled) {
-            [seenButton setTintColor:SCIUtils.SCIColour_Primary];
+            [seenButton setTintColor:SCIUtils.SCIColor_Primary];
         } else {
             [seenButton setTintColor:UIColor.labelColor];
         }
@@ -28,7 +28,7 @@
         [new_items addObject:dmVisualMsgsViewedButton];
 
         if (dmVisualMsgsViewedButtonEnabled) {
-            [dmVisualMsgsViewedButton setTintColor:SCIUtils.SCIColour_Primary];
+            [dmVisualMsgsViewedButton setTintColor:SCIUtils.SCIColor_Primary];
         } else {
             [dmVisualMsgsViewedButton setTintColor:UIColor.labelColor];
         }
@@ -44,7 +44,7 @@
         [sender setTintColor:UIColor.labelColor];
     } else {
         seenButtonEnabled = true;
-        [sender setTintColor:SCIUtils.SCIColour_Primary];
+        [sender setTintColor:SCIUtils.SCIColor_Primary];
     }
 }
 // DM visual messages viewed button
@@ -54,7 +54,7 @@
         [sender setTintColor:UIColor.labelColor];
     } else {
         dmVisualMsgsViewedButtonEnabled = true;
-        [sender setTintColor:SCIUtils.SCIColour_Primary];
+        [sender setTintColor:SCIUtils.SCIColor_Primary];
     }
 }
 %end

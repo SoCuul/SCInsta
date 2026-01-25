@@ -98,7 +98,7 @@ static char defaultsKeyStaticRef[] = "defaultsKey";
         case SCITableCellSwitch: {
             UISwitch *toggle = [UISwitch new];
             toggle.on = [[NSUserDefaults standardUserDefaults] boolForKey:row.defaultsKey];
-            toggle.onTintColor = [SCIUtils SCIColour_Primary];
+            toggle.onTintColor = [SCIUtils SCIColor_Primary];
             
             objc_setAssociatedObject(toggle, defaultsKeyStaticRef, row.defaultsKey, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
             
