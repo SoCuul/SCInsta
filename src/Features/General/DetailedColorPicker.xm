@@ -45,11 +45,11 @@
 
     self.color = color;
 
-    [self setSelected:YES animated:YES];
+    [self setPushedDown:YES];
 
     // Trigger change for text color
     IGStoryTextEntryViewController *presentingVC = [SCIUtils nearestViewControllerForView:self];
-    [presentingVC textViewControllerDidUpdateWithColor:color];
+    [presentingVC textViewControllerDidUpdateWithColor:color colorSource:0];
 };
 %end
 
@@ -61,7 +61,7 @@
         IGStoryEyedropperToggleButton *_eyedropperToggleButton = MSHookIvar<IGStoryEyedropperToggleButton *>(colorPickingControls, "_eyedropperToggleButton");
 
         if (_eyedropperToggleButton != nil) {
-            [_eyedropperToggleButton setSelected:NO animated:YES];
+            [_eyedropperToggleButton setPushedDown:NO];
         }
     }
 

@@ -315,13 +315,13 @@
 @interface IGStoryEyedropperToggleButton : UIControl
 @property (nonatomic, strong, readwrite) UIColor *color;
 
-- (void)setSelected:(BOOL)selected animated:(BOOL)animated;
+- (void)setPushedDown:(BOOL)pushedDown;
 
 - (void)addLongPressGestureRecognizer; // new
 @end
 
 @interface IGStoryTextEntryViewController : UIViewController
-- (void)textViewControllerDidUpdateWithColor:(id)color;
+- (void)textViewControllerDidUpdateWithColor:(id)color colorSource:(NSInteger)source;
 @end
 
 @interface IGStoryColorPaletteView : UIView
