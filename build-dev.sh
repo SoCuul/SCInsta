@@ -22,9 +22,6 @@ else
     make DEV=1
 
     # Change framework locations to @rpath
-    install_name_tool -change "/Library/Frameworks/Cephei.framework/Cephei" "@rpath/Cephei.framework/Cephei" ".theos/obj/debug/SCInsta.dylib" 2>/dev/null || true
-    install_name_tool -change "/Library/Frameworks/CepheiPrefs.framework/CepheiPrefs" "@rpath/CepheiPrefs.framework/CepheiPrefs" ".theos/obj/debug/SCInsta.dylib" 2>/dev/null || true
-    install_name_tool -change "/Library/Frameworks/CepheiUI.framework/CepheiUI" "@rpath/CepheiUI.framework/CepheiUI" ".theos/obj/debug/SCInsta.dylib" 2>/dev/null || true
     install_name_tool -change "/Library/Frameworks/CydiaSubstrate.framework/CydiaSubstrate" "@rpath/CydiaSubstrate.framework/CydiaSubstrate" ".theos/obj/debug/SCInsta.dylib" 2>/dev/null || true
 
     _scinsta_devquick_after

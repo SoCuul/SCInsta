@@ -51,11 +51,11 @@ BOOL dmVisualMsgsViewedButtonEnabled = false;
 
         // Display settings modal on screen
         NSLog(@"[SCInsta] Displaying SCInsta first-time settings modal");
-        UIViewController *rootController = [[self window] rootViewController];
-        SCISettingsViewController *settingsViewController = [SCISettingsViewController new];
-        UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:settingsViewController];
+        //UIViewController *rootController = [[self window] rootViewController];
+        //SCISettingsViewController *settingsViewController = [SCISettingsViewController new];
+        //UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:settingsViewController];
         
-        [rootController presentViewController:navigationController animated:YES completion:nil];
+        //[rootController presentViewController:navigationController animated:YES completion:nil];
 
         // Done with first-time setup
         [[NSUserDefaults standardUserDefaults] setValue:@"SCInstaFirstRun" forKey:@"SCInstaFirstRun"];
@@ -582,29 +582,5 @@ static BOOL showingRepostConfirm = NO;
     }
 
     return %orig;
-}
-%end
-
-/////////////////////////////////////////////////////////////////////////////
-
-%hook HBLinkTableCell
-- (void)viewDidLoad {
-    %orig;
-
-    UILabel *titleLabel = [self titleLabel];
-    [titleLabel setTextColor:[SCIUtils SCIColour_Primary]];
-}
-- (void)loadIconIfNeeded {
-    if ([[self.specifier propertyForKey:@"iconTransparentBG"] isEqual:@(YES)]) {
-        self.iconView.backgroundColor = [UIColor clearColor];
-    }
-
-    %orig;
-}
-%end
-
-%hook HBForceCepheiPrefs
-+ (BOOL)forceCepheiPrefsWhichIReallyNeedToAccessAndIKnowWhatImDoingISwear {
-    return YES;
 }
 %end

@@ -6,4 +6,4 @@ Description: A feature-rich tweak for Instagram on iOS!
 Maintainer: SoCuul
 Author: SoCuul
 Section: Tweaks
-Depends: mobilesubstrate, ws.hbang.common
+Depends: mobilesubstrate

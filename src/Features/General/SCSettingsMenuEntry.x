@@ -25,9 +25,9 @@
 %new - (void)handleLongPress {
     NSLog(@"[SCInsta] Tweak settings gesture activated");
 
-    UIViewController *rootController = [[UIApplication sharedApplication] delegate].window.rootViewController;
-    UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[SCISettingsViewController new]];
+    //UIViewController *rootController = [[UIApplication sharedApplication] delegate].window.rootViewController;
+    //UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[SCISettingsViewController new]];
     
-    [rootController presentViewController:navigationController animated:YES completion:nil];
+    //[rootController presentViewController:navigationController animated:YES completion:nil];
 }
 %end
