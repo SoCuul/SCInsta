@@ -254,6 +254,12 @@
 @end
 
 @interface IGImageWithAccessoryButton : IGTapButton
+- (void)addLongPressGestureRecognizer; // new
+- (void)handleLongPress:(UILongPressGestureRecognizer *)gr; // new
+@end
+
+@interface IGHomeFeedHeaderViewController
+- (void)headerDidLongPressLogo:(id)arg1;
 @end
 
 @interface IGSearchBarDonutButton : UIView
