@@ -17,11 +17,13 @@
     if ([self.gestureRecognizers count] == 0) {
         NSLog(@"[SCInsta] Adding color eyedroppper long press gesture recognizer");
 
-        UILongPressGestureRecognizer *longPress = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(handleLongPress)];
+        UILongPressGestureRecognizer *longPress = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(handleLongPress:)];
         [self addGestureRecognizer:longPress];
     }
 }
-%new - (void)handleLongPress {
+%new - (void)handleLongPress:(UILongPressGestureRecognizer *)sender {
+    if (sender.state != UIGestureRecognizerStateBegan) return;
+    
     UIColorPickerViewController *colorPickerController = [[UIColorPickerViewController alloc] init];
 
     colorPickerController.delegate = (id<UIColorPickerViewControllerDelegate>)self; // cast to suppress warnings

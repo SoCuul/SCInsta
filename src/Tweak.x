@@ -573,10 +573,10 @@ static BOOL showingRepostConfirm = NO;
     [self.view addGestureRecognizer:longPress];
 }
 %new - (void)handleLongPress:(UILongPressGestureRecognizer *)sender {
-    if (sender.state == UIGestureRecognizerStateBegan) {
-        if ([SCIManager getBoolPref:@"flex_instagram"]) {
-            [[objc_getClass("FLEXManager") sharedManager] showExplorer];
-        }
+    if (sender.state != UIGestureRecognizerStateBegan) return;
+
+    if ([SCIManager getBoolPref:@"flex_instagram"]) {
+        [[objc_getClass("FLEXManager") sharedManager] showExplorer];
     }
 }
 %end

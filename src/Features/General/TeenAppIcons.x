@@ -24,8 +24,10 @@
         [self addGestureRecognizer:longPress];
     }
 }
-%new - (void)handleLongPress:(UILongPressGestureRecognizer *)gr {
-    if (gr.state == UIGestureRecognizerStateBegan && [SCIManager getBoolPref:@"teen_app_icons"]) {
+%new - (void)handleLongPress:(UILongPressGestureRecognizer *)sender {
+    if (sender.state != UIGestureRecognizerStateBegan) return;
+
+    if ([SCIManager getBoolPref:@"teen_app_icons"]) {
         IGHomeFeedHeaderViewController *homeFeedHeaderVC = [SCIUtils nearestViewControllerForView:self];
 
         if (homeFeedHeaderVC != nil) {

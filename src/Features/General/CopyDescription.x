@@ -17,20 +17,20 @@
 }
 
 %new - (void)handleLongPress:(UILongPressGestureRecognizer *)sender {
-    if (sender.state == UIGestureRecognizerStateBegan) {
-        NSLog(@"[SCInsta] Copying description");
+    if (sender.state != UIGestureRecognizerStateBegan) return;
 
-        // Copy text to system clipboard
-        UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
-        pasteboard.string = self.text;
+    NSLog(@"[SCInsta] Copying description");
 
-        // Notify user
-        JGProgressHUD *HUD = [[JGProgressHUD alloc] init];
-        HUD.textLabel.text = @"Copied text to clipboard!";
-        HUD.indicatorView = [[JGProgressHUDSuccessIndicatorView alloc] init];
-        
-        [HUD showInView:topMostController().view];
-        [HUD dismissAfterDelay:2.0];
-    }
+    // Copy text to system clipboard
+    UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
+    pasteboard.string = self.text;
+
+    // Notify user
+    JGProgressHUD *HUD = [[JGProgressHUD alloc] init];
+    HUD.textLabel.text = @"Copied text to clipboard!";
+    HUD.indicatorView = [[JGProgressHUDSuccessIndicatorView alloc] init];
+    
+    [HUD showInView:topMostController().view];
+    [HUD dismissAfterDelay:2.0];
 }
 %end
