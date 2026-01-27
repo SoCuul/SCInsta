@@ -158,6 +158,12 @@
 - (void)addLongPressGestureRecognizer; // new
 @end
 
+@interface IGStoryModernVideoView : UIView
+@property (nonatomic, readonly) IGMedia *item;
+
+- (void)addLongPressGestureRecognizer; // new
+@end
+
 @interface IGStoryFullscreenOverlayView : UIView
 @property (nonatomic, weak, readwrite) id gestureDelegate;
 - (id)gestureDelegate;

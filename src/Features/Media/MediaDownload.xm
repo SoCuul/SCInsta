@@ -231,6 +231,45 @@ static void initDownloaders () {
 %end
 
 // Download story (videos)
+%hook IGStoryModernVideoView
+- (void)didMoveToSuperview {
+    %orig;
+
+    if ([SCIManager getBoolPref:@"dw_story"]) {
+        [self addLongPressGestureRecognizer];
+    }
+
+    return;
+}
+%new - (void)addLongPressGestureRecognizer {
+    //NSLog(@"[SCInsta] Adding story video download long press gesture recognizer");
+
+    UILongPressGestureRecognizer *longPress = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(handleLongPress:)];
+    longPress.minimumPressDuration = [SCIManager getDoublePref:@"dw_finger_duration"];
+    longPress.numberOfTouchesRequired = [SCIManager getDoublePref:@"dw_finger_count"];
+
+    [self addGestureRecognizer:longPress];
+}
+%new - (void)handleLongPress:(UILongPressGestureRecognizer *)sender {
+    if (sender.state != UIGestureRecognizerStateBegan) return;
+
+    NSURL *videoUrl = [SCIUtils getVideoUrlForMedia:self.item];
+    
+    if (!videoUrl) {
+        [SCIUtils showErrorHUDWithDescription:@"Could not extract video url from story"];
+
+        return;
+    }
+
+    // Download video & show in share menu
+    initDownloaders();
+    [videoDownloadDelegate downloadFileWithURL:videoUrl
+                                 fileExtension:[[videoUrl lastPathComponent] pathExtension]
+                                      hudLabel:nil];
+}
+%end
+
+// Download story (videos, legacy)
 %hook IGStoryVideoView
 - (void)didMoveToSuperview {
     %orig;
