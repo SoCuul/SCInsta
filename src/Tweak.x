@@ -583,6 +583,11 @@ static BOOL showingRepostConfirm = NO;
 
 // Disable safe mode (defaults reset upon subsequent crashes)
 %hook IGSafeModeChecker
+- (id)initWithInstacrashCounterProvider:(void *)provider crashThreshold:(unsigned long long)threshold {
+    if ([SCIManager getBoolPref:@"disable_safe_mode"]) return nil;
+
+    return %orig(provider, threshold);
+}
 - (unsigned long long)crashCount {
     if ([SCIManager getBoolPref:@"disable_safe_mode"]) {
         return 0;
