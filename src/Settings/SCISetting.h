@@ -28,6 +28,8 @@ typedef NS_ENUM(NSInteger, SCITableCell) {
 @property (nonatomic, strong) NSURL *url;
 @property (nonatomic, strong) NSURL *imageUrl;
 
+@property (nonatomic) BOOL requiresRestart;
+
 @property (nonatomic) double min;
 @property (nonatomic) double max;
 @property (nonatomic) double step;
@@ -55,6 +57,11 @@ typedef NS_ENUM(NSInteger, SCITableCell) {
 + (instancetype)switchCellWithTitle:(NSString *)title
                            subtitle:(NSString *)subtitle
                         defaultsKey:(NSString *)defaultsKey;
+
++ (instancetype)switchCellWithTitle:(NSString *)title
+                           subtitle:(NSString *)subtitle
+                        defaultsKey:(NSString *)defaultsKey
+                    requiresRestart:(BOOL)requiresRestart;
 
 + (instancetype)stepperCellWithTitle:(NSString *)title
                             subtitle:(NSString *)subtitle

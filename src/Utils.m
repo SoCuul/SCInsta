@@ -138,6 +138,15 @@
 
     return nil;
 };
++ (void)showRestartConfirmation {
+    UIAlertController* alert = [UIAlertController alertControllerWithTitle:@"Restart required" message:@"You must restart the app to apply this change" preferredStyle:UIAlertControllerStyleAlert];
+    [alert addAction:[UIAlertAction actionWithTitle:@"Restart" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+        exit(0);
+    }]];
+    [alert addAction:[UIAlertAction actionWithTitle:@"Later" style:UIAlertActionStyleCancel handler:nil]];
+
+    [topMostController() presentViewController:alert animated:YES completion:nil];
+};
 + (void)prepareAlertPopoverIfNeeded:(UIAlertController*)alert inView:(UIView*)view {
     if (alert.popoverPresentationController) {
         // UIAlertController is a popover on iPad. Display it in the center of a view.

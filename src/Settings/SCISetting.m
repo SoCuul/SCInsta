@@ -89,6 +89,21 @@
     return setting;
 }
 
++ (instancetype)switchCellWithTitle:(NSString *)title
+                           subtitle:(NSString *)subtitle
+                        defaultsKey:(NSString *)defaultsKey
+                    requiresRestart:(BOOL)requiresRestart
+{
+    SCISetting *setting = [[self alloc] initWithType:SCITableCellSwitch];
+    
+    setting.title = title;
+    setting.subtitle = subtitle;
+    setting.defaultsKey = defaultsKey;
+    setting.requiresRestart = requiresRestart;
+    
+    return setting;
+}
+
 #pragma mark + stepperCellWithTitle
 
 + (instancetype)stepperCellWithTitle:(NSString *)title

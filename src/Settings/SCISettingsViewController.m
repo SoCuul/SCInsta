@@ -1,6 +1,7 @@
 #import "SCISettingsViewController.h"
 
 static char defaultsKeyStaticRef[] = "defaultsKey";
+static char requiresRestartStaticRef[] = "requiresRestart";
 
 @interface SCISettingsViewController () <UITableViewDataSource, UITableViewDelegate>
 
@@ -101,6 +102,7 @@ static char defaultsKeyStaticRef[] = "defaultsKey";
             toggle.onTintColor = [SCIUtils SCIColor_Primary];
             
             objc_setAssociatedObject(toggle, defaultsKeyStaticRef, row.defaultsKey, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+            objc_setAssociatedObject(toggle, requiresRestartStaticRef, @(row.requiresRestart), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
             
             [toggle addTarget:self action:@selector(switchChanged:) forControlEvents:UIControlEventValueChanged];
             
@@ -196,6 +198,11 @@ static char defaultsKeyStaticRef[] = "defaultsKey";
     [[NSUserDefaults standardUserDefaults] setBool:sender.isOn forKey:defaultsKey];
     
     NSLog(@"Switch changed: %@", sender.isOn ? @"ON" : @"OFF");
+    
+    NSString *requiresRestart = objc_getAssociatedObject(sender, requiresRestartStaticRef);
+    if ([requiresRestart boolValue]) {
+        [SCIUtils showRestartConfirmation];
+    }
 }
 
 - (void)stepperChanged:(UIStepper *)sender {

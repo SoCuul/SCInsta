@@ -34,6 +34,7 @@
 + (BOOL)existingLongPressGestureRecognizerForView:(UIView *)view;
 + (BOOL)showConfirmation:(void(^)(void))okHandler;
 + (BOOL)showConfirmation:(void(^)(void))okHandler cancelHandler:(void(^)(void))cancelHandler;
++ (void)showRestartConfirmation;
 + (void)prepareAlertPopoverIfNeeded:(UIAlertController*)alert inView:(UIView*)view;
 
 // Math
