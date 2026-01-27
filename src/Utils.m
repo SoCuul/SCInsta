@@ -63,7 +63,6 @@
         return [[video allVideoURLs] anyObject];
     }
 
-    // The future
     return nil;
 }
 + (NSURL *)getVideoUrlForMedia:(IGMedia *)media {
