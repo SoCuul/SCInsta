@@ -2,6 +2,7 @@
 #import <UIKit/UIKit.h>
 #import <QuickLook/QuickLook.h>
 
+#import "InstagramHeaders.h"
 #import "QuickLook.h"
 
 @interface SCIManager : NSObject

@@ -1,6 +1,6 @@
 #import "Manager.h"
-#include "QuickLook.h"
 #import "InstagramHeaders.h"
+#import "QuickLook.h"
 
 @implementation SCIManager
 + (BOOL)getBoolPref:(NSString *)key {
