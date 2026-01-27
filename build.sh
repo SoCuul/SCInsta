@@ -78,7 +78,7 @@ then
     cyan -i "packages/${ipaFile}" -o packages/SCInsta-sideloaded.ipa -f $SCINSTAPATH $FLEXPATH -c $COMPRESSION -m 15.0 -du
     
     # Patch IPA for sideloading
-    ipapatch --input "packages/SCInsta-sideloaded.ipa" --inplace --noconfirm
+    ./ipapatch --input "packages/SCInsta-sideloaded.ipa" --inplace --noconfirm
 
     echo -e "\033[1m\033[32mDone, we hope you enjoy SCInsta!\033[0m\n\nYou can find the ipa file at: $(pwd)/packages"
 
