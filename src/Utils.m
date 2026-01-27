@@ -48,18 +48,22 @@
 
     return [SCIUtils getPhotoUrl:photo];
 }
-
 + (NSURL *)getVideoUrl:(IGVideo *)video {
     if (!video) return nil;
 
-    // Sort videos by quality
-    NSArray<NSDictionary *> *sortedVideoUrls = [video sortedVideoURLsBySize];
-    if ([sortedVideoUrls count] < 1 || sortedVideoUrls[0] == nil) return nil;
+    // The past (pre v398)
+    if ([video respondsToSelector:@selector(sortedVideoURLsBySize)]) {
+        NSArray<NSDictionary *> *sorted = [video sortedVideoURLsBySize];
+        NSString *urlString = sorted.firstObject[@"url"];
+        return urlString.length ? [NSURL URLWithString:urlString] : nil;
+    }
 
-    // First element in array is highest quality
-    NSURL *videoUrl = [NSURL URLWithString:[sortedVideoUrls[0] objectForKey:@"url"]];
+    // The present (post v398)
+    if ([video respondsToSelector:@selector(allVideoURLs)]) {
+        return [[video allVideoURLs] anyObject];
+    }
 
-    return videoUrl;
+    return nil;
 }
 + (NSURL *)getVideoUrlForMedia:(IGMedia *)media {
     if (!media) return nil;
