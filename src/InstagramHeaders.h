@@ -341,6 +341,8 @@
 @end
 
 @interface IGProfilePictureImageView : UIView
+@property (nonatomic, readonly) IGUser *userGQL;
+
 - (void)addLongPressGestureRecognizer; // new
 @end
 

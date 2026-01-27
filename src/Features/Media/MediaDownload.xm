@@ -351,10 +351,13 @@ static void initDownloaders () {
 %new - (void)handleLongPress:(UILongPressGestureRecognizer *)sender {
     if (sender.state != UIGestureRecognizerStateBegan) return;
 
-    IGImageRequest *_imageRequest = MSHookIvar<IGImageRequest *>(self, "_imageRequest");
-    if (!_imageRequest) return;
+    IGImageView *_imageView = MSHookIvar<IGImageView *>(self, "_imageView");
+    if (!_imageView) return;
     
-    NSURL *imageUrl = [_imageRequest url];
+    IGImageSpecifier *imageSpecifier = _imageView.imageSpecifier;
+    if (!imageSpecifier) return;
+
+    NSURL *imageUrl = imageSpecifier.url;
     if (!imageUrl) return;
 
     // Download image & preview in quick look
