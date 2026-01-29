@@ -1,7 +1,6 @@
 #import "SCISettingsViewController.h"
 
-static char defaultsKeyStaticRef[] = "defaultsKey";
-static char requiresRestartStaticRef[] = "requiresRestart";
+static char rowStaticRef[] = "row";
 
 @interface SCISettingsViewController () <UITableViewDataSource, UITableViewDelegate>
 
@@ -101,8 +100,7 @@ static char requiresRestartStaticRef[] = "requiresRestart";
             toggle.on = [[NSUserDefaults standardUserDefaults] boolForKey:row.defaultsKey];
             toggle.onTintColor = [SCIUtils SCIColor_Primary];
             
-            objc_setAssociatedObject(toggle, defaultsKeyStaticRef, row.defaultsKey, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
-            objc_setAssociatedObject(toggle, requiresRestartStaticRef, @(row.requiresRestart), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+            objc_setAssociatedObject(toggle, rowStaticRef, row, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
             
             [toggle addTarget:self action:@selector(switchChanged:) forControlEvents:UIControlEventValueChanged];
             
@@ -118,7 +116,7 @@ static char requiresRestartStaticRef[] = "requiresRestart";
             stepper.stepValue = row.step;
             stepper.value = [[NSUserDefaults standardUserDefaults] doubleForKey:row.defaultsKey];
             
-            objc_setAssociatedObject(stepper, defaultsKeyStaticRef, row.defaultsKey, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+            objc_setAssociatedObject(stepper, rowStaticRef, row, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
             
             [stepper addTarget:self
                         action:@selector(stepperChanged:)
@@ -194,20 +192,19 @@ static char requiresRestartStaticRef[] = "requiresRestart";
 #pragma mark - Actions
 
 - (void)switchChanged:(UISwitch *)sender {
-    NSString *defaultsKey = objc_getAssociatedObject(sender, defaultsKeyStaticRef);
-    [[NSUserDefaults standardUserDefaults] setBool:sender.isOn forKey:defaultsKey];
+    SCISetting *row = objc_getAssociatedObject(sender, rowStaticRef);
+    [[NSUserDefaults standardUserDefaults] setBool:sender.isOn forKey:row.defaultsKey];
     
     NSLog(@"Switch changed: %@", sender.isOn ? @"ON" : @"OFF");
     
-    NSString *requiresRestart = objc_getAssociatedObject(sender, requiresRestartStaticRef);
-    if ([requiresRestart boolValue]) {
+    if (row.requiresRestart) {
         [SCIUtils showRestartConfirmation];
     }
 }
 
 - (void)stepperChanged:(UIStepper *)sender {
-    NSString *defaultsKey = objc_getAssociatedObject(sender, defaultsKeyStaticRef);
-    [[NSUserDefaults standardUserDefaults] setDouble:sender.value forKey:defaultsKey];
+    SCISetting *row = objc_getAssociatedObject(sender, rowStaticRef);
+    [[NSUserDefaults standardUserDefaults] setDouble:sender.value forKey:row.defaultsKey];
     
     NSLog(@"Stepper changed: %f", sender.value);
     
