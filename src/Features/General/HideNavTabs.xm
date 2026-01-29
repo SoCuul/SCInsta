@@ -1,51 +1,69 @@
 #import "../../Utils.h"
 #import "../../InstagramHeaders.h"
 
-%hook IGTabBar
-- (void)didMoveToWindow {
-    %orig;
+BOOL isSurfaceShown(IGMainAppSurfaceIntent *surface) {
+    BOOL isShown = YES;
 
-    NSMutableArray *_tabButtons = MSHookIvar<NSArray *>(self, "_tabButtons");
-    if (_tabButtons == nil) return;
+    // Feed
+    if ([[surface tabStringFromSurfaceIntent] isEqualToString:@"FEED"] && [SCIUtils getBoolPref:@"hide_feed_tab"]) {
+        isShown = NO;
+    }
+    
+    // Reels
+    else if ([[surface tabStringFromSurfaceIntent] isEqualToString:@"CLIPS"] && [SCIUtils getBoolPref:@"hide_reels_tab"]) {
+        isShown = NO;
+    }
 
-    NSMutableArray *filteredObjs = [NSMutableArray arrayWithCapacity:[_tabButtons count]];
+    // Explore
+    else if ([[surface tabStringFromSurfaceIntent] isEqualToString:@"SEARCH"] && [SCIUtils getBoolPref:@"hide_explore_tab"]) {
+        isShown = NO;
+    }
 
-    for (UIView *obj in _tabButtons) {
-        BOOL shouldHide = NO;
+    return isShown;
+}
 
-        // Explore/search tab
-        if ([SCIUtils getBoolPref:@"hide_explore_tab"] && [obj.accessibilityIdentifier isEqualToString:@"explore-tab"]) {
-            NSLog(@"[SCInsta] Hiding explore/search tab");
+NSArray *filterSurfacesArray(NSArray *surfaces) {
+    NSMutableArray *filteredSurfaces = [NSMutableArray array];
 
-            shouldHide = YES;
+    for (IGMainAppSurfaceIntent *surface in surfaces) {
+        if (![surface isKindOfClass:%c(IGMainAppSurfaceIntent)]) break;
 
-            [obj setHidden:YES];
-        }
-
-        // Create/camera tab
-        else if ([SCIUtils getBoolPref:@"hide_create_tab"] && [obj.accessibilityIdentifier isEqualToString:@"camera-tab"]) {
-            NSLog(@"[SCInsta] Hiding create/camera tab");
-
-            shouldHide = YES;
-
-            [obj setHidden:YES];
-        }
-
-        // Reels tab
-        else if ([SCIUtils getBoolPref:@"hide_reels_tab"] && [obj.accessibilityIdentifier isEqualToString:@"reels-tab"]) {
-            NSLog(@"[SCInsta] Hiding reels tab");
-
-            shouldHide = YES;
-
-            [obj setHidden:YES];
-        }
-
-        // Populate new objs array
-        if (!shouldHide) {
-            [filteredObjs addObject:obj];
+        if (isSurfaceShown(surface)) {
+            [filteredSurfaces addObject:surface];
         }
     }
 
-    [_tabButtons setArray:filteredObjs];
+    return filteredSurfaces;
+}
+
+///////////////////////////////////////////////
+
+%hook IGTabBarControllerSwipeCoordinator
+- (id)initWithSurfaces:(id)surfaces parentViewController:(id)controller enableHaptics:(_Bool)haptics launcherSet:(id)set {
+    // Removes the surface from the main swipeable app collection view
+    return %orig(filterSurfacesArray(surfaces), controller, haptics, set);
+}
+%end
+
+%hook IGTabBarController
+- (void)_layoutTabBar {
+    // Prevents the wrong icon from being shown as selected because of mismatched surface array indexes
+    NSArray *_tabBarSurfaces = MSHookIvar<NSArray *>(self, "_tabBarSurfaces");
+
+    Ivar ivar = class_getInstanceVariable(object_getClass(self), "_tabBarSurfaces");
+    object_setIvarWithStrongDefault(self, ivar, filterSurfacesArray(_tabBarSurfaces));
+    
+    %orig;
+}
+
+- (id)_buttonForTabBarSurface:(id)surface {
+    // Prevents the button from being added to the tab bar 
+    id button = %orig(surface);
+
+    if (!isSurfaceShown(surface)) {
+        return nil;
+    }
+
+    return button;
 }
 %end

@@ -8,10 +8,14 @@
 #import "InstagramHeaders.h"
 #import "QuickLook.h"
 
+#ifdef __cplusplus
+#define _Bool bool
+#endif
+
 #define SCILog(fmt, ...) \
     do { \
         NSString *tmpStr = [NSString stringWithFormat:(fmt), ##__VA_ARGS__]; \
-        os_log(OS_LOG_DEFAULT, "%{public}s", tmpStr.UTF8String); \
+        os_log(OS_LOG_DEFAULT, "[SCInsta Test] %{public}s", tmpStr.UTF8String); \
     } while(0)
 
 @interface SCIUtils : NSObject

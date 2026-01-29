@@ -35,6 +35,9 @@
 @interface IGTabBar: UIView
 @end
 
+@interface IGTabBarController : UIViewController
+@end
+
 @interface IGTableViewCell: UITableViewCell
 - (id)initWithReuseIdentifier:(NSString *)identifier;
 @end
@@ -370,6 +373,10 @@
 @interface IGSundialViewerVerticalUFI : UIView
 - (void)_didTapLikeButton:(id)arg1;
 - (void)_didTapRepostButton:(id)arg1;
+@end
+
+@interface IGMainAppSurfaceIntent : NSObject
+- (id)tabStringFromSurfaceIntent;
 @end
 
 /////////////////////////////////////////////////////////////////////////////
