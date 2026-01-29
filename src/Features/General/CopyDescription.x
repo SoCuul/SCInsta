@@ -1,11 +1,11 @@
+#import "../../Utils.h"
 #import "../../InstagramHeaders.h"
-#import "../../Manager.h"
 #import "../../../modules/JGProgressHUD/JGProgressHUD.h"
 
 %hook IGCoreTextView
 - (id)initWithWidth:(CGFloat)width {
     self = %orig;
-    if ([SCIManager getBoolPref:@"copy_description"]) {
+    if ([SCIUtils getBoolPref:@"copy_description"]) {
         [self addHandleLongPress];
     }
     return self;

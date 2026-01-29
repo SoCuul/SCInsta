@@ -1,12 +1,11 @@
 #import "../../InstagramHeaders.h"
-#import "../../Manager.h"
 #import "../../Utils.h"
 
 %hook IGStoryEyedropperToggleButton
 - (void)didMoveToWindow {
     %orig;
 
-    if ([SCIManager getBoolPref:@"detailed_color_picker"]) {
+    if ([SCIUtils getBoolPref:@"detailed_color_picker"]) {
         [self addLongPressGestureRecognizer];
     }
 

@@ -1,10 +1,10 @@
+#import "../../Utils.h"
 #import "../../InstagramHeaders.h"
-#import "../../Manager.h"
 
 // Disable logging of searches at server-side
 %hook IGSearchEntityRouter
 - (id)initWithUserSession:(id)arg1 analyticsModule:(id)arg2 shouldAddToRecents:(BOOL)shouldAddToRecents {
-    if ([SCIManager getBoolPref:@"no_recent_searches"]) {
+    if ([SCIUtils getBoolPref:@"no_recent_searches"]) {
         NSLog(@"[SCInsta] Disabling recent searches");
 
         shouldAddToRecents = false;
@@ -17,7 +17,7 @@
 // Most in-app search bars
 %hook IGRecentSearchStore
 - (id)initWithDiskManager:(id)arg1 recentSearchStoreConfiguration:(id)arg2 {
-    if ([SCIManager getBoolPref:@"no_recent_searches"]) {
+    if ([SCIUtils getBoolPref:@"no_recent_searches"]) {
         NSLog(@"[SCInsta] Disabling recent searches");
 
         return nil;
@@ -26,7 +26,7 @@
     return %orig;
 }
 - (BOOL)addItem:(id)arg1 {
-    if ([SCIManager getBoolPref:@"no_recent_searches"]) {
+    if ([SCIUtils getBoolPref:@"no_recent_searches"]) {
         NSLog(@"[SCInsta] Disabling recent searches");
 
         return nil;
@@ -39,7 +39,7 @@
 // Recent dm message recipients search bar
 %hook IGDirectRecipientRecentSearchStorage
 - (id)initWithDiskManager:(id)arg1 directCache:(id)arg2 userStore:(id)arg3 currentUser:(id)arg4 featureSets:(id)arg5 {
-    if ([SCIManager getBoolPref:@"no_recent_searches"]) {
+    if ([SCIUtils getBoolPref:@"no_recent_searches"]) {
         NSLog(@"[SCInsta] Disabling recent searches");
 
         return nil;

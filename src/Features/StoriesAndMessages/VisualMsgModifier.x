@@ -1,4 +1,4 @@
-#import "../../Manager.h"
+#import "../../Utils.h"
 
 %hook IGDirectVisualMessage
 - (NSInteger)viewMode {
@@ -8,7 +8,7 @@
     // 0 - View Once
     // 1 - Replayable
 
-    if ([SCIManager getBoolPref:@"disable_view_once_limitations"]) {
+    if ([SCIUtils getBoolPref:@"disable_view_once_limitations"]) {
         if (mode == 0) {
             mode = 1;
 

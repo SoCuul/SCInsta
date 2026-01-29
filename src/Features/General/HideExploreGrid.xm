@@ -1,9 +1,9 @@
+#import "../../Utils.h"
 #import "../../InstagramHeaders.h"
-#import "../../Manager.h"
 
 %hook IGExploreGridViewController
 - (void)viewDidLoad {
-    if ([SCIManager getBoolPref:@"hide_explore_grid"]) {
+    if ([SCIUtils getBoolPref:@"hide_explore_grid"]) {
         NSLog(@"[SCInsta] Hiding explore grid");
 
         [[self view] removeFromSuperview];
@@ -19,7 +19,7 @@
 - (void)viewDidLoad {
     %orig;
 
-    if ([SCIManager getBoolPref:@"hide_explore_grid"]) {
+    if ([SCIUtils getBoolPref:@"hide_explore_grid"]) {
         NSLog(@"[SCInsta] Hiding explore grid");
 
         IGShimmeringGridView *shimmeringGridView = MSHookIvar<IGShimmeringGridView *>(self, "_shimmeringGridView");

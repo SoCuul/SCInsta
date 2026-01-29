@@ -1,5 +1,5 @@
+#import "../../Utils.h"
 #import "../../InstagramHeaders.h"
-#import "../../Manager.h"
 
 %hook IGTabBar
 - (void)didMoveToWindow {
@@ -14,7 +14,7 @@
         BOOL shouldHide = NO;
 
         // Explore/search tab
-        if ([SCIManager getBoolPref:@"hide_explore_tab"] && [obj.accessibilityIdentifier isEqualToString:@"explore-tab"]) {
+        if ([SCIUtils getBoolPref:@"hide_explore_tab"] && [obj.accessibilityIdentifier isEqualToString:@"explore-tab"]) {
             NSLog(@"[SCInsta] Hiding explore/search tab");
 
             shouldHide = YES;
@@ -23,7 +23,7 @@
         }
 
         // Create/camera tab
-        else if ([SCIManager getBoolPref:@"hide_create_tab"] && [obj.accessibilityIdentifier isEqualToString:@"camera-tab"]) {
+        else if ([SCIUtils getBoolPref:@"hide_create_tab"] && [obj.accessibilityIdentifier isEqualToString:@"camera-tab"]) {
             NSLog(@"[SCInsta] Hiding create/camera tab");
 
             shouldHide = YES;
@@ -32,7 +32,7 @@
         }
 
         // Reels tab
-        else if ([SCIManager getBoolPref:@"hide_reels_tab"] && [obj.accessibilityIdentifier isEqualToString:@"reels-tab"]) {
+        else if ([SCIUtils getBoolPref:@"hide_reels_tab"] && [obj.accessibilityIdentifier isEqualToString:@"reels-tab"]) {
             NSLog(@"[SCInsta] Hiding reels tab");
 
             shouldHide = YES;

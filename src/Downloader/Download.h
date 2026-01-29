@@ -3,7 +3,6 @@
 #import "../../modules/JGProgressHUD/JGProgressHUD.h"
 
 #import "../InstagramHeaders.h"
-#import "../Manager.h"
 #import "../Utils.h"
 
 #import "Manager.h"

@@ -1,5 +1,4 @@
 #import "../../InstagramHeaders.h"
-#import "../../Manager.h"
 #import "../../Utils.h"
 #import "../../Downloader/Download.h"
 
@@ -22,7 +21,7 @@ static void initDownloaders () {
 - (void)didMoveToSuperview {
     %orig;
 
-    if ([SCIManager getBoolPref:@"dw_feed_posts"]) {
+    if ([SCIUtils getBoolPref:@"dw_feed_posts"]) {
         [self addLongPressGestureRecognizer];
     }
 
@@ -32,8 +31,8 @@ static void initDownloaders () {
     NSLog(@"[SCInsta] Adding feed photo download long press gesture recognizer");
 
     UILongPressGestureRecognizer *longPress = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(handleLongPress:)];
-    longPress.minimumPressDuration = [SCIManager getDoublePref:@"dw_finger_duration"];
-    longPress.numberOfTouchesRequired = [SCIManager getDoublePref:@"dw_finger_count"];
+    longPress.minimumPressDuration = [SCIUtils getDoublePref:@"dw_finger_duration"];
+    longPress.numberOfTouchesRequired = [SCIUtils getDoublePref:@"dw_finger_count"];
 
     [self addGestureRecognizer:longPress];
 }
@@ -75,7 +74,7 @@ static void initDownloaders () {
 - (void)didMoveToSuperview {
     %orig;
 
-    if ([SCIManager getBoolPref:@"dw_feed_posts"]) {
+    if ([SCIUtils getBoolPref:@"dw_feed_posts"]) {
         [self addLongPressGestureRecognizer];
     }
 
@@ -85,8 +84,8 @@ static void initDownloaders () {
     NSLog(@"[SCInsta] Adding feed video download long press gesture recognizer");
 
     UILongPressGestureRecognizer *longPress = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(handleLongPress:)];
-    longPress.minimumPressDuration = [SCIManager getDoublePref:@"dw_finger_duration"];
-    longPress.numberOfTouchesRequired = [SCIManager getDoublePref:@"dw_finger_count"];
+    longPress.minimumPressDuration = [SCIUtils getDoublePref:@"dw_finger_duration"];
+    longPress.numberOfTouchesRequired = [SCIUtils getDoublePref:@"dw_finger_count"];
 
     [self addGestureRecognizer:longPress];
 }
@@ -116,7 +115,7 @@ static void initDownloaders () {
 - (void)didMoveToSuperview {
     %orig;
 
-    if ([SCIManager getBoolPref:@"dw_reels"]) {
+    if ([SCIUtils getBoolPref:@"dw_reels"]) {
         [self addLongPressGestureRecognizer];
     }
 
@@ -126,8 +125,8 @@ static void initDownloaders () {
     NSLog(@"[SCInsta] Adding reels photo download long press gesture recognizer");
 
     UILongPressGestureRecognizer *longPress = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(handleLongPress:)];
-    longPress.minimumPressDuration = [SCIManager getDoublePref:@"dw_finger_duration"];
-    longPress.numberOfTouchesRequired = [SCIManager getDoublePref:@"dw_finger_count"];
+    longPress.minimumPressDuration = [SCIUtils getDoublePref:@"dw_finger_duration"];
+    longPress.numberOfTouchesRequired = [SCIUtils getDoublePref:@"dw_finger_count"];
 
     [self addGestureRecognizer:longPress];
 }
@@ -156,7 +155,7 @@ static void initDownloaders () {
 - (void)didMoveToSuperview {
     %orig;
 
-    if ([SCIManager getBoolPref:@"dw_reels"]) {
+    if ([SCIUtils getBoolPref:@"dw_reels"]) {
         [self addLongPressGestureRecognizer];
     }
 
@@ -166,8 +165,8 @@ static void initDownloaders () {
     NSLog(@"[SCInsta] Adding reels video download long press gesture recognizer");
 
     UILongPressGestureRecognizer *longPress = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(handleLongPress:)];
-    longPress.minimumPressDuration = [SCIManager getDoublePref:@"dw_finger_duration"];
-    longPress.numberOfTouchesRequired = [SCIManager getDoublePref:@"dw_finger_count"];
+    longPress.minimumPressDuration = [SCIUtils getDoublePref:@"dw_finger_duration"];
+    longPress.numberOfTouchesRequired = [SCIUtils getDoublePref:@"dw_finger_count"];
 
     [self addGestureRecognizer:longPress];
 }
@@ -197,7 +196,7 @@ static void initDownloaders () {
 - (void)didMoveToSuperview {
     %orig;
 
-    if ([SCIManager getBoolPref:@"dw_story"]) {
+    if ([SCIUtils getBoolPref:@"dw_story"]) {
         [self addLongPressGestureRecognizer];
     }
 
@@ -207,8 +206,8 @@ static void initDownloaders () {
     NSLog(@"[SCInsta] Adding story photo download long press gesture recognizer");
 
     UILongPressGestureRecognizer *longPress = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(handleLongPress:)];
-    longPress.minimumPressDuration = [SCIManager getDoublePref:@"dw_finger_duration"];
-    longPress.numberOfTouchesRequired = [SCIManager getDoublePref:@"dw_finger_count"];
+    longPress.minimumPressDuration = [SCIUtils getDoublePref:@"dw_finger_duration"];
+    longPress.numberOfTouchesRequired = [SCIUtils getDoublePref:@"dw_finger_count"];
 
     [self addGestureRecognizer:longPress];
 }
@@ -235,7 +234,7 @@ static void initDownloaders () {
 - (void)didMoveToSuperview {
     %orig;
 
-    if ([SCIManager getBoolPref:@"dw_story"]) {
+    if ([SCIUtils getBoolPref:@"dw_story"]) {
         [self addLongPressGestureRecognizer];
     }
 
@@ -245,8 +244,8 @@ static void initDownloaders () {
     //NSLog(@"[SCInsta] Adding story video download long press gesture recognizer");
 
     UILongPressGestureRecognizer *longPress = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(handleLongPress:)];
-    longPress.minimumPressDuration = [SCIManager getDoublePref:@"dw_finger_duration"];
-    longPress.numberOfTouchesRequired = [SCIManager getDoublePref:@"dw_finger_count"];
+    longPress.minimumPressDuration = [SCIUtils getDoublePref:@"dw_finger_duration"];
+    longPress.numberOfTouchesRequired = [SCIUtils getDoublePref:@"dw_finger_count"];
 
     [self addGestureRecognizer:longPress];
 }
@@ -274,7 +273,7 @@ static void initDownloaders () {
 - (void)didMoveToSuperview {
     %orig;
 
-    if ([SCIManager getBoolPref:@"dw_story"]) {
+    if ([SCIUtils getBoolPref:@"dw_story"]) {
         [self addLongPressGestureRecognizer];
     }
 
@@ -284,8 +283,8 @@ static void initDownloaders () {
     //NSLog(@"[SCInsta] Adding story video download long press gesture recognizer");
 
     UILongPressGestureRecognizer *longPress = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(handleLongPress:)];
-    longPress.minimumPressDuration = [SCIManager getDoublePref:@"dw_finger_duration"];
-    longPress.numberOfTouchesRequired = [SCIManager getDoublePref:@"dw_finger_count"];
+    longPress.minimumPressDuration = [SCIUtils getDoublePref:@"dw_finger_duration"];
+    longPress.numberOfTouchesRequired = [SCIUtils getDoublePref:@"dw_finger_count"];
 
     [self addGestureRecognizer:longPress];
 }
@@ -336,7 +335,7 @@ static void initDownloaders () {
 - (void)didMoveToSuperview {
     %orig;
 
-    if ([SCIManager getBoolPref:@"save_profile"]) {
+    if ([SCIUtils getBoolPref:@"save_profile"]) {
         [self addLongPressGestureRecognizer];
     }
 

@@ -1,5 +1,4 @@
 #import "../../InstagramHeaders.h"
-#import "../../Manager.h"
 #import "../../Utils.h"
 
 %hook IGImageWithAccessoryButton
@@ -27,7 +26,7 @@
 %new - (void)handleLongPress:(UILongPressGestureRecognizer *)sender {
     if (sender.state != UIGestureRecognizerStateBegan) return;
 
-    if ([SCIManager getBoolPref:@"teen_app_icons"]) {
+    if ([SCIUtils getBoolPref:@"teen_app_icons"]) {
         IGHomeFeedHeaderViewController *homeFeedHeaderVC = [SCIUtils nearestViewControllerForView:self];
 
         if (homeFeedHeaderVC != nil) {

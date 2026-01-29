@@ -1,4 +1,3 @@
-#import "../../Manager.h"
 #import "../../Utils.h"
 
 %hook IGDirectNotesTrayRowCell
@@ -9,7 +8,7 @@
     for (id obj in originalObjs) {
         BOOL shouldHide = NO;
 
-        if ([SCIManager getBoolPref:@"hide_friends_map"]) {
+        if ([SCIUtils getBoolPref:@"hide_friends_map"]) {
 
             if ([obj isKindOfClass:%c(IGDirectNotesTrayUserViewModel)]) {
 

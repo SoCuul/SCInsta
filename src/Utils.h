@@ -1,9 +1,22 @@
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
 #import "../modules/JGProgressHUD/JGProgressHUD.h"
-#import "./InstagramHeaders.h"
+#import <Foundation/Foundation.h>
+#import <UIKit/UIKit.h>
+#import <QuickLook/QuickLook.h>
+
+#import "InstagramHeaders.h"
+#import "QuickLook.h"
 
 @interface SCIUtils : NSObject
+
++ (BOOL)getBoolPref:(NSString *)key;
++ (double)getDoublePref:(NSString *)key;
++ (void)cleanCache;
+
+// Displaying View Controllers
++ (void)showQuickLookVC:(NSArray<id> *)items;
++ (void)showShareVC:(id)item;
 
 // Colours
 + (UIColor *)SCIColor_Primary;

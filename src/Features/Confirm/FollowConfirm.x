@@ -1,11 +1,10 @@
-#import "../../Manager.h"
 #import "../../Utils.h"
 #import "../../InstagramHeaders.h"
 
 ////////////////////////////////////////////////////////
 
 #define CONFIRMFOLLOW(orig)                            \
-    if ([SCIManager getBoolPref:@"follow_confirm"]) {             \
+    if ([SCIUtils getBoolPref:@"follow_confirm"]) {             \
         NSLog(@"[SCInsta] Confirm follow triggered");  \
                                                        \
         [SCIUtils showConfirmation:^(void) { orig; }]; \

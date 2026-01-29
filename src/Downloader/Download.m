@@ -84,11 +84,11 @@
 
         switch (self.action) {
             case share:
-                [SCIManager showShareVC:fileURL];
+                [SCIUtils showShareVC:fileURL];
                 break;
             
             case quickLook:
-                [SCIManager showQuickLookVC:@[fileURL]];
+                [SCIUtils showQuickLookVC:@[fileURL]];
                 break;
         }
     });

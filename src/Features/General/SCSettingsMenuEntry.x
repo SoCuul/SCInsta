@@ -1,5 +1,4 @@
 #import "../../InstagramHeaders.h"
-#import "../../Manager.h"
 #import "../../Settings/SCISettingsViewController.h"
 
 // Show SCInsta tweak settings by holding on the settings/more icon under profile for ~1 second

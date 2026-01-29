@@ -1,11 +1,11 @@
+#import "../../Utils.h"
 #import "../../InstagramHeaders.h"
-#import "../../Manager.h"
 
 %hook IGStoryTextEntryControlsOverlayView
 - (void)didMoveToSuperview {
     %orig;
 
-    if ([SCIManager getBoolPref:@"enable_hidden_texteffectsstyles"]) {
+    if ([SCIUtils getBoolPref:@"enable_hidden_texteffectsstyles"]) {
     
         // Clear previous option values
         [self.animationTypes removeAllObjects];
