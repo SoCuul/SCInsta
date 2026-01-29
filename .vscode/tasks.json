@@ -41,6 +41,10 @@
                 "reveal": "silent",
                 "panel": "dedicated",
                 "clear": true
+            },
+            "icon": {
+                "color": "terminal.ansiYellow",
+                "id": "debug-connected"
             }
         }
     ]
