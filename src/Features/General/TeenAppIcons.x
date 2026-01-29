@@ -12,8 +12,8 @@
 
 %new - (void)addLongPressGestureRecognizer {
     BOOL hasLongPress = [self.gestureRecognizers filteredArrayUsingPredicate:
-        [NSPredicate predicateWithBlock:^BOOL(UIGestureRecognizer *gr, NSDictionary *_) {
-            return [gr isKindOfClass:[UILongPressGestureRecognizer class]];
+        [NSPredicate predicateWithBlock:^BOOL(NSObject *item, NSDictionary *_) {
+            return [item isKindOfClass:[UILongPressGestureRecognizer class]];
         }]
     ].count > 0;
 
