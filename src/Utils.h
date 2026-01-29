@@ -1,11 +1,18 @@
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
 #import <QuickLook/QuickLook.h>
+#import <os/log.h>
 
 #import "../modules/JGProgressHUD/JGProgressHUD.h"
 
 #import "InstagramHeaders.h"
 #import "QuickLook.h"
+
+#define SCILog(fmt, ...) \
+    do { \
+        NSString *tmpStr = [NSString stringWithFormat:(fmt), ##__VA_ARGS__]; \
+        os_log(OS_LOG_DEFAULT, "%{public}s", tmpStr.UTF8String); \
+    } while(0)
 
 @interface SCIUtils : NSObject
 
