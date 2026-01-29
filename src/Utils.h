@@ -1,9 +1,8 @@
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
-#import "../modules/JGProgressHUD/JGProgressHUD.h"
-#import <Foundation/Foundation.h>
-#import <UIKit/UIKit.h>
 #import <QuickLook/QuickLook.h>
+
+#import "../modules/JGProgressHUD/JGProgressHUD.h"
 
 #import "InstagramHeaders.h"
 #import "QuickLook.h"
