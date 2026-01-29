@@ -368,7 +368,8 @@
 @end
 
 @interface IGSundialViewerVerticalUFI : UIView
-- (void)_didTapRepostButton:(id)arg1; // new
+- (void)_didTapLikeButton:(id)arg1;
+- (void)_didTapRepostButton:(id)arg1;
 @end
 
 /////////////////////////////////////////////////////////////////////////////
