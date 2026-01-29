@@ -146,6 +146,21 @@
         @{
             @"title": @"",
             @"rows": @[
+                // [SCISetting navigationCellWithTitle:@"Experimental"
+                //                            subtitle:@""
+                //                                icon:[SCISymbol symbolWithName:@"testtube.2"]
+                //                         navSections:@[@{
+                //                             @"title": @"Warning",
+                //                             @"footer": @"These features are unstable and cause the Instagram app to crash unexpectedly.\n\nUse at your own risk!"
+                //                         },
+                //                         @{
+                //                             @"title": @"",
+                //                             @"rows": @[
+
+                //                             ]
+                //                         }
+                //                         ]
+                // ],
                 [SCISetting navigationCellWithTitle:@"Debug"
                                            subtitle:@""
                                                icon:[SCISymbol symbolWithName:@"ladybug"]
@@ -207,7 +222,7 @@
             @"footer": [NSString stringWithFormat:@"SCInsta %@\n\nInstagram v%@", SCIVersionString, [SCIUtils IGVersionString]]
         }
     ];
-}   
+}
 
 + (NSString *)title {
     return @"SCInsta Settings";
