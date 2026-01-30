@@ -99,6 +99,7 @@ jobs:
                 cd main
                 curl -Lo ipapatch https://github.com/asdfzxcvbn/ipapatch/releases/download/v2.1.3/ipapatch.macos-arm64
                 chmod +x ipapatch
+                export PATH=.:$PATH
                 ls -la
 
                 ./build.sh sideload
