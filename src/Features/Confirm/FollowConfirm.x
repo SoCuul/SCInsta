@@ -76,3 +76,31 @@
 
 // TODO: Need to handle follow button in the top navigation bar (at the right) when scrolled down in someone's profile
 // TODO: It's a deeply nested IGNavigationBarButtonView -> (subviews) -> IGTextButton
+
+// Follow all button in group chats (3+ members) people view
+static void (*orig_listSectionController)(id, SEL, id, id);
+
+static void hooked_listSectionController(id self, SEL _cmd, id arg1, id arg2) {
+    if ([SCIUtils getBoolPref:@"follow_confirm"]) {
+
+        [SCIUtils showConfirmation:^{
+            orig_listSectionController(self, _cmd, arg1, arg2);
+        }];
+
+        return;
+    }
+
+    orig_listSectionController(self, _cmd, arg1, arg2);
+}
+
+%ctor {
+    Class cls = objc_getClass("IGDirectDetailMembersKit.IGDirectThreadDetailsMembersListViewController");
+    if (!cls) return;
+
+    MSHookMessageEx(
+        cls,
+        @selector(listSectionController:didTapHeaderButtonWithViewModel:),
+        (IMP)hooked_listSectionController,
+        (IMP *)&orig_listSectionController
+    );
+}

@@ -2,6 +2,7 @@
 #import <UIKit/UIKit.h>
 #import <QuickLook/QuickLook.h>
 #import <os/log.h>
+#import <objc/message.h>
 
 #import "../modules/JGProgressHUD/JGProgressHUD.h"
 
