@@ -2,6 +2,8 @@
 
 @implementation SCITweakSettings
 
+#pragma mark - Sections
+
 ///
 /// This returns an array of sections, with each section consisting of a dictionary
 ///
@@ -10,24 +12,23 @@
 /// `"rows"`: An array of **SCISetting** classes, potentially containing a "navigationCellWithTitle" initializer to allow for nested setting pages.
 ///
 /// `"footer`: The section footer (leave blank for no footer)
-///
 
 + (NSArray *)sections {
     return @[
         @{
-            @"title": @"",
+            @"header": @"",
             @"rows": @[
                 [SCISetting linkCellWithTitle:@"Donate" subtitle:@"Consider donating to support this tweak's development!" icon:[SCISymbol symbolWithName:@"heart.circle.fill" color:[UIColor systemPinkColor] size:20.0] url:@"https://ko-fi.com/SoCuul"]
             ]
         },
         @{
-            @"title": @"",
+            @"header": @"",
             @"rows": @[
                 [SCISetting navigationCellWithTitle:@"General"
                                            subtitle:@""
                                                icon:[SCISymbol symbolWithName:@"gear"]
                                         navSections:@[@{
-                                            @"title": @"",
+                                            @"header": @"",
                                             @"rows": @[
                                                 [SCISetting switchCellWithTitle:@"Hide Meta AI" subtitle:@"Hides the meta ai buttons/functionality within the app" defaultsKey:@"hide_meta_ai"],
                                                 [SCISetting switchCellWithTitle:@"Copy description" subtitle:@"Copy description text fields by long-pressing on them" defaultsKey:@"copy_description"],
@@ -43,7 +44,7 @@
                                            subtitle:@""
                                                icon:[SCISymbol symbolWithName:@"rectangle.stack"]
                                         navSections:@[@{
-                                            @"title": @"",
+                                            @"header": @"",
                                             @"rows": @[
                                                 [SCISetting switchCellWithTitle:@"Hide ads" subtitle:@"Removes all ads from the Instagram app" defaultsKey:@"hide_ads"],
                                                 [SCISetting switchCellWithTitle:@"Hide stories tray" subtitle:@"Hides the story tray at the top and within your feed" defaultsKey:@"hide_stories_tray"],
@@ -59,7 +60,7 @@
                                            subtitle:@""
                                                icon:[SCISymbol symbolWithName:@"tray.and.arrow.down"]
                                         navSections:@[@{
-                                            @"title": @"",
+                                            @"header": @"",
                                             @"rows": @[
                                                 [SCISetting switchCellWithTitle:@"Download feed posts" subtitle:@"Long-press with finger(s) to download posts in the home tab" defaultsKey:@"dw_feed_posts"],
                                                 [SCISetting switchCellWithTitle:@"Download reels" subtitle:@"Long-press with finger(s) on a reel to download" defaultsKey:@"dw_reels"],
@@ -68,7 +69,7 @@
                                             ]
                                         },
                                         @{
-                                            @"title": @"Customize gestures",
+                                            @"header": @"Customize gestures",
                                             @"rows": @[
                                                 [SCISetting stepperCellWithTitle:@"Finger count for long-press" subtitle:@"Downloads with %@ %@" defaultsKey:@"dw_finger_count" min:1 max:5 step:1 label:@"fingers" singularLabel:@"finger"],
                                                 [SCISetting stepperCellWithTitle:@"Long-press hold time" subtitle:@"Press finger(s) for %@ %@" defaultsKey:@"dw_finger_duration" min:0 max:10 step:0.25 label:@"sec" singularLabel:@"sec"]
@@ -79,7 +80,7 @@
                                            subtitle:@""
                                                icon:[SCISymbol symbolWithName:@"rectangle.portrait.on.rectangle.portrait.angled"]
                                         navSections:@[@{
-                                            @"title": @"",
+                                            @"header": @"",
                                             @"rows": @[
                                                 [SCISetting switchCellWithTitle:@"Keep deleted messages" subtitle:@"Saves deleted messages in chat conversations" defaultsKey:@"keep_deleted_message"],
                                                 [SCISetting switchCellWithTitle:@"Disable screenshot detection" subtitle:@"Removes the screenshot-prevention features for visual messages in DMs" defaultsKey:@"remove_screenshot_alert"],
@@ -94,14 +95,14 @@
                                            subtitle:@""
                                                icon:[SCISymbol symbolWithName:@"checkmark"]
                                         navSections:@[@{
-                                            @"title": @"",
+                                            @"header": @"",
                                             @"rows": @[
                                                 [SCISetting switchCellWithTitle:@"Confirm like: Posts" subtitle:@"Shows an alert when you click the like button on posts or stories to confirm the like" defaultsKey:@"like_confirm"],
                                                 [SCISetting switchCellWithTitle:@"Confirm like: Reels" subtitle:@"Shows an alert when you click the like button on reels to confirm the like" defaultsKey:@"like_confirm_reels"]
                                             ]
                                         },
                                         @{
-                                            @"title": @"",
+                                            @"header": @"",
                                             @"rows": @[
                                                 [SCISetting switchCellWithTitle:@"Confirm follow" subtitle:@"Shows an alert when you click the follow button to confirm the follow" defaultsKey:@"follow_confirm"],
                                                 [SCISetting switchCellWithTitle:@"Confirm repost" subtitle:@"Shows an alert when you click the repost button to confirm before resposting" defaultsKey:@"repost_confirm"],
@@ -119,13 +120,13 @@
                                            subtitle:@""
                                                icon:[SCISymbol symbolWithName:@"moon"]
                                         navSections:@[@{
-                                            @"title": @"",
+                                            @"header": @"",
                                             @"rows": @[
                                                 [SCISetting switchCellWithTitle:@"Hide explore posts grid" subtitle:@"Hides the grid of suggested posts on the explore/search tab" defaultsKey:@"hide_explore_grid"],
                                                 [SCISetting switchCellWithTitle:@"Hide trending searches" subtitle:@"Hides the trending searches under the explore search bar" defaultsKey:@"hide_trending_searches"],
                                                 [SCISetting switchCellWithTitle:@"No suggested chats" subtitle:@"Hides the suggested broadcast channels in direct messages" defaultsKey:@"no_suggested_chats"],
                                                 [SCISetting switchCellWithTitle:@"No suggested users" subtitle:@"Hides all suggested users for you to follow, outside your feed" defaultsKey:@"no_suggested_users"],
-                                                [SCISetting switchCellWithTitle:@"Disable scrolling reels" subtitle:@"Prevents reels from being scrolled to the next video" defaultsKey:@"disable_scrolling_reels"],
+                                                [SCISetting switchCellWithTitle:@"Disable scrolling reels" subtitle:@"Prevents reels from being scrolled to the next video" defaultsKey:@"disable_scrolling_reels"]
                                             ]
                                         }]
                 ],
@@ -133,7 +134,7 @@
                                            subtitle:@""
                                                icon:[SCISymbol symbolWithName:@"dock.rectangle"]
                                         navSections:@[@{
-                                            @"title": @"",
+                                            @"header": @"",
                                             @"rows": @[
                                                 [SCISetting switchCellWithTitle:@"Hide feed tab" subtitle:@"Hides the feed/home tab on the bottom navbar" defaultsKey:@"hide_feed_tab" requiresRestart:YES],
                                                 [SCISetting switchCellWithTitle:@"Hide explore tab" subtitle:@"Hides the explore/search tab on the bottom navbar" defaultsKey:@"hide_explore_tab" requiresRestart:YES],
@@ -144,17 +145,17 @@
             ]
         },
         @{
-            @"title": @"",
+            @"header": @"",
             @"rows": @[
                 // [SCISetting navigationCellWithTitle:@"Experimental"
                 //                            subtitle:@""
                 //                                icon:[SCISymbol symbolWithName:@"testtube.2"]
                 //                         navSections:@[@{
-                //                             @"title": @"Warning",
+                //                             @"header": @"Warning",
                 //                             @"footer": @"These features are unstable and cause the Instagram app to crash unexpectedly.\n\nUse at your own risk!"
                 //                         },
                 //                         @{
-                //                             @"title": @"",
+                //                             @"header": @"",
                 //                             @"rows": @[
 
                 //                             ]
@@ -165,7 +166,7 @@
                                            subtitle:@""
                                                icon:[SCISymbol symbolWithName:@"ladybug"]
                                         navSections:@[@{
-                                            @"title": @"FLEX",
+                                            @"header": @"FLEX",
                                             @"rows": @[
                                                 [SCISetting switchCellWithTitle:@"Enable FLEX gesture" subtitle:@"Allows you to hold 5 fingers on the screen to open the FLEX explorer" defaultsKey:@"flex_instagram"],
                                                 [SCISetting switchCellWithTitle:@"Open FLEX on app launch" subtitle:@"Automatically opens the FLEX explorer when the app launches" defaultsKey:@"flex_app_launch"],
@@ -173,48 +174,49 @@
                                             ]
                                         },
                                         @{
-                                            @"title": @"SCInsta",
+                                            @"header": @"SCInsta",
                                             @"rows": @[
                                                 [SCISetting switchCellWithTitle:@"Show tweak settings on app launch" subtitle:@"Automatically opens the SCInsta settings when the app launches" defaultsKey:@"tweak_settings_app_launch"]
                                             ]
                                         },
                                         @{
-                                            @"title": @"Instagram",
+                                            @"header": @"Instagram",
                                             @"rows": @[
                                                 [SCISetting switchCellWithTitle:@"Disable safe mode" subtitle:@"Makes Instagram not reset settings after subsequent crashes (at your own risk)" defaultsKey:@"disable_safe_mode"]
                                             ]
                                         },
-                                        // @{
-                                        //     @"title": @"Example",
-                                        //     @"rows": @[
-                                        //         [SCISetting staticCellWithTitle:@"Static Cell" subtitle:@"" icon:[SCISymbol symbolWithName:@"tablecells"]],
-                                        //         [SCISetting switchCellWithTitle:@"Switch Cell" subtitle:@"Tap the switch" defaultsKey:@"test_switch_cell"],
-                                        //         [SCISetting switchCellWithTitle:@"Switch Cell (Restart)" subtitle:@"Tap the switch" defaultsKey:@"test_switch_cell_restart" requiresRestart:YES],
-                                        //         [SCISetting stepperCellWithTitle:@"Stepper cell" subtitle:@"I have %@%@" defaultsKey:@"test_stepper_cell" min:-10 max:1000 step:5.5 label:@"$" singularLabel:@"$"],
-                                        //         [SCISetting linkCellWithTitle:@"Link Cell" subtitle:@"Using icon" icon:[SCISymbol symbolWithName:@"link" color:[UIColor systemTealColor] size:20.0] url:@"https://google.com"],
-                                        //         [SCISetting linkCellWithTitle:@"Link Cell" subtitle:@"Using image" imageUrl:@"https://i.imgur.com/c9CbytZ.png" url:@"https://google.com"],
-                                        //         [SCISetting buttonCellWithTitle:@"Button Cell"
-                                        //                                    subtitle:@""
-                                        //                                        icon:[SCISymbol symbolWithName:@"oval.inset.filled"]
-                                        //                                      action:^(void) { [SCIUtils showConfirmation:^(void){}]; }
-                                        //         ],
-                                        //         [SCISetting navigationCellWithTitle:@"Navigation Cell"
-                                        //                                    subtitle:@""
-                                        //                                        icon:[SCISymbol symbolWithName:@"rectangle.stack"]
-                                        //                                 navSections:@[@{
-                                        //                                     @"title": @"",
-                                        //                                     @"rows": @[]
-                                        //                                 }]
-                                        //         ]
-                                        //     ],
-                                        //     @"footer": @"Example"
-                                        // }
+                                        @{
+                                            @"header": @"_ Example",
+                                            @"rows": @[
+                                                [SCISetting staticCellWithTitle:@"Static Cell" subtitle:@"" icon:[SCISymbol symbolWithName:@"tablecells"]],
+                                                [SCISetting switchCellWithTitle:@"Switch Cell" subtitle:@"Tap the switch" defaultsKey:@"test_switch_cell"],
+                                                [SCISetting switchCellWithTitle:@"Switch Cell (Restart)" subtitle:@"Tap the switch" defaultsKey:@"test_switch_cell_restart" requiresRestart:YES],
+                                                [SCISetting stepperCellWithTitle:@"Stepper cell" subtitle:@"I have %@%@" defaultsKey:@"test_stepper_cell" min:-10 max:1000 step:5.5 label:@"$" singularLabel:@"$"],
+                                                [SCISetting linkCellWithTitle:@"Link Cell" subtitle:@"Using icon" icon:[SCISymbol symbolWithName:@"link" color:[UIColor systemTealColor] size:20.0] url:@"https://google.com"],
+                                                [SCISetting linkCellWithTitle:@"Link Cell" subtitle:@"Using image" imageUrl:@"https://i.imgur.com/c9CbytZ.png" url:@"https://google.com"],
+                                                [SCISetting buttonCellWithTitle:@"Button Cell"
+                                                                           subtitle:@""
+                                                                               icon:[SCISymbol symbolWithName:@"oval.inset.filled"]
+                                                                             action:^(void) { [SCIUtils showConfirmation:^(void){}]; }
+                                                ],
+                                                [SCISetting menuCellWithTitle:@"Menu Cell" subtitle:@"Change the value on the right" menu:[self menus][@"test"]],
+                                                [SCISetting navigationCellWithTitle:@"Navigation Cell"
+                                                                           subtitle:@""
+                                                                               icon:[SCISymbol symbolWithName:@"rectangle.stack"]
+                                                                        navSections:@[@{
+                                                                            @"header": @"",
+                                                                            @"rows": @[]
+                                                                        }]
+                                                ]
+                                            ],
+                                            @"footer": @"_ Example"
+                                        }
                                         ]
                 ]
             ]
         },
         @{
-            @"title": @"Credits",
+            @"header": @"Credits",
             @"rows": @[
                 [SCISetting linkCellWithTitle:@"Developer" subtitle:@"SoCuul" imageUrl:@"https://i.imgur.com/c9CbytZ.png" url:@"https://socuul.dev"],
                 [SCISetting linkCellWithTitle:@"View Repo" subtitle:@"View the tweak's source code on GitHub" imageUrl:@"https://i.imgur.com/BBUNzeP.png" url:@"https://github.com/SoCuul/SCInsta"]
@@ -224,8 +226,55 @@
     ];
 }
 
+
+#pragma mark - Title
+
+///
+/// This is the title displayed on the initial settings page view controller
+///
+
 + (NSString *)title {
     return @"SCInsta Settings";
 }
+
+
+#pragma mark - Menus
+
+///
+/// This returns a dictionary where each key corresponds to a certain menu that can be displayed.
+/// Each "propertyList"  item is an NSDictionary containing the following items:
+///
+/// `"defaultsKey"`: The key to save the selected value under in NSUserDefaults
+///
+/// `"value"`: A unique string corresponding to the menu item which is selected
+///
+
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wundeclared-selector"
+
++ (NSDictionary *)menus {
+    return @{
+        @"test": [UIMenu menuWithChildren:@[
+            [UICommand commandWithTitle:@"ABC"
+                                  image:nil
+                                 action:@selector(menuChanged:)
+                           propertyList:@{
+                               @"defaultsKey": @"test_menu_cell",
+                               @"value": @"abc"
+                           }
+            ],
+            [UICommand commandWithTitle:@"123"
+                                  image:nil
+                                 action:@selector(menuChanged:)
+                           propertyList:@{
+                               @"defaultsKey": @"test_menu_cell",
+                               @"value": @"123"
+                           }
+            ]
+        ]]
+    };
+}
+
+#pragma clang diagnostic pop
 
 @end

@@ -19,9 +19,24 @@ static char rowStaticRef[] = "row";
     
     if (self) {
         self.title = title;
-        self.sections = sections;
         self.reduceMargin = reduceMargin;
+        
+        // Exclude development cells from release builds
+        NSMutableArray *mutableSections = [sections mutableCopy];
+        
+        [mutableSections enumerateObjectsWithOptions:NSEnumerationReverse usingBlock:^(NSDictionary *section, NSUInteger index, BOOL *stop) {
+        
+            if ([section[@"header"] hasPrefix:@"_"] && [section[@"footer"] hasPrefix:@"_"]) {
+                if (![[SCIUtils IGVersionString] isEqualToString:@"0.0.0"]) {
+                    [mutableSections removeObjectAtIndex:index];
+                }
+            }
+            
+        }];
+        
+        self.sections = [mutableSections copy];
     }
+    
     
     return self;
 }
@@ -137,6 +152,20 @@ static char rowStaticRef[] = "row";
             break;
         }
             
+        case SCITableCellMenu: {
+            UIButton *menuButton = [UIButton buttonWithType:UIButtonTypeSystem];
+            [menuButton setTitle:@"•••" forState:UIControlStateNormal];
+            menuButton.menu = [row menuForButton:menuButton];
+            menuButton.showsMenuAsPrimaryAction = YES;
+            menuButton.titleLabel.font = [UIFont systemFontOfSize:[UIFont preferredFontForTextStyle:UIFontTextStyleBody].pointSize
+                                                           weight:UIFontWeightMedium];
+            [menuButton sizeToFit];
+            
+            cell.accessoryView = menuButton;
+            cell.selectionStyle = UITableViewCellSelectionStyleNone;
+            break;
+        }
+            
         case SCITableCellNavigation: {
             cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
             break;
@@ -153,7 +182,7 @@ static char rowStaticRef[] = "row";
 }
 
 - (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section {
-    return self.sections[section][@"title"];
+    return self.sections[section][@"header"];
 }
 
 - (NSString *)tableView:(UITableView *)tableView titleForFooterInSection:(NSInteger)section {
@@ -173,7 +202,7 @@ static char rowStaticRef[] = "row";
     if (row.type == SCITableCellLink) {
         [[UIApplication sharedApplication] openURL:row.url options:@{} completionHandler:nil];
     }
-    if (row.type == SCITableCellButton) {
+    else if (row.type == SCITableCellButton) {
         if (row.action != nil) {
             row.action();
         }
@@ -211,6 +240,16 @@ static char rowStaticRef[] = "row";
     [self reloadCellForView:sender];
 }
 
+- (void)menuChanged:(UICommand *)command {
+    NSDictionary *properties = command.propertyList;
+    
+    [[NSUserDefaults standardUserDefaults] setValue:properties[@"value"] forKey:properties[@"defaultsKey"]];
+    
+    NSLog(@"Menu changed: %@", command.propertyList[@"value"]);
+    
+    [self reloadCellForView:command.sender animated:YES];
+}
+
 #pragma mark - Helper
 
 - (NSString *)formatString:(NSString *)template withValue:(double)value label:(NSString *)label singularLabel:(NSString *)singularLabel {
@@ -233,7 +272,7 @@ static char rowStaticRef[] = "row";
     return [NSString stringWithFormat:template, stringValue, applicableLabel];
 }
 
-- (void)reloadCellForView:(UIView *)view {
+- (void)reloadCellForView:(UIView *)view animated:(BOOL)animated {
     UITableViewCell *cell = (UITableViewCell *)view.superview;
     while (cell && ![cell isKindOfClass:[UITableViewCell class]]) {
         cell = (UITableViewCell *)cell.superview;
@@ -244,7 +283,10 @@ static char rowStaticRef[] = "row";
     if (!indexPath) return;
     
     [self.tableView reloadRowsAtIndexPaths:@[indexPath]
-                          withRowAnimation:UITableViewRowAnimationNone];
+                          withRowAnimation:animated ? UITableViewRowAnimationAutomatic : UITableViewRowAnimationNone];
+}
+- (void)reloadCellForView:(UIView *)view {
+    [self reloadCellForView:view animated:NO];
 }
 
 - (void)loadImageFromURL:(NSURL *)url atIndexPath:(NSIndexPath *)indexPath forTableView:(UITableView *)tableView

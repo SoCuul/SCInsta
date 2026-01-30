@@ -148,6 +148,22 @@
     return setting;
 }
 
+# pragma mark + menuCellWithTitle
+
++ (instancetype)menuCellWithTitle:(NSString *)title
+                         subtitle:(NSString *)subtitle
+                             menu:(UIMenu *)menu
+{
+    SCISetting *setting = [[self alloc] initWithType:SCITableCellMenu];
+    
+    setting.title = title;
+    setting.subtitle = subtitle;
+    
+    setting.baseMenu = menu;
+    
+    return setting;
+}
+
 #pragma mark + navigationCellWithTitle
 
 + (instancetype)navigationCellWithTitle:(NSString *)title
@@ -164,6 +180,35 @@
     setting.navSections = navSections;
     
     return setting;
+}
+
+
+# pragma mark - Instance methods
+
+- (UIMenu *)menuForButton:(UIButton *)button {
+    NSMutableArray<UIMenuElement *> *children = [NSMutableArray array];
+
+    for (UICommand *child in self.baseMenu.children) {
+        NSString *saved = [[NSUserDefaults standardUserDefaults] stringForKey:child.propertyList[@"defaultsKey"]];
+
+        UICommand *command = [UICommand commandWithTitle:child.title
+                                                   image:child.image
+                                                  action:child.action
+                                            propertyList:child.propertyList];
+        
+        if ([child.propertyList[@"value"] isEqualToString:saved]) {
+            command.state = YES;
+            
+            [button setTitle:command.title forState:UIControlStateNormal];
+        }
+        else {
+            command.state = NO;
+        }
+        
+        [children addObject:command];
+    }
+
+    return [UIMenu menuWithTitle:self.baseMenu.title children:children];
 }
 
 @end
