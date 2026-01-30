@@ -281,6 +281,15 @@
                                @"defaultsKey": @"test_menu_cell",
                                @"value": @"123"
                            }
+            ],
+            [UICommand commandWithTitle:@"Requires restart"
+                                  image:nil
+                                 action:@selector(menuChanged:)
+                           propertyList:@{
+                               @"defaultsKey": @"test_menu_cell",
+                               @"value": @"requires_restart",
+                               @"requiresRestart": @YES
+                           }
             ]
         ]]
     };
