@@ -75,7 +75,8 @@
                                         navSections:@[@{
                                             @"header": @"",
                                             @"rows": @[
-                                                [SCISetting switchCellWithTitle:@"Hide ads" subtitle:@"Removes all ads from the Instagram app" defaultsKey:@"hide_ads"]
+                                                [SCISetting menuCellWithTitle:@"Tap Controls" subtitle:@"Change what happens when you tap on a reel" menu:[self menus][@"reels_tap_control"]],
+                                                [SCISetting switchCellWithTitle:@"Always show progress scrubber" subtitle:@"Forces the progress bar to appear on every reel" defaultsKey:@"reels_show_scrubber"]
                                             ]
                                         }]
                 ],
@@ -259,12 +260,45 @@
 ///
 /// `"value"`: A unique string corresponding to the menu item which is selected
 ///
+/// `"requiresRestart"`: (optional) Causes a popup to appear detailing you have to restart to use these features
+///
 
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wundeclared-selector"
 
 + (NSDictionary *)menus {
     return @{
+        @"reels_tap_control": [UIMenu menuWithChildren:@[
+            [UICommand commandWithTitle:@"Default"
+                                  image:nil
+                                 action:@selector(menuChanged:)
+                           propertyList:@{
+                               @"defaultsKey": @"reels_tap_control",
+                               @"value": @"default",
+                               @"requiresRestart": @YES
+                           }
+            ],
+            [UICommand commandWithTitle:@"Pause/Play"
+                                  image:nil
+                                 action:@selector(menuChanged:)
+                           propertyList:@{
+                               @"defaultsKey": @"reels_tap_control",
+                               @"value": @"pause",
+                               @"requiresRestart": @YES
+                           }
+            ],
+            [UICommand commandWithTitle:@"Mute/Unmute"
+                                  image:nil
+                                 action:@selector(menuChanged:)
+                           propertyList:@{
+                               @"defaultsKey": @"reels_tap_control",
+                               @"value": @"mute",
+                               @"requiresRestart": @YES
+                           }
+            ]
+        ]],
+
+
         @"test": [UIMenu menuWithChildren:@[
             [UICommand commandWithTitle:@"ABC"
                                   image:nil
