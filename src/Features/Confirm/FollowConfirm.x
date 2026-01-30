@@ -74,9 +74,6 @@
 }
 %end
 
-// TODO: Need to handle follow button in the top navigation bar (at the right) when scrolled down in someone's profile
-// TODO: It's a deeply nested IGNavigationBarButtonView -> (subviews) -> IGTextButton
-
 // Follow all button in group chats (3+ members) people view
 static void (*orig_listSectionController)(id, SEL, id, id);
 
