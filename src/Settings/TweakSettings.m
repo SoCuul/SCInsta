@@ -30,13 +30,26 @@
                                         navSections:@[@{
                                             @"header": @"",
                                             @"rows": @[
-                                                [SCISetting switchCellWithTitle:@"Hide Meta AI" subtitle:@"Hides the meta ai buttons/functionality within the app" defaultsKey:@"hide_meta_ai"],
                                                 [SCISetting switchCellWithTitle:@"Copy description" subtitle:@"Copy description text fields by long-pressing on them" defaultsKey:@"copy_description"],
-                                                [SCISetting switchCellWithTitle:@"Use detailed color picker" subtitle:@"Long press on the eyedropper tool in stories to customize the text color more precisely" defaultsKey:@"detailed_color_picker"],
                                                 [SCISetting switchCellWithTitle:@"Do not save recent searches" subtitle:@"Search bars will no longer save your recent searches" defaultsKey:@"no_recent_searches"],
+                                                [SCISetting switchCellWithTitle:@"Use detailed color picker" subtitle:@"Long press on the eyedropper tool in stories to customize the text color more precisely" defaultsKey:@"detailed_color_picker"],
+                                                [SCISetting switchCellWithTitle:@"Enable teen app icons" subtitle:@"When enabled, hold down on the Instagram logo to change the app icon" defaultsKey:@"teen_app_icons" requiresRestart:YES]
+                                            ]
+                                        },
+                                        @{
+                                            @"header": @"Hiding",
+                                            @"rows": @[
+                                                [SCISetting switchCellWithTitle:@"Hide Meta AI" subtitle:@"Hides the meta ai buttons/functionality within the app" defaultsKey:@"hide_meta_ai"],
                                                 [SCISetting switchCellWithTitle:@"Hide notes tray" subtitle:@"Hides the notes tray in the dm inbox" defaultsKey:@"hide_notes_tray"],
-                                                [SCISetting switchCellWithTitle:@"Hide friends map" subtitle:@"Hides the friends map icon in the notes tray" defaultsKey:@"hide_friends_map"],
-                                                [SCISetting switchCellWithTitle:@"Enable teen app icons" subtitle:@"When enabled, hold down on the Instagram logo to change the app icon" defaultsKey:@"teen_app_icons" requiresRestart:YES],
+                                                [SCISetting switchCellWithTitle:@"Hide friends map" subtitle:@"Hides the friends map icon in the notes tray" defaultsKey:@"hide_friends_map"]
+                                            ]
+                                        },
+                                        @{
+                                            @"header": @"Navigation",
+                                            @"rows": @[
+                                                [SCISetting switchCellWithTitle:@"Hide feed tab" subtitle:@"Hides the feed/home tab on the bottom navbar" defaultsKey:@"hide_feed_tab" requiresRestart:YES],
+                                                [SCISetting switchCellWithTitle:@"Hide explore tab" subtitle:@"Hides the explore/search   tab on the bottom navbar" defaultsKey:@"hide_explore_tab" requiresRestart:YES],
+                                                [SCISetting switchCellWithTitle:@"Hide reels tab" subtitle:@"Hides the reels tab on the   bottom navbar" defaultsKey:@"hide_reels_tab" requiresRestart:YES]
                                             ]
                                         }]
                 ],
@@ -53,6 +66,16 @@
                                                 [SCISetting switchCellWithTitle:@"No suggested for you" subtitle:@"Hides suggested accounts for you to follow" defaultsKey:@"no_suggested_account"],
                                                 [SCISetting switchCellWithTitle:@"No suggested reels" subtitle:@"Hides suggested reels to watch" defaultsKey:@"no_suggested_reels"],
                                                 [SCISetting switchCellWithTitle:@"No suggested threads posts" subtitle:@"Hides suggested threads posts" defaultsKey:@"no_suggested_threads"]
+                                            ]
+                                        }]
+                ],
+                [SCISetting navigationCellWithTitle:@"Reels"
+                                           subtitle:@""
+                                               icon:[SCISymbol symbolWithName:@"film.stack"]
+                                        navSections:@[@{
+                                            @"header": @"",
+                                            @"rows": @[
+                                                [SCISetting switchCellWithTitle:@"Hide ads" subtitle:@"Removes all ads from the Instagram app" defaultsKey:@"hide_ads"]
                                             ]
                                         }]
                 ],
@@ -127,18 +150,6 @@
                                                 [SCISetting switchCellWithTitle:@"No suggested chats" subtitle:@"Hides the suggested broadcast channels in direct messages" defaultsKey:@"no_suggested_chats"],
                                                 [SCISetting switchCellWithTitle:@"No suggested users" subtitle:@"Hides all suggested users for you to follow, outside your feed" defaultsKey:@"no_suggested_users"],
                                                 [SCISetting switchCellWithTitle:@"Disable scrolling reels" subtitle:@"Prevents reels from being scrolled to the next video" defaultsKey:@"disable_scrolling_reels"]
-                                            ]
-                                        }]
-                ],
-                [SCISetting navigationCellWithTitle:@"Navigation"
-                                           subtitle:@""
-                                               icon:[SCISymbol symbolWithName:@"dock.rectangle"]
-                                        navSections:@[@{
-                                            @"header": @"",
-                                            @"rows": @[
-                                                [SCISetting switchCellWithTitle:@"Hide feed tab" subtitle:@"Hides the feed/home tab on the bottom navbar" defaultsKey:@"hide_feed_tab" requiresRestart:YES],
-                                                [SCISetting switchCellWithTitle:@"Hide explore tab" subtitle:@"Hides the explore/search tab on the bottom navbar" defaultsKey:@"hide_explore_tab" requiresRestart:YES],
-                                                [SCISetting switchCellWithTitle:@"Hide reels tab" subtitle:@"Hides the reels tab on the bottom navbar" defaultsKey:@"hide_reels_tab" requiresRestart:YES]
                                             ]
                                         }]
                 ]
