@@ -159,6 +159,11 @@ static char rowStaticRef[] = "row";
             menuButton.showsMenuAsPrimaryAction = YES;
             menuButton.titleLabel.font = [UIFont systemFontOfSize:[UIFont preferredFontForTextStyle:UIFontTextStyleBody].pointSize
                                                            weight:UIFontWeightMedium];
+            
+            UIButtonConfiguration *config = menuButton.configuration ?: [UIButtonConfiguration plainButtonConfiguration];
+            menuButton.configuration.contentInsets = NSDirectionalEdgeInsetsMake(8, 8, 8, 8);
+            menuButton.configuration = config;
+
             [menuButton sizeToFit];
             
             cell.accessoryView = menuButton;
