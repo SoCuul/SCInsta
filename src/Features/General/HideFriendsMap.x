@@ -1,7 +1,7 @@
 #import "../../Utils.h"
 
 %hook IGDirectNotesTrayRowCell
-- (id)objectsForListAdapter:(id)arg1 {
+- (id)listAdapterObjects {
     NSArray *originalObjs = %orig();
     NSMutableArray *filteredObjs = [NSMutableArray arrayWithCapacity:[originalObjs count]];
 
@@ -12,8 +12,7 @@
 
             if ([obj isKindOfClass:%c(IGDirectNotesTrayUserViewModel)]) {
 
-                // Map cell type
-                if ([[obj valueForKey:@"cellType"] isEqualToNumber:@5]) {
+                if ([[obj valueForKey:@"notePk"] isEqualToString:@"friends_map"]) {
                     NSLog(@"[SCInsta] Hiding friends map");
 
                     shouldHide = YES;
