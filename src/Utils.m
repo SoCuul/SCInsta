@@ -12,6 +12,11 @@
 
     return [[NSUserDefaults standardUserDefaults] doubleForKey:key];
 }
++ (NSString *)getStringPref:(NSString *)key {
+    if (![key length] || [[NSUserDefaults standardUserDefaults] objectForKey:key] == nil) return @"";
+
+    return [[NSUserDefaults standardUserDefaults] stringForKey:key];
+}
 
 + (void)cleanCache {
     NSFileManager *fileManager = [NSFileManager defaultManager];
