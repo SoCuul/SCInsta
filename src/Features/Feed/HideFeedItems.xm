@@ -11,7 +11,7 @@ static NSArray *removeItemsInList(NSArray *list, BOOL isFeed) {
 
             // Posts
             if (
-                ([obj respondsToSelector:@selector(explorePostInFeed)] && [obj performSelector:@selector(explorePostInFeed)])
+                ([obj isKindOfClass:%c(IGMedia)] && !((IGMedia *)obj).isOrganicMedia)
                 || ([obj isKindOfClass:%c(IGFeedGroupHeaderViewModel)] && [[obj title] isEqualToString:@"Suggested Posts"])
             ) {
                 NSLog(@"[SCInsta] Removing suggested posts");

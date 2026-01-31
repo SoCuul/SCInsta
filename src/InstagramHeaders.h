@@ -67,6 +67,7 @@
 @end
 
 @interface IGMedia : NSObject
+@property(nonatomic, readonly) BOOL isOrganicMedia;
 @property(readonly) IGVideo *video;
 @property(readonly) IGPhoto *photo;
 @end
