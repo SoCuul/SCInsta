@@ -188,8 +188,8 @@
 
     return NO;
 }
-+ (BOOL)showConfirmation:(void(^)(void))okHandler {
-    UIAlertController* alert = [UIAlertController alertControllerWithTitle:nil message:@"Are you sure?" preferredStyle:UIAlertControllerStyleAlert];
++ (BOOL)showConfirmation:(void(^)(void))okHandler title:(NSString *)title {
+    UIAlertController* alert = [UIAlertController alertControllerWithTitle:title message:@"Are you sure?" preferredStyle:UIAlertControllerStyleAlert];
     [alert addAction:[UIAlertAction actionWithTitle:@"Yes" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
         okHandler();
     }]];
@@ -199,7 +199,7 @@
 
     return nil;
 };
-+ (BOOL)showConfirmation:(void(^)(void))okHandler cancelHandler:(void(^)(void))cancelHandler {
++ (BOOL)showConfirmation:(void(^)(void))okHandler cancelHandler:(void(^)(void))cancelHandler title:(NSString *)title {
     UIAlertController* alert = [UIAlertController alertControllerWithTitle:nil message:@"Are you sure?" preferredStyle:UIAlertControllerStyleAlert];
     [alert addAction:[UIAlertAction actionWithTitle:@"Yes" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
         okHandler();
@@ -214,6 +214,12 @@
 
     return nil;
 };
++ (BOOL)showConfirmation:(void(^)(void))okHandler {
+    return [self showConfirmation:okHandler title:nil];
+};
++ (BOOL)showConfirmation:(void(^)(void))okHandler cancelHandler:(void(^)(void))cancelHandler {
+    return [self showConfirmation:okHandler cancelHandler:cancelHandler title:nil];
+}
 + (void)showRestartConfirmation {
     UIAlertController* alert = [UIAlertController alertControllerWithTitle:@"Restart required" message:@"You must restart the app to apply this change" preferredStyle:UIAlertControllerStyleAlert];
     [alert addAction:[UIAlertAction actionWithTitle:@"Restart" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
