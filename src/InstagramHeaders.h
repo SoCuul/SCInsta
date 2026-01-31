@@ -379,6 +379,13 @@
 - (id)tabStringFromSurfaceIntent;
 @end
 
+@interface IGSundialFeedViewController : UIViewController
+- (void)refreshControlDidEndFinishLoadingAnimation:(id)arg1;
+@end
+
+@interface IGRefreshControl : UIControl
+@end
+
 /////////////////////////////////////////////////////////////////////////////
 
 

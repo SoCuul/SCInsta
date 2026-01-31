@@ -27,3 +27,29 @@
     return %orig(set, userTapPauseEnabled, controls, previewThumbEnabled, userMinSec, seekSec, tapSec, userDuration, userShortScrubberEnabled);
 }
 %end
+
+%hook IGSundialFeedViewController
+- (void)triggerRefreshFromTabTap {
+    if ([SCIUtils getBoolPref:@"refresh_reel_confirm"]) {
+        NSLog(@"[SCInsta] Reel refresh triggered");
+        
+        [SCIUtils showConfirmation:^(void) { %orig; } title:@"Refresh Reels"];
+    } else {
+        return %orig;
+    }
+}
+- (void)_refreshReelsWithParamsForNetworkRequest:(NSInteger)arg1 userDidPullToRefresh:(BOOL)arg2 {
+    if ([SCIUtils getBoolPref:@"refresh_reel_confirm"]) {
+        NSLog(@"[SCInsta] Reel refresh triggered");
+        
+        [SCIUtils showConfirmation:^(void) { %orig(arg1, arg2); }
+                     cancelHandler:^(void) {
+                         IGRefreshControl *_refreshControl = MSHookIvar<IGRefreshControl *>(self, "_refreshControl");
+                         [self refreshControlDidEndFinishLoadingAnimation:_refreshControl];
+                     }
+                             title:@"Refresh Reels"];
+    } else {
+        return %orig(arg1, arg2);
+    }
+}
+%end
