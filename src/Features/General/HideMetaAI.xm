@@ -183,7 +183,7 @@
 // Explore
 
 // Meta AI explore search summary
-%hook IGDiscoveryListKitDataSource
+%hook IGDiscoveryListKitGQLDataSource
 - (id)objectsForListAdapter:(id)arg1 {
     NSArray *originalObjs = %orig();
     NSMutableArray *filteredObjs = [NSMutableArray arrayWithCapacity:[originalObjs count]];
