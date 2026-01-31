@@ -241,6 +241,18 @@
 }
 %end
 
+%hook _TtC34IGCommentThreadAICarouselPillSwift30IGCommentThreadAICarouselSwift
+- (id)initWithLauncherSet:(id)arg1 hasSearchPrefix:(BOOL)arg2 {
+    if ([SCIUtils getBoolPref:@"hide_meta_ai"]) {
+        NSLog(@"[SCInsta] Hiding meta ai: suggested ai searches comment carousel");
+
+        return nil;
+    }
+
+    return %orig;
+}
+%end
+
 /////////////////////////////////////////////////////////////////////////////
 
 // Story
