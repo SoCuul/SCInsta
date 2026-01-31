@@ -17,6 +17,7 @@
         NSLog(@"[SCInsta] Adding color eyedroppper long press gesture recognizer");
 
         UILongPressGestureRecognizer *longPress = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(handleLongPress:)];
+        longPress.minimumPressDuration = 0.25;
         [self addGestureRecognizer:longPress];
     }
 }
@@ -26,8 +27,9 @@
     UIColorPickerViewController *colorPickerController = [[UIColorPickerViewController alloc] init];
 
     colorPickerController.delegate = (id<UIColorPickerViewControllerDelegate>)self; // cast to suppress warnings
-    colorPickerController.title = @"Text color";
+    colorPickerController.title = @"Select color";
     colorPickerController.modalPresentationStyle = UIModalPresentationPopover;
+    colorPickerController.supportsAlpha = NO;
     colorPickerController.selectedColor = self.color;
     
     UIViewController *presentingVC = [SCIUtils nearestViewControllerForView:self];
@@ -44,13 +46,21 @@
 {
     NSLog(@"[SCInsta] Selected text color: %@", color);
 
-    self.color = color;
+    UIColor *opaque = [color colorWithAlphaComponent:1.0];
+    self.color = opaque;
 
     [self setPushedDown:YES];
 
     // Trigger change for text color
-    IGStoryTextEntryViewController *presentingVC = [SCIUtils nearestViewControllerForView:self];
-    [presentingVC textViewControllerDidUpdateWithColor:color colorSource:0];
+    id presentingVC = [SCIUtils nearestViewControllerForView:self];
+
+    if ([presentingVC isKindOfClass:%c(IGDirectRecipientCellViewModel)]) {
+        [presentingVC textViewControllerDidUpdateWithColor:color colorSource:0];
+    }
+    else if ([presentingVC isKindOfClass:%c(IGDirectThreadViewDrawingViewController)]) {
+        [presentingVC drawingControls:nil didSelectColor:color];
+    }
+
 };
 %end
 
@@ -58,7 +68,10 @@
 - (CGFloat)collectionView:(id)view didSelectItemAtIndexPath:(id)index {
     UIView *colorPickingControls = [self superview];
 
-    if ([colorPickingControls isKindOfClass:%c(IGStoryColorPickingControls)]) {
+    if (
+        [colorPickingControls isKindOfClass:%c(IGStoryColorPickingControls)]
+        || [colorPickingControls isKindOfClass:%c(IGDirectThreadColorPickingControls)]
+    ) {
         IGStoryEyedropperToggleButton *_eyedropperToggleButton = MSHookIvar<IGStoryEyedropperToggleButton *>(colorPickingControls, "_eyedropperToggleButton");
 
         if (_eyedropperToggleButton != nil) {

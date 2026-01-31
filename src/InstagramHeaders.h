@@ -386,6 +386,10 @@
 @interface IGRefreshControl : UIControl
 @end
 
+@interface IGDirectThreadViewDrawingViewController : UIViewController
+- (void)drawingControls:controls didSelectColor:color;
+@end
+
 /////////////////////////////////////////////////////////////////////////////
 
 
