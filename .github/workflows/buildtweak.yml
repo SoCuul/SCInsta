@@ -78,6 +78,11 @@ jobs:
               env:
                 THEOS: ${{ github.workspace }}/theos
 
+            - name: Rename deb to include version info
+              run: |
+                cd main/packages
+                mv "$(ls -t | head -n1)" "com.socuul.scinsta_${SCINSTA_VERSION}+debug-rootless.deb"
+
             - name: Pass package name to upload action
               id: package_name
               run: |
@@ -86,6 +91,6 @@ jobs:
             - name: Upload Artifact
               uses: actions/upload-artifact@v4
               with:
-                name: com.socuul.scinsta_${{ steps.scinsta_version.outputs.version }}+debug-rootless
+                name: ${{ steps.package_name.outputs.package }}
                 path: ${{ github.workspace }}/main/packages/${{ steps.package_name.outputs.package }}
                 if-no-files-found: error
