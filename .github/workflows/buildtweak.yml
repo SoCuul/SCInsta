@@ -1,0 +1,91 @@
+name: Build SCInsta tweak for Rootless
+
+on:
+    push:
+        branches:
+            - 'main'
+            - 'dev'
+    workflow_dispatch:
+  
+concurrency:
+    group: ${{ github.workflow }}-${{ github.ref }}
+    cancel-in-progress: true
+jobs:
+    build:
+        name: Build SCInsta Rootless
+        runs-on: macos-latest
+        permissions:
+            contents: write
+
+        steps:
+            - name: Checkout Main
+              uses: actions/checkout@v4
+              with:
+                path: main
+                submodules: recursive
+
+            - name: Install Dependencies
+              run: brew install ldid dpkg make
+
+            - name: Set PATH environment variable
+              run: echo "$(brew --prefix make)/libexec/gnubin" >> $GITHUB_PATH 
+
+            - name: Setup Theos
+              uses: actions/checkout@v4
+              with:
+                repository: theos/theos
+                ref: master
+                path: ${{ github.workspace }}/theos
+                submodules: recursive
+        
+            - name: SDK Caching
+              id: SDK
+              uses: actions/cache@v4
+              env:
+                cache-name: iPhoneOS16.2.sdk
+              with:
+                path: ${{ github.workspace }}/theos/sdks/
+                key: ${{ env.cache-name }}
+                restore-keys: ${{ env.cache-name }}
+
+            - name: Download iOS SDK
+              if: steps.SDK.outputs.cache-hit != 'true'
+              run: |
+                git clone --quiet -n --depth=1 --filter=tree:0 https://github.com/xybp888/iOS-SDKs/
+                cd iOS-SDKs
+                git sparse-checkout set --no-cone iPhoneOS16.2.sdk
+                git checkout
+                mv *.sdk $THEOS/sdks
+              env:
+                THEOS: ${{ github.workspace }}/theos
+
+            - name: Get SCInsta Version
+              id: scinsta_version
+              run: |
+                SCINSTA_VERSION=$(awk '/Version:/ {print $2}' main/control)
+
+                echo "SCINSTA_VERSION=${SCINSTA_VERSION}" >> "$GITHUB_ENV"
+                echo "version=${SCINSTA_VERSION}" >> "$GITHUB_OUTPUT"
+            
+            - name: Build SCInsta tweak for Rootless
+              run: |                
+                cd main
+                ls -la
+
+                ./build.sh rootless
+                ls -la packages
+                
+              env:
+                THEOS: ${{ github.workspace }}/theos
+
+            - name: Pass package name to upload action
+              id: package_name
+              run: |
+                echo "package=$(ls -t main/packages | head -n1)" >> "$GITHUB_OUTPUT"
+
+            - name: Upload Artifact
+              uses: actions/upload-artifact@v4
+              with:
+                name: com.socuul.scinsta_${{ steps.scinsta_version.outputs.version }}+debug-rootless
+                path: ${{ github.workspace }}/main/packages/${{ steps.package_name.outputs.package }}
+                if-no-files-found: error
