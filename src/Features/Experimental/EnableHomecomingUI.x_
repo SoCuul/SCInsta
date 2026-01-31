@@ -1,0 +1,26 @@
+%hook IGSundialFeedViewController
+- (_Bool)_isHomecomingEnabled {
+    return true;
+}
+- (_Bool)_isHomeComingHomeFeed {
+    return true;
+}
+%end
+
+%hook IGSundialViewerManagedRequestItem
+- (id)initWithMedia:(id)media launcherSet:(id)set isHomecomingEnabled:(_Bool)enabled {
+    return %orig(media, set, true);
+}
+%end
+
+%hook IGTabBarViewControllerManager 
+ - (_Bool)_isHomecomingEnabled {
+    return true;
+}
+%end
+
+%hook IGMainAppSurfaceIntent
++ (id)resolvedHomeAppSurfaceIntentWithIsHomecomingEnabled:(_Bool)enabled {
+    return %orig(true);
+}
+%end

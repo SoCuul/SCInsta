@@ -1,0 +1,56 @@
+// Todo: ATM it just shows entrypoints, and displays "Instants is unavailable on this device" when clicked
+
+// Demangled name: IGQuickSnapExperimentation.IGQuickSnapExperimentationHelper
+%hook _TtC26IGQuickSnapExperimentation32IGQuickSnapExperimentationHelper
++ (_Bool)shouldEnableScreenshotBlocking:(id)blocking {
+    return false;
+}
++ (_Bool)isQuicksnapEnabled:(id)enabled {
+    return true;
+}
++ (_Bool)isQuicksnapEnabledInFeed:(id)feed {
+    return true;
+}
++ (_Bool)isQuicksnapEnabledInInbox:(id)inbox {
+    return true;
+}
++ (_Bool)isQuicksnapEnabledInStories:(id)stories {
+    return true;
+}
++ (_Bool)isQuicksnapEnabledInNotesTray:(id)tray {
+    return true;
+}
++ (_Bool)isQuicksnapEnabledInNotesTrayWithPeek:(id)peek {
+    return true;
+}
++ (_Bool)isQuicksnapEnabledInNotesTrayWithPog:(id)pog {
+    return true;
+}
++ (_Bool)isQuicksnapNotesTrayEmptyPogEnabled:(id)enabled {
+    return true;
+}
++ (_Bool)isStoriesSpringEnabled:(id)enabled {
+    return true;
+}
++ (_Bool)areFiltersEnabled:(id)enabled {
+    return true;
+}
++ (_Bool)isBottomsheetCustomAudienceEnabled:(id)enabled {
+    return true;
+}
++ (_Bool)isVideoCaptureEnabled:(id)enabled {
+    return true;
+}
+%end
+
+%hook IGDirectNotesTrayRowCell
+- (_Bool)isQuicksnapPeekVisible {
+    return true;
+}
+%end
+
+%hook IGDirectNotesTrayRowSectionController
+- (_Bool)isQuicksnapPeekVisible {
+    return true;
+}
+%end
