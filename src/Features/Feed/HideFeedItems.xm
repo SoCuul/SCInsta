@@ -6,8 +6,6 @@ static NSArray *removeItemsInList(NSArray *list, BOOL isFeed) {
     NSMutableArray *filteredObjs = [NSMutableArray arrayWithCapacity:[originalObjs count]];
 
     for (id obj in originalObjs) {
-        BOOL shouldHide = NO;
-
         // Remove suggested posts
         if (isFeed && [SCIUtils getBoolPref:@"no_suggested_post"]) {
 
@@ -18,16 +16,12 @@ static NSArray *removeItemsInList(NSArray *list, BOOL isFeed) {
             ) {
                 NSLog(@"[SCInsta] Removing suggested posts");
 
-                shouldHide = YES;
-
                 continue;
             }
 
             // Suggested stories (carousel)
             if ([obj isKindOfClass:%c(IGInFeedStoriesTrayModel)]) {
                 NSLog(@"[SCInsta] Hiding suggested stories carousel");
-
-                shouldHide = YES;
 
                 continue;
             }
@@ -38,8 +32,6 @@ static NSArray *removeItemsInList(NSArray *list, BOOL isFeed) {
         if (isFeed && [SCIUtils getBoolPref:@"no_suggested_reels"]) {
             if ([obj isKindOfClass:%c(IGFeedScrollableClipsModel)]) {
                 NSLog(@"[SCInsta] Hiding suggested reels carousel");
-
-                shouldHide = YES;
 
                 continue;
             }
@@ -52,16 +44,12 @@ static NSArray *removeItemsInList(NSArray *list, BOOL isFeed) {
             if (isFeed && [obj isKindOfClass:%c(IGHScrollAYMFModel)]) {
                 NSLog(@"[SCInsta] Hiding accounts suggested for you (feed)");
 
-                shouldHide = YES;
-
                 continue;
             }
 
             // Reels
             if ([obj isKindOfClass:%c(IGSuggestedUserInReelsModel)]) {
                 NSLog(@"[SCInsta] Hiding accounts suggested for you (reels)");
-
-                shouldHide = YES;
 
                 continue;
             }
@@ -75,8 +63,6 @@ static NSArray *removeItemsInList(NSArray *list, BOOL isFeed) {
                 if ([obj isKindOfClass:%c(IGBloksFeedUnitModel)] || [obj isKindOfClass:objc_getClass("IGThreadsInFeedModels.IGThreadsInFeedModel")]) {
                     NSLog(@"[SCInsta] Hiding suggested threads posts (carousel)");
 
-                    shouldHide = YES;
-
                     continue;
                 }
             }
@@ -84,8 +70,6 @@ static NSArray *removeItemsInList(NSArray *list, BOOL isFeed) {
             // Reels
             if ([obj isKindOfClass:%c(IGSundialNetegoItem)]) {
                 NSLog(@"[SCInsta] Hiding suggested threads posts (reels)");
-
-                shouldHide = YES;
 
                 continue;
             }
@@ -97,8 +81,6 @@ static NSArray *removeItemsInList(NSArray *list, BOOL isFeed) {
             if ([obj isKindOfClass:%c(IGStoryDataController)]) {
                 NSLog(@"[SCInsta] Hiding stories tray");
 
-                shouldHide = YES;
-
                 continue;
             }
         }
@@ -107,8 +89,6 @@ static NSArray *removeItemsInList(NSArray *list, BOOL isFeed) {
         if (isFeed && [SCIUtils getBoolPref:@"hide_entire_feed"]) {
             if ([obj isKindOfClass:%c(IGPostCreationManager)] || [obj isKindOfClass:%c(IGMedia)] || [obj isKindOfClass:%c(IGEndOfFeedDemarcatorModel)] || [obj isKindOfClass:%c(IGSpinnerLabelViewModel)]) {
                 NSLog(@"[SCInsta] Hiding entire feed");
-
-                shouldHide = YES;
 
                 continue;
             }
@@ -123,16 +103,11 @@ static NSArray *removeItemsInList(NSArray *list, BOOL isFeed) {
             ) {
                 NSLog(@"[SCInsta] Removing ads");
 
-                shouldHide = YES;
-
                 continue;
             }
         }
 
-        // Populate new objs array
-        if (!shouldHide) {
-            [filteredObjs addObject:obj];
-        }
+        [filteredObjs addObject:obj];
     }
 
     return [filteredObjs copy];
