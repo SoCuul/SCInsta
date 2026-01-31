@@ -391,6 +391,9 @@
 - (void)drawingControls:controls didSelectColor:color;
 @end
 
+@interface IGSundialViewerNavigationBarOld : UIView
+@end
+
 @interface IGFeedItemUFICell : UIView
 - (void)UFIButtonBarDidTapOnRepost:(id)arg1;
 @end
