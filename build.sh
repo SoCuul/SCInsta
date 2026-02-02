@@ -28,7 +28,7 @@ then
             echo
 
             ./build.sh sideload --buildonly
-            ./build-dev.sh
+            ./build-dev.sh true
             exit
         fi
 
