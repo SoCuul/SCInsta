@@ -60,6 +60,19 @@ static char rowStaticRef[] = "row";
     [self.view addSubview:self.tableView];
 }
 
+- (void)viewWillDisappear:(BOOL)animated {
+    UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"SCInsta Settings Info"
+                                                                   message:@"In the future: Hold down on the three lines at the top right of your profile page, to re-open SCInsta settings."
+                                                            preferredStyle:UIAlertControllerStyleAlert];
+    
+    [alert addAction:[UIAlertAction actionWithTitle:@"I understand!"
+                                              style:UIAlertActionStyleDefault
+                                            handler:nil]];
+    
+    UIViewController *presenter = self.presentingViewController;
+    [presenter presentViewController:alert animated:YES completion:nil];
+}
+
 #pragma mark - UITableViewDataSource
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {

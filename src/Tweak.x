@@ -47,7 +47,7 @@ BOOL dmVisualMsgsViewedButtonEnabled = false;
 
     // Open settings for first-time users
     if (
-        [[NSUserDefaults standardUserDefaults] objectForKey:@"SCInstaFirstRun"] == nil
+        ![[[NSUserDefaults standardUserDefaults] objectForKey:@"SCInstaFirstRun"] isEqualToString:SCIVersionString]
         || [SCIUtils getBoolPref:@"tweak_settings_app_launch"]
     ) {
         NSLog(@"[SCInsta] First run, initializing");
@@ -60,9 +60,8 @@ BOOL dmVisualMsgsViewedButtonEnabled = false;
         
         [rootController presentViewController:navigationController animated:YES completion:nil];
 
-        // Done with first-time setup
-        [[NSUserDefaults standardUserDefaults] setValue:@"SCInstaFirstRun" forKey:@"SCInstaFirstRun"];
-
+        // Done with first-time setup for this version
+        [[NSUserDefaults standardUserDefaults] setValue:SCIVersionString forKey:@"SCInstaFirstRun"];
     }
 
     NSLog(@"[SCInsta] Cleaning cache...");
