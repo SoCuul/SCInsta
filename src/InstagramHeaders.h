@@ -437,6 +437,10 @@
 @interface IGCommentThreadViewController : UIViewController
 @end
 
+@interface IGSeeAllItemConfiguration : NSObject
+@property (readonly, nonatomic) long long destination;
+@end
+
 
 /////////////////////////////////////////////////////////////////////////////
 

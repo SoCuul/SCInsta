@@ -130,12 +130,53 @@
 }
 %end
 
-%hook IGFollowListViewControllerConfiguration
-- (BOOL)showSuggestedUsers {
-    return NO;
+// Profile "following" and "followers" tabs
+%hook IGFollowListViewController
+- (id)objectsForListAdapter:(id)arg1 {
+    NSArray *originalObjs = %orig(arg1);
+    NSMutableArray *filteredObjs = [NSMutableArray arrayWithCapacity:[originalObjs count]];
+
+    for (IGStoryTrayViewModel *obj in originalObjs) {
+        BOOL shouldHide = NO;
+
+        if ([SCIUtils getBoolPref:@"no_suggested_users"]) {
+
+            // Suggested user
+            if ([obj isKindOfClass:%c(IGDiscoverPeopleItemConfiguration)]) {
+                NSLog(@"[SCInsta] Hiding suggested users: follow list suggested user");
+
+                shouldHide = YES;
+            }
+
+            // Section header 
+            else if ([obj isKindOfClass:%c(IGLabelItemViewModel)]) {
+
+                // "Suggested for you" search results header
+                if ([[obj valueForKey:@"labelTitle"] isEqualToString:@"Suggested for you"]) {
+                    shouldHide = YES;
+                }
+
+            }
+
+            // See all suggested users
+            else if ([obj isKindOfClass:%c(IGSeeAllItemConfiguration)] && ((IGSeeAllItemConfiguration *)obj).destination == 4) {
+                NSLog(@"[SCInsta] Hiding suggested users: follow list suggested user");
+
+                shouldHide = YES;
+            }
+
+        }
+
+        // Populate new objs array
+        if (!shouldHide) {
+            [filteredObjs addObject:obj];
+        }
+    }
+
+    return [filteredObjs copy];
 }
 %end
-
+    
 %hook IGSegmentedTabControl
 - (void)setSegments:(id)segments {
     NSArray *originalObjs = segments;
@@ -159,5 +200,16 @@
     }
 
     return %orig([filteredObjs copy]);
+}
+%end
+
+// Suggested subscriptions
+%hook IGFanClubSuggestedUsersDataSource
+- (id)initWithUserSession:(id)arg1 delegate:(id)arg2 {
+    if ([SCIUtils getBoolPref:@"no_suggested_users"]) {
+        return nil;
+    }
+
+    return %orig(arg1, arg2);
 }
 %end
