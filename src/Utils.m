@@ -17,6 +17,15 @@
 
     return [[NSUserDefaults standardUserDefaults] stringForKey:key];
 }
++ (void)savePrefsBeforeTerminate {
+    // Keep liquid glass buttons active
+    if ([SCIUtils getBoolPref:@"liquid_glass_buttons"]) {
+        [[NSUserDefaults standardUserDefaults] setValue:@(YES) forKey:@"instagram.override.project.lucent.navigation"];
+    }
+    else {
+        [[NSUserDefaults standardUserDefaults] setValue:@(NO) forKey:@"instagram.override.project.lucent.navigation"];
+    }
+}
 
 + (void)cleanCache {
     NSFileManager *fileManager = [NSFileManager defaultManager];
@@ -223,6 +232,8 @@
 + (void)showRestartConfirmation {
     UIAlertController* alert = [UIAlertController alertControllerWithTitle:@"Restart required" message:@"You must restart the app to apply this change" preferredStyle:UIAlertControllerStyleAlert];
     [alert addAction:[UIAlertAction actionWithTitle:@"Restart" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+        [SCIUtils savePrefsBeforeTerminate];
+        
         exit(0);
     }]];
     [alert addAction:[UIAlertAction actionWithTitle:@"Later" style:UIAlertActionStyleCancel handler:nil]];

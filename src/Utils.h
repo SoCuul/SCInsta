@@ -26,6 +26,7 @@
 + (BOOL)getBoolPref:(NSString *)key;
 + (double)getDoublePref:(NSString *)key;
 + (NSString *)getStringPref:(NSString *)key;
++ (void)savePrefsBeforeTerminate;
 
 + (void)cleanCache;
 

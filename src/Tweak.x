@@ -80,6 +80,12 @@ BOOL dmVisualMsgsViewedButtonEnabled = false;
         [[objc_getClass("FLEXManager") sharedManager] showExplorer];
     }
 }
+
+- (void)applicationWillTerminate:(id)arg1 {
+    %orig;
+
+    [SCIUtils savePrefsBeforeTerminate];
+}
 %end
 
 // Disable sending modded insta bug reports
