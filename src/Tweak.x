@@ -177,7 +177,7 @@ shouldPersistLastBugReportId:(id)arg6
         if ([obj isKindOfClass:%c(IGLabelItemViewModel)]) {
 
             // Broadcast channels
-            if ([[obj uniqueIdentifier] isEqualToString:@"channels"]) {
+            if ([[obj valueForKey:@"uniqueIdentifier"] isEqualToString:@"channels"]) {
                 if ([SCIUtils getBoolPref:@"no_suggested_chats"]) {
                     NSLog(@"[SCInsta] Hiding suggested chats (header)");
 
@@ -186,7 +186,7 @@ shouldPersistLastBugReportId:(id)arg6
             }
 
             // Ask Meta AI
-            else if ([[obj labelTitle] isEqualToString:@"Ask Meta AI"]) {
+            else if ([[obj valueForKey:@"labelTitle"] isEqualToString:@"Ask Meta AI"]) {
                 if ([SCIUtils getBoolPref:@"hide_meta_ai"]) {
                     NSLog(@"[SCInsta] Hiding meta ai suggested chats (header)");
 
@@ -195,7 +195,7 @@ shouldPersistLastBugReportId:(id)arg6
             }
 
             // AI
-            else if ([[obj labelTitle] isEqualToString:@"AI"]) {
+            else if ([[obj valueForKey:@"labelTitle"] isEqualToString:@"AI"]) {
                 if ([SCIUtils getBoolPref:@"hide_meta_ai"]) {
                     NSLog(@"[SCInsta] Hiding ai suggested chats (header)");
 
@@ -394,7 +394,7 @@ shouldPersistLastBugReportId:(id)arg6
             if ([obj isKindOfClass:%c(IGLabelItemViewModel)]) {
 
                 // "Ask Meta AI" search results header
-                if ([[obj labelTitle] isEqualToString:@"Ask Meta AI"]) {
+                if ([[obj valueForKey:@"labelTitle"] isEqualToString:@"Ask Meta AI"]) {
                     shouldHide = YES;
                 }
 
@@ -439,7 +439,7 @@ shouldPersistLastBugReportId:(id)arg6
             if ([obj isKindOfClass:%c(IGLabelItemViewModel)]) {
 
                 // "Suggested for you" search results header
-                if ([[obj labelTitle] isEqualToString:@"Suggested for you"]) {
+                if ([[obj valueForKey:@"labelTitle"] isEqualToString:@"Suggested for you"]) {
                     shouldHide = YES;
                 }
 
@@ -451,7 +451,7 @@ shouldPersistLastBugReportId:(id)arg6
             }
 
             // See all suggested users
-            else if ([obj isKindOfClass:%c(IGSeeAllItemConfiguration)]) {
+            else if ([obj isKindOfClass:%c(IGSeeAllItemConfiguration)] && ((IGSeeAllItemConfiguration *)obj).destination == 4) {
                 shouldHide = YES;
             }
 
