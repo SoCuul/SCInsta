@@ -61,16 +61,21 @@ static char rowStaticRef[] = "row";
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
-    UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"SCInsta Settings Info"
-                                                                   message:@"In the future: Hold down on the three lines at the top right of your profile page, to re-open SCInsta settings."
-                                                            preferredStyle:UIAlertControllerStyleAlert];
-    
-    [alert addAction:[UIAlertAction actionWithTitle:@"I understand!"
-                                              style:UIAlertActionStyleDefault
-                                            handler:nil]];
-    
-    UIViewController *presenter = self.presentingViewController;
-    [presenter presentViewController:alert animated:YES completion:nil];
+    if (![[NSUserDefaults standardUserDefaults] objectForKey:@"SCInstaFirstRun"]) {
+        UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"SCInsta Settings Info"
+                                                                       message:@"In the future: Hold down on the three lines at the top right of your profile page, to re-open SCInsta settings."
+                                                                preferredStyle:UIAlertControllerStyleAlert];
+        
+        [alert addAction:[UIAlertAction actionWithTitle:@"I understand!"
+                                                  style:UIAlertActionStyleDefault
+                                                handler:nil]];
+        
+        UIViewController *presenter = self.presentingViewController;
+        [presenter presentViewController:alert animated:YES completion:nil];
+        
+        // Done with first-time setup for this version
+        [[NSUserDefaults standardUserDefaults] setValue:SCIVersionString forKey:@"SCInstaFirstRun"];
+    }
 }
 
 #pragma mark - UITableViewDataSource

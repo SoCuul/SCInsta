@@ -46,23 +46,22 @@ BOOL dmVisualMsgsViewedButtonEnabled = false;
     [[NSUserDefaults standardUserDefaults] registerDefaults:sciDefaults];
 
     // Open settings for first-time users
-    if (
-        ![[[NSUserDefaults standardUserDefaults] objectForKey:@"SCInstaFirstRun"] isEqualToString:SCIVersionString]
-        || [SCIUtils getBoolPref:@"tweak_settings_app_launch"]
-    ) {
-        NSLog(@"[SCInsta] First run, initializing");
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(5.0 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+        if (
+            ![[[NSUserDefaults standardUserDefaults] objectForKey:@"SCInstaFirstRun"] isEqualToString:SCIVersionString]
+            || [SCIUtils getBoolPref:@"tweak_settings_app_launch"]
+        ) {
+            NSLog(@"[SCInsta] First run, initializing");
 
-        // Display settings modal on screen
-        NSLog(@"[SCInsta] Displaying SCInsta first-time settings modal");
-        UIViewController *rootController = [[self window] rootViewController];
-        SCISettingsViewController *settingsViewController = [SCISettingsViewController new];
-        UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:settingsViewController];
-        
-        [rootController presentViewController:navigationController animated:YES completion:nil];
+            // Display settings modal on screen
+            NSLog(@"[SCInsta] Displaying SCInsta first-time settings modal");
+            UIViewController *rootController = [[self window] rootViewController];
+            SCISettingsViewController *settingsViewController = [SCISettingsViewController new];
+            UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:settingsViewController];
 
-        // Done with first-time setup for this version
-        [[NSUserDefaults standardUserDefaults] setValue:SCIVersionString forKey:@"SCInstaFirstRun"];
-    }
+            [rootController presentViewController:navigationController animated:YES completion:nil];
+        }
+    });
 
     NSLog(@"[SCInsta] Cleaning cache...");
     [SCIUtils cleanCache];
