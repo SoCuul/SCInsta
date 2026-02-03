@@ -219,7 +219,6 @@
 @end
 
 @interface IGInstagramAppDelegate : NSObject <UIApplicationDelegate>
-- (void)authPrompt; // new
 @end
 
 @interface IGDirectInboxSearchAIAgentsPillsContainerCell : UIView

@@ -4,8 +4,6 @@
 #import "Utils.h"
 #import "Settings/SCISettingsViewController.h"
 
-#import "Controllers/SecurityViewController.h"
-
 ///////////////////////////////////////////////////////////
 
 // Screenshot handlers
@@ -70,8 +68,6 @@ BOOL dmVisualMsgsViewedButtonEnabled = false;
     NSLog(@"[SCInsta] Cleaning cache...");
     [SCIUtils cleanCache];
 
-    [self authPrompt];
-
     if ([SCIUtils getBoolPref:@"flex_app_launch"]) {
         [[objc_getClass("FLEXManager") sharedManager] showExplorer];
     }
@@ -79,38 +75,11 @@ BOOL dmVisualMsgsViewedButtonEnabled = false;
     return true;
 }
 
-// Biometric/passcode authentication
-BOOL isAuthenticationBeingShown = NO;
-
-- (void)applicationDidEnterBackground:(id)arg1 {
-    %orig;
-
-    [self authPrompt];
-}
-- (void)applicationWillEnterForeground:(id)arg1 {
-    %orig;
-
-    [self authPrompt];
-}
 - (void)applicationDidBecomeActive:(id)arg1 {
     %orig;
     
     if ([SCIUtils getBoolPref:@"flex_app_start"]) {
         [[objc_getClass("FLEXManager") sharedManager] showExplorer];
-    }
-}
-
-%new - (void)authPrompt {
-    // Padlock (biometric auth)
-    if ([SCIUtils getBoolPref:@"padlock"] && !isAuthenticationBeingShown) {
-        UIViewController *rootController = [[self window] rootViewController];
-        SCISecurityViewController *securityViewController = [SCISecurityViewController new];
-        securityViewController.modalPresentationStyle = UIModalPresentationOverFullScreen;
-        [rootController presentViewController:securityViewController animated:NO completion:nil];
-
-        isAuthenticationBeingShown = YES;
-
-        NSLog(@"[SCInsta] Padlock authentication: App enabled");
     }
 }
 %end
