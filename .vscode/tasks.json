@@ -15,6 +15,10 @@
                 "reveal": "always",
                 "panel": "dedicated",
                 "clear": true
+            },
+            "icon": {
+                "color": "terminal.ansiCyan",
+                "id": "run-all"
             }
         },
         {
@@ -28,6 +32,9 @@
                 "reveal": "always",
                 "panel": "dedicated",
                 "clear": true
+            },
+            "icon": {
+                "id": "package"
             }
         },
         {
