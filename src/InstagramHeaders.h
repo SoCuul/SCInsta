@@ -1,4 +1,5 @@
 #import <Foundation/Foundation.h>
+#include <objc/NSObject.h>
 #import <UIKit/UIKit.h>
 #import "../modules/JGProgressHUD/JGProgressHUD.h"
 
@@ -425,6 +426,10 @@
 @interface IGDSBottomButtonsView : UIView
 - (void)setPrimaryButtonEnabled:(BOOL)enabled;
 - (void)setSecondaryButtonEnabled:(BOOL)enabled;
+@end
+
+@interface IGStoryTrayViewModel : NSObject
+@property (nonatomic, readonly) NSString *pk;
 @end
 
 

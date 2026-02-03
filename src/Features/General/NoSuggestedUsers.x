@@ -100,3 +100,32 @@
     return [filteredObjs copy];
 }
 %end
+
+// Story tray
+%hook IGMainStoryTrayDataSource
+- (id)allItemsForTrayUsingCachedValue:(BOOL)cached {
+    NSArray *originalObjs = %orig(cached);
+    NSMutableArray *filteredObjs = [NSMutableArray arrayWithCapacity:[originalObjs count]];
+
+    for (IGStoryTrayViewModel *obj in originalObjs) {
+        BOOL shouldHide = NO;
+
+        if ([SCIUtils getBoolPref:@"no_suggested_users"]) {
+            // This hides as many recommended models as possible, without hiding genuine models
+            // Some recommended models share the non-32 digit id as normal accounts, so those will still be seen
+            if ([obj isKindOfClass:%c(IGStoryTrayViewModel)] && [obj.pk length] == 32) {
+                NSLog(@"[SCInsta] Hiding suggested users: story tray");
+
+                shouldHide = YES;
+            }
+        }
+
+        // Populate new objs array
+        if (!shouldHide) {
+            [filteredObjs addObject:obj];
+        }
+    }
+
+    return [filteredObjs copy];
+}
+%end
