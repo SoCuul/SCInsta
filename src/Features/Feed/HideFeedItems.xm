@@ -247,6 +247,31 @@ static NSArray *removeItemsInList(NSArray *list, BOOL isFeed) {
 }
 %end
 
+// Hide shopping carousel in reel comments
+// Demangled name: IGCommentThreadCommerceCarouselPill.IGCommentThreadCommerceCarousel
+%hook _TtC35IGCommentThreadCommerceCarouselPill31IGCommentThreadCommerceCarousel
+- (id)initWithFrame:(CGRect)frame pillText:(id)text pillStyle:(NSInteger)style {
+    if ([SCIUtils getBoolPref:@"hide_ads"]) {
+        return nil;
+    }
+
+    return %orig(frame, text, style);
+}
+%end
+
+// Hide suggested search/shopping on reels
+// Demangled name: IGSundialOrganicCTAContainerView.IGSundialOrganicCTAContainerView
+%hook _TtC32IGSundialOrganicCTAContainerView32IGSundialOrganicCTAContainerView
+- (void)didMoveToWindow {
+    %orig;
+
+    if ([SCIUtils getBoolPref:@"hide_ads"]) {
+        [self removeFromSuperview];
+    }
+}
+%end
+
+
 // Hide "suggested for you" text at end of feed
 %hook IGEndOfFeedDemarcatorCellTopOfFeed
 - (void)configureWithViewConfig:(id)arg1 {

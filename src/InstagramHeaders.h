@@ -431,6 +431,12 @@
 @property (nonatomic, readonly) NSString *pk;
 @end
 
+@interface _TtC32IGSundialOrganicCTAContainerView32IGSundialOrganicCTAContainerView : UIView
+@end
+
+@interface IGCommentThreadViewController : UIViewController
+@end
+
 
 /////////////////////////////////////////////////////////////////////////////
 
