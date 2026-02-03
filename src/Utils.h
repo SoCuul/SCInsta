@@ -16,7 +16,7 @@
 #define SCILog(fmt, ...) \
     do { \
         NSString *tmpStr = [NSString stringWithFormat:(fmt), ##__VA_ARGS__]; \
-        os_log(OS_LOG_DEFAULT, "[SCInsta Test] %{public}s", tmpStr.UTF8String); \
+        os_log(OS_LOG_DEFAULT, "[SCInsta] %{public}s", tmpStr.UTF8String); \
     } while(0)
 
 #define SCILogId(prefix, obj) os_log(OS_LOG_DEFAULT, "[SCInsta Test] %{public}@: %{public}@", prefix, obj);
