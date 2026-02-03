@@ -41,7 +41,9 @@ BOOL dmVisualMsgsViewedButtonEnabled = false;
         @"save_profile": @(YES),
         @"dw_finger_count": @(3),
         @"dw_finger_duration": @(0.5),
-        @"reels_tap_control": @"default"
+        @"reels_tap_control": @"default",
+        @"enable_notes_customization": @(YES),
+        @"custom_note_themes": @(YES)
     };
     [[NSUserDefaults standardUserDefaults] registerDefaults:sciDefaults];
 
