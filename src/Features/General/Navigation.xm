@@ -72,3 +72,31 @@ NSArray *filterSurfacesArray(NSArray *surfaces) {
     return button;
 }
 %end
+
+// Demangled name: IGNavConfiguration.IGNavConfiguration
+%hook _TtC18IGNavConfiguration18IGNavConfiguration
+- (NSInteger)tabOrdering {
+
+    if ([[SCIUtils getStringPref:@"nav_icon_ordering"] isEqualToString:@"classic"]) return 0;
+    else if ([[SCIUtils getStringPref:@"nav_icon_ordering"] isEqualToString:@"standard"]) return 1;
+    else if ([[SCIUtils getStringPref:@"nav_icon_ordering"] isEqualToString:@"alternate"]) return 2;
+
+    return %orig;
+
+}
+- (void)setTabOrdering:(NSInteger)arg1 {
+    return;
+}
+
+- (BOOL)isTabSwipingEnabled {
+
+    if ([[SCIUtils getStringPref:@"swipe_nav_tabs"] isEqualToString:@"enabled"]) return YES;
+    else if ([[SCIUtils getStringPref:@"swipe_nav_tabs"] isEqualToString:@"disabled"]) return NO;
+
+    return %orig;
+
+}
+- (void)setIsTabSwipingEnabled:(BOOL)arg1 {
+    return;
+}
+%end

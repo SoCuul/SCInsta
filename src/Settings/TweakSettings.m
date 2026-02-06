@@ -127,6 +127,26 @@
                                             ]
                                         }]
                 ],
+                [SCISetting navigationCellWithTitle:@"Navigation"
+                                           subtitle:@""
+                                               icon:[SCISymbol symbolWithName:@"hand.draw.fill"]
+                                        navSections:@[@{
+                                            @"header": @"",
+                                            @"rows": @[
+                                                [SCISetting menuCellWithTitle:@"Icon order" subtitle:@"The order of the icons on the bottom navigation bar" menu:[self menus][@"nav_icon_ordering"]],
+                                                [SCISetting menuCellWithTitle:@"Swipe between tabs" subtitle:@"Lets you swipe to switch between navigation bar tabs" menu:[self menus][@"swipe_nav_tabs"]],
+                                            ]
+                                        },
+                                        @{
+                                            @"header": @"Hiding tabs",
+                                            @"rows": @[
+                                                [SCISetting switchCellWithTitle:@"Hide feed tab" subtitle:@"Hides the feed/home tab on the bottom navigation bar" defaultsKey:@"hide_feed_tab" requiresRestart:YES],
+                                                [SCISetting switchCellWithTitle:@"Hide explore tab" subtitle:@"Hides the explore/search tab on the bottom navigation bar" defaultsKey:@"hide_explore_tab" requiresRestart:YES],
+                                                [SCISetting switchCellWithTitle:@"Hide reels tab" subtitle:@"Hides the reels tab on the bottom navigation bar" defaultsKey:@"hide_reels_tab" requiresRestart:YES],
+                                                [SCISetting switchCellWithTitle:@"Hide create tab" subtitle:@"Hides the create tab on the bottom navigation bar" defaultsKey:@"hide_create_tab" requiresRestart:YES]
+                                            ]
+                                        }]
+                ],
                 [SCISetting navigationCellWithTitle:@"Confirm actions"
                                            subtitle:@""
                                                icon:[SCISymbol symbolWithName:@"checkmark"]
@@ -273,51 +293,146 @@
     return @{
         @"reels_tap_control": [UIMenu menuWithChildren:@[
             [UICommand commandWithTitle:@"Default"
-                                  image:nil
-                                 action:@selector(menuChanged:)
-                           propertyList:@{
-                               @"defaultsKey": @"reels_tap_control",
-                               @"value": @"default",
-                               @"requiresRestart": @YES
-                           }
+                                    image:nil
+                                    action:@selector(menuChanged:)
+                            propertyList:@{
+                                @"defaultsKey": @"reels_tap_control",
+                                @"value": @"default",
+                                @"requiresRestart": @YES
+                            }
             ],
-            [UICommand commandWithTitle:@"Pause/Play"
-                                  image:nil
-                                 action:@selector(menuChanged:)
-                           propertyList:@{
-                               @"defaultsKey": @"reels_tap_control",
-                               @"value": @"pause",
-                               @"requiresRestart": @YES
-                           }
-            ],
-            [UICommand commandWithTitle:@"Mute/Unmute"
-                                  image:nil
-                                 action:@selector(menuChanged:)
-                           propertyList:@{
-                               @"defaultsKey": @"reels_tap_control",
-                               @"value": @"mute",
-                               @"requiresRestart": @YES
-                           }
+            [UIMenu menuWithTitle:@""
+                            image:nil
+                        identifier:nil
+                            options:UIMenuOptionsDisplayInline
+                            children:@[
+                                [UICommand commandWithTitle:@"Pause/Play"
+                                                        image:nil
+                                                        action:@selector(menuChanged:)
+                                                propertyList:@{
+                                                    @"defaultsKey": @"reels_tap_control",
+                                                    @"value": @"pause",
+                                                    @"requiresRestart": @YES
+                                                }
+                                ],
+                                [UICommand commandWithTitle:@"Mute/Unmute"
+                                                        image:nil
+                                                        action:@selector(menuChanged:)
+                                                propertyList:@{
+                                                    @"defaultsKey": @"reels_tap_control",
+                                                    @"value": @"mute",
+                                                    @"requiresRestart": @YES
+                                                }
+                                ]
+                            ]
             ]
         ]],
 
+        @"nav_icon_ordering": [UIMenu menuWithChildren:@[
+            [UICommand commandWithTitle:@"Default"
+                                    image:nil
+                                    action:@selector(menuChanged:)
+                            propertyList:@{
+                                @"defaultsKey": @"nav_icon_ordering",
+                                @"value": @"default",
+                                @"requiresRestart": @YES
+                            }
+            ],
+            [UIMenu menuWithTitle:@""
+                            image:nil
+                        identifier:nil
+                            options:UIMenuOptionsDisplayInline
+                            children:@[
+                                [UICommand commandWithTitle:@"Classic"
+                                                        image:nil
+                                                        action:@selector(menuChanged:)
+                                                propertyList:@{
+                                                    @"defaultsKey": @"nav_icon_ordering",
+                                                    @"value": @"classic",
+                                                    @"requiresRestart": @YES
+                                                }
+                                ],
+                                [UICommand commandWithTitle:@"Standard"
+                                                        image:nil
+                                                        action:@selector(menuChanged:)
+                                                propertyList:@{
+                                                    @"defaultsKey": @"nav_icon_ordering",
+                                                    @"value": @"standard",
+                                                    @"requiresRestart": @YES
+                                                }
+                                ],
+                                [UICommand commandWithTitle:@"Alternate"
+                                                        image:nil
+                                                        action:@selector(menuChanged:)
+                                                propertyList:@{
+                                                    @"defaultsKey": @"nav_icon_ordering",
+                                                    @"value": @"alternate",
+                                                    @"requiresRestart": @YES
+                                                }
+                                ]
+                            ]
+            ]
+        ]],
+        @"swipe_nav_tabs": [UIMenu menuWithChildren:@[
+            [UICommand commandWithTitle:@"Default"
+                                    image:nil
+                                    action:@selector(menuChanged:)
+                            propertyList:@{
+                                @"defaultsKey": @"swipe_nav_tabs",
+                                @"value": @"default",
+                                @"requiresRestart": @YES
+                            }
+            ],
+            [UIMenu menuWithTitle:@""
+                            image:nil
+                        identifier:nil
+                            options:UIMenuOptionsDisplayInline
+                            children:@[
+                                [UICommand commandWithTitle:@"Enabled"
+                                                        image:nil
+                                                        action:@selector(menuChanged:)
+                                                propertyList:@{
+                                                    @"defaultsKey": @"swipe_nav_tabs",
+                                                    @"value": @"enabled",
+                                                    @"requiresRestart": @YES
+                                                }
+                                ],
+                                [UICommand commandWithTitle:@"Disabled"
+                                                        image:nil
+                                                        action:@selector(menuChanged:)
+                                                propertyList:@{
+                                                    @"defaultsKey": @"swipe_nav_tabs",
+                                                    @"value": @"disabled",
+                                                    @"requiresRestart": @YES
+                                                }
+                                ]
+                            ]
+            ]
+        ]],
 
         @"test": [UIMenu menuWithChildren:@[
-            [UICommand commandWithTitle:@"ABC"
-                                  image:nil
-                                 action:@selector(menuChanged:)
-                           propertyList:@{
-                               @"defaultsKey": @"test_menu_cell",
-                               @"value": @"abc"
-                           }
-            ],
-            [UICommand commandWithTitle:@"123"
-                                  image:nil
-                                 action:@selector(menuChanged:)
-                           propertyList:@{
-                               @"defaultsKey": @"test_menu_cell",
-                               @"value": @"123"
-                           }
+            [UIMenu menuWithTitle:@""
+                            image:nil
+                        identifier:nil
+                            options:UIMenuOptionsDisplayInline
+                            children:@[
+                                [UICommand commandWithTitle:@"ABC"
+                                                        image:nil
+                                                        action:@selector(menuChanged:)
+                                                propertyList:@{
+                                                    @"defaultsKey": @"test_menu_cell",
+                                                    @"value": @"abc"
+                                                }
+                                ],
+                                [UICommand commandWithTitle:@"123"
+                                                        image:nil
+                                                        action:@selector(menuChanged:)
+                                                propertyList:@{
+                                                    @"defaultsKey": @"test_menu_cell",
+                                                    @"value": @"123"
+                                                }
+                                ]
+                            ]
             ],
             [UICommand commandWithTitle:@"Requires restart"
                                   image:nil
@@ -327,7 +442,7 @@
                                @"value": @"requires_restart",
                                @"requiresRestart": @YES
                            }
-            ]
+            ],
         ]]
     };
 }
