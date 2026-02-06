@@ -19,6 +19,11 @@ BOOL isSurfaceShown(IGMainAppSurfaceIntent *surface) {
         isShown = NO;
     }
 
+    // Create
+    else if ([(NSNumber *)[surface valueForKey:@"_subtype"] unsignedIntegerValue] == 3 && [SCIUtils getBoolPref:@"hide_create_tab"]) {
+        isShown = NO;
+    }
+
     return isShown;
 }
 
