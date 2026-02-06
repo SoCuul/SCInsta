@@ -473,6 +473,44 @@ shouldPersistLastBugReportId:(id)arg6
 }
 %end
 
+// Story tray
+%hook IGMainStoryTrayDataSource
+- (id)allItemsForTrayUsingCachedValue:(BOOL)cached {
+    NSArray *originalObjs = %orig(cached);
+    NSMutableArray *filteredObjs = [NSMutableArray arrayWithCapacity:[originalObjs count]];
+
+    for (IGStoryTrayViewModel *obj in originalObjs) {
+        BOOL shouldHide = NO;
+
+        if ([SCIUtils getBoolPref:@"no_suggested_users"]) {
+            // This hides as many recommended models as possible, without hiding genuine models
+            // Most recommended models share a 32 digit id, unlike normal accounts
+            if ([obj isKindOfClass:%c(IGStoryTrayViewModel)] && [obj.pk length] == 32) {
+                NSLog(@"[SCInsta] Hiding suggested users: story tray");
+
+                shouldHide = YES;
+            }
+        }
+
+        if ([SCIUtils getBoolPref:@"hide_ads"]) {
+            // "New!" account id is 3538572169
+            if ([obj isKindOfClass:%c(IGStoryTrayViewModel)] && (obj.isUnseenNux == YES || [obj.pk isEqualToString:@"3538572169"])) {
+                NSLog(@"[SCInsta] Removing ads: story tray");
+
+                shouldHide = YES;
+            }
+        }
+
+        // Populate new objs array
+        if (!shouldHide) {
+            [filteredObjs addObject:obj];
+        }
+    }
+
+    return [filteredObjs copy];
+}
+%end
+
 /////////////////////////////////////////////////////////////////////////////
 
 // Confirm buttons

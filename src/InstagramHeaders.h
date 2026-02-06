@@ -429,6 +429,7 @@
 
 @interface IGStoryTrayViewModel : NSObject
 @property (nonatomic, readonly) NSString *pk;
+@property (nonatomic, readonly) BOOL isUnseenNux;
 @end
 
 @interface _TtC32IGSundialOrganicCTAContainerView32IGSundialOrganicCTAContainerView : UIView
