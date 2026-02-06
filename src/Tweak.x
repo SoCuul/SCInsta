@@ -38,6 +38,8 @@ BOOL dmVisualMsgsViewedButtonEnabled = false;
         @"dw_finger_count": @(3),
         @"dw_finger_duration": @(0.5),
         @"reels_tap_control": @"default",
+        @"nav_icon_ordering": @"default",
+        @"swipe_nav_tabs": @"default",
         @"enable_notes_customization": @(YES),
         @"custom_note_themes": @(YES)
     };
