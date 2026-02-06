@@ -186,9 +186,24 @@
 # pragma mark - Instance methods
 
 - (UIMenu *)menuForButton:(UIButton *)button {
+    return [self submenuForButton:button submenu:self.baseMenu];
+}
+
+- (UIMenu *)submenuForButton:(UIButton *)button submenu:(UIMenu*)submenu {
     NSMutableArray<UIMenuElement *> *children = [NSMutableArray array];
 
-    for (UICommand *child in self.baseMenu.children) {
+    for (id obj in submenu.children) {
+        // Handle recursive submenus
+        if ([obj isKindOfClass:[UIMenu class]]) {
+            [children addObject:[self submenuForButton:button submenu:(UIMenu *)obj]];
+            continue;
+        }
+        else if (![obj isKindOfClass:[UICommand class]]) {
+            continue;
+        }
+
+        UICommand *child = obj;
+
         NSString *saved = [[NSUserDefaults standardUserDefaults] stringForKey:child.propertyList[@"defaultsKey"]];
 
         UICommand *command = [UICommand commandWithTitle:child.title
@@ -208,7 +223,7 @@
         [children addObject:command];
     }
 
-    return [UIMenu menuWithTitle:self.baseMenu.title children:children];
+    return [UIMenu menuWithTitle:submenu.title image:nil identifier:nil options:submenu.options children:children];
 }
 
 @end
