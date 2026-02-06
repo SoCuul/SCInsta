@@ -198,7 +198,12 @@
                                         @{
                                             @"header": @"SCInsta",
                                             @"rows": @[
-                                                [SCISetting switchCellWithTitle:@"Show tweak settings on app launch" subtitle:@"Automatically opens the SCInsta settings when the app launches" defaultsKey:@"tweak_settings_app_launch"]
+                                                [SCISetting switchCellWithTitle:@"Show tweak settings on app launch" subtitle:@"Automatically opens the SCInsta settings when the app launches" defaultsKey:@"tweak_settings_app_launch"],
+                                                [SCISetting buttonCellWithTitle:@"Reset onboarding completion state"
+                                                                           subtitle:@""
+                                                                               icon:nil
+                                                                             action:^(void) { [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"SCInstaFirstRun"]; [SCIUtils showRestartConfirmation];}
+                                                ],
                                             ]
                                         },
                                         @{

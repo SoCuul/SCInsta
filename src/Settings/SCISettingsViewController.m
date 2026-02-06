@@ -61,6 +61,8 @@ static char rowStaticRef[] = "row";
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
+    [super viewWillDisappear:animated];
+    
     if (![[NSUserDefaults standardUserDefaults] objectForKey:@"SCInstaFirstRun"]) {
         UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"SCInsta Settings Info"
                                                                        message:@"In the future: Hold down on the three lines at the top right of your profile page, to re-open SCInsta settings."
