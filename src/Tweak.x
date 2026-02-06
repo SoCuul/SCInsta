@@ -22,9 +22,7 @@ BOOL dmVisualMsgsViewedButtonEnabled = false;
 
 // Tweak first-time setup
 %hook IGInstagramAppDelegate
-- (_Bool)application:(UIApplication *)application didFinishLaunchingWithOptions:(id)arg2 {
-    %orig;
-
+- (_Bool)application:(UIApplication *)application willFinishLaunchingWithOptions:(id)arg2 {
     // Default SCInsta config
     NSDictionary *sciDefaults = @{
         @"hide_ads": @(YES),
@@ -44,6 +42,19 @@ BOOL dmVisualMsgsViewedButtonEnabled = false;
         @"custom_note_themes": @(YES)
     };
     [[NSUserDefaults standardUserDefaults] registerDefaults:sciDefaults];
+    
+    // Override instagram defaults
+    if ([SCIUtils getBoolPref:@"liquid_glass_buttons"]) {
+        [[NSUserDefaults standardUserDefaults] setValue:@(YES) forKey:@"instagram.override.project.lucent.navigation"];
+    }
+    else {
+        [[NSUserDefaults standardUserDefaults] setValue:@(NO) forKey:@"instagram.override.project.lucent.navigation"];
+    }
+
+    return %orig;
+}
+- (_Bool)application:(UIApplication *)application didFinishLaunchingWithOptions:(id)arg2 {
+    %orig;
 
     // Open settings for first-time users
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(5.0 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
@@ -79,12 +90,6 @@ BOOL dmVisualMsgsViewedButtonEnabled = false;
     if ([SCIUtils getBoolPref:@"flex_app_start"]) {
         [[objc_getClass("FLEXManager") sharedManager] showExplorer];
     }
-}
-
-- (void)applicationWillTerminate:(id)arg1 {
-    %orig;
-
-    [SCIUtils savePrefsBeforeTerminate];
 }
 %end
 
