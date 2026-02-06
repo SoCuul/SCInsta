@@ -30,7 +30,7 @@
 
 + (instancetype)staticCellWithTitle:(NSString *)title
                            subtitle:(NSString *)subtitle
-                               icon:(SCISymbol *)icon
+                               icon:(nullable SCISymbol *)icon
 {
     SCISetting *setting = [[self alloc] initWithType:SCITableCellStatic];
     
@@ -45,7 +45,7 @@
 
 + (instancetype)linkCellWithTitle:(NSString *)title
                          subtitle:(NSString *)subtitle
-                             icon:(SCISymbol *)icon
+                             icon:(nullable SCISymbol *)icon
                               url:(NSString *)url
 {
     SCISetting *setting = [[self alloc] initWithType:SCITableCellLink];
@@ -134,7 +134,7 @@
 
 + (instancetype)buttonCellWithTitle:(NSString *)title
                            subtitle:(NSString *)subtitle
-                               icon:(SCISymbol *)icon
+                               icon:(nullable SCISymbol *)icon
                              action:(void (^)(void))action
 {
     SCISetting *setting = [[self alloc] initWithType:SCITableCellButton];
@@ -168,7 +168,7 @@
 
 + (instancetype)navigationCellWithTitle:(NSString *)title
                                subtitle:(NSString *)subtitle
-                                   icon:(SCISymbol *)icon
+                                   icon:(nullable SCISymbol *)icon
                             navSections:(NSArray *)navSections
 {
     SCISetting *setting = [[self alloc] initWithType:SCITableCellNavigation];

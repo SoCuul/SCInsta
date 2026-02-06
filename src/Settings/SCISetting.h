@@ -23,7 +23,7 @@ typedef NS_ENUM(NSInteger, SCITableCell) {
 @property (nonatomic, strong) NSString *title;
 @property (nonatomic, strong) NSString *subtitle;
 
-@property (nonatomic, strong) SCISymbol *icon;
+@property (nonatomic, strong, nullable) SCISymbol *icon;
 @property (nonatomic, strong) NSString *defaultsKey;
 
 @property (nonatomic, strong) NSURL *url;
@@ -45,11 +45,11 @@ typedef NS_ENUM(NSInteger, SCITableCell) {
 
 + (instancetype)staticCellWithTitle:(NSString *)title
                            subtitle:(NSString *)subtitle
-                               icon:(SCISymbol *)icon;
+                               icon:(nullable SCISymbol *)icon;
 
 + (instancetype)linkCellWithTitle:(NSString *)title
                          subtitle:(NSString *)subtitle
-                             icon:(SCISymbol *)icon
+                             icon:(nullable SCISymbol *)icon
                               url:(NSString *)url;
 
 + (instancetype)linkCellWithTitle:(NSString *)title
@@ -77,7 +77,7 @@ typedef NS_ENUM(NSInteger, SCITableCell) {
 
 + (instancetype)buttonCellWithTitle:(NSString *)title
                            subtitle:(NSString *)subtitle
-                               icon:(SCISymbol *)icon
+                               icon:(nullable SCISymbol *)icon
                              action:(void (^)(void))action;
 
 + (instancetype)menuCellWithTitle:(NSString *)title
@@ -86,7 +86,7 @@ typedef NS_ENUM(NSInteger, SCITableCell) {
 
 + (instancetype)navigationCellWithTitle:(NSString *)title
                                subtitle:(NSString *)subtitle
-                                   icon:(SCISymbol *)icon
+                                   icon:(nullable SCISymbol *)icon
                             navSections:(NSArray *)navSections;
 
 
