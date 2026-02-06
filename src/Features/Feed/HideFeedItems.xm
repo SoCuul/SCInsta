@@ -260,6 +260,17 @@ static NSArray *removeItemsInList(NSArray *list, BOOL isFeed) {
 %end
 
 // Hide suggested search/shopping on reels
+
+// Demangled name: IGShoppableEverythingCommon.IGRapEntrypointResolver
+%hook _TtC27IGShoppableEverythingCommon23IGRapEntrypointResolver
+- (id)initWithLauncherSet:(id)arg1 {
+    if ([SCIUtils getBoolPref:@"hide_ads"]) {
+        return nil;
+    }
+
+    return %orig(arg1);
+}
+%end
 // Demangled name: IGSundialOrganicCTAContainerView.IGSundialOrganicCTAContainerView
 %hook _TtC32IGSundialOrganicCTAContainerView32IGSundialOrganicCTAContainerView
 - (void)didMoveToWindow {
