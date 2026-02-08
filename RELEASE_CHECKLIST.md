@@ -5,6 +5,7 @@
 - [ ] Update version string in `src/Tweak.x`
 - [ ] Update version string at top of `README.md` 
 - [ ] Update compatible Instagram app version at top of `README.md`
+- [ ] Update features list in  `README.md`
 - [ ] (Optional) Update screenshots
 
 ### Creating new release
