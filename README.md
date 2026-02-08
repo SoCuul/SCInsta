@@ -5,7 +5,7 @@ A feature-rich tweak for Instagram on iOS!\
 ---
 
 > [!NOTE]
-> ⚙️ &nbsp;To modify SCInsta's settings, check out [this page](https://github.com/SoCuul/SCInsta/wiki/Modify-Settings) for help\
+> ⚙️ &nbsp;To modify SCInsta's settings, check out [this section below](https://github.com/SoCuul/SCInsta#Opening-Tweak-Settings) for help\
 > ❓ &nbsp;If you have any questions or need help with the tweak, visit the [Discussions](https://github.com/SoCuul/SCInsta/discussions) tab
 >
 > ✨ &nbsp;If you have a feature request, [click here](https://github.com/SoCuul/SCInsta/issues/new/choose)\
@@ -22,16 +22,25 @@ A feature-rich tweak for Instagram on iOS!\
 
 # Features
 ### General
+- Hide ads
 - Hide Meta AI
 - Copy description
-- Use detailed color picker
-- Enable hidden text effects/styles
 - Do not save recent searches
-- Hide notes tray
-- Hide friends map
+- Use detailed (native) color picker
+- Enable liquid glass buttons
+- Enable teen app icons
+- IG Notes:
+  - Hide notes tray
+  - Hide friends map
+  - Enable note theming
+  - Custom note themes
+- Focus/Distractions
+  - Hide explore posts grid
+  - Hide trending searches
+  - No suggested chats
+  - No suggested users
 
 ### Feed
-- Hide ads
 - Hide stories tray
 - Hide entire feed
 - No suggested posts
@@ -39,58 +48,59 @@ A feature-rich tweak for Instagram on iOS!\
 - No suggested reels
 - No suggested threads posts
 
-### Save media
+### Reels
+- Modify tap controls
+- Always show progress scrubber
+- Confirm reel refresh
+- Hide reels header
+- Disable scrolling reels
+
+### Saving
 - Download feed posts
 - Download reels
 - Download stories
 - Save profile picture
+- *Customize finger count for long-press*
+- *Customize hold time for long-press*
 
-### Story and messages
-- Keep deleted message
+### Stories and messages
+- Keep deleted messages
 - Disable screenshot detection
 - Unlimited replay of direct stories
 - Disabling sending read receipts
 - Disable story seen receipt
 - Disable view-once limitations
 
+### Navigation
+- Modify tab bar icon order
+- Modify swiping between tabs
+- Hiding tabs
+  - Hide feed tab
+  - Hide explore tab
+  - Hide reels tab
+  - Hide create tab
+
 ### Confirm actions
-- Confirm like: Posts (and stories)
+- Confirm like: Posts/Stories
 - Confirm like: Reels
 - Confirm follow
+- Confirm repost
 - Confirm call
 - Confirm voice messages
+- Confirm follow requests
 - Confirm shh mode (disappearing messages)
-- Confirm sticker interaction
 - Confirm posting comment
 - Confirm changing direct message theme
-
-### Focus/Distractions
-- Hide explore posts grid
-- Hide trending searches
-- No suggested chats
-- No suggested users
-- Disable scrolling reels
-
-### Navigation
-- Hide explore tab
-- Hide create tab
-- Hide reels tab
-
-### Security
-- Padlock (require biometric authentication to open the app)
+- Confirm sticker interaction
 
 ### Optimization
 - Automatically clears unneeded cache folders, reducing the size of your Instagram installation
 
-### Built-in Tweak Settings
-[How to modify SCInsta settings](https://github.com/SoCuul/SCInsta/wiki/Modify-Settings)
+# Opening Tweak Settings
 
-# In-App Screenshots
-
-|                                             |                                             |                                             |
-|:-------------------------------------------:|:-------------------------------------------:|:-------------------------------------------:|
-| <img src="https://i.imgur.com/EZIktAw.png"> | <img src="https://i.imgur.com/aA3g1Vw.png"> | <img src="https://i.imgur.com/QdyFbo4.png"> |
-| <img src="https://i.imgur.com/Ydd61cZ.png"> | <img src="https://i.imgur.com/XGOn3lY.png"> | <img src="https://i.imgur.com/n4GFWl8.png"> |
+|                                             |                                             |
+|:-------------------------------------------:|:-------------------------------------------:|
+| <img src="https://i.imgur.com/uPMcugZ.png"> | <img src="https://i.imgur.com/ctIiL7i.png"> |
 
 # Building from source
 ### Prerequisites
