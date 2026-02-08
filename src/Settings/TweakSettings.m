@@ -153,7 +153,7 @@
                                         navSections:@[@{
                                             @"header": @"",
                                             @"rows": @[
-                                                [SCISetting switchCellWithTitle:@"Confirm like: Posts" subtitle:@"Shows an alert when you click the like button on posts or stories to confirm the like" defaultsKey:@"like_confirm"],
+                                                [SCISetting switchCellWithTitle:@"Confirm like: Posts/Stories" subtitle:@"Shows an alert when you click the like button on posts or stories to confirm the like" defaultsKey:@"like_confirm"],
                                                 [SCISetting switchCellWithTitle:@"Confirm like: Reels" subtitle:@"Shows an alert when you click the like button on reels to confirm the like" defaultsKey:@"like_confirm_reels"]
                                             ]
                                         },
