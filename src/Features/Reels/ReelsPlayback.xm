@@ -29,15 +29,6 @@
 %end
 
 %hook IGSundialFeedViewController
-- (void)triggerRefreshFromTabTap {
-    if ([SCIUtils getBoolPref:@"refresh_reel_confirm"]) {
-        NSLog(@"[SCInsta] Reel refresh triggered");
-        
-        [SCIUtils showConfirmation:^(void) { %orig; } title:@"Refresh Reels"];
-    } else {
-        return %orig;
-    }
-}
 - (void)_refreshReelsWithParamsForNetworkRequest:(NSInteger)arg1 userDidPullToRefresh:(BOOL)arg2 {
     if ([SCIUtils getBoolPref:@"refresh_reel_confirm"]) {
         NSLog(@"[SCInsta] Reel refresh triggered");
