@@ -24,17 +24,26 @@
 
     // Temp folder
     // * disabled bc app crashed trying to delete certain files inside it
-    //NSError *tempFolderError;
-    //[fileManager removeItemAtURL:[NSURL fileURLWithPath:NSTemporaryDirectory()] error:&tempFolderError];
+    // todo: remove the above disclaimer if this new code doesn't cause crashing
+    NSArray *tempFolderContents = [fileManager contentsOfDirectoryAtURL:[NSURL fileURLWithPath:NSTemporaryDirectory()] includingPropertiesForKeys:nil options:NSDirectoryEnumerationSkipsHiddenFiles error:nil];
 
-    //if (tempFolderError) [deletionErrors addObject:tempFolderError];
+    for (NSURL *fileURL in tempFolderContents) {
+        NSError *cacheItemDeletionError;
+        [fileManager removeItemAtURL:fileURL error:&cacheItemDeletionError];
+
+        if (cacheItemDeletionError) [deletionErrors addObject:cacheItemDeletionError];
+    }
 
     // Analytics folder
-    NSError *analyticsFolderError;
     NSString *analyticsFolder = [[NSSearchPathForDirectoriesInDomains(NSLibraryDirectory, NSUserDomainMask, YES) objectAtIndex:0] stringByAppendingPathComponent:@"Application Support/com.burbn.instagram/analytics"];
-    [fileManager removeItemAtURL:[[NSURL alloc] initFileURLWithPath:analyticsFolder] error:&analyticsFolderError];
+    NSArray *analyticsFolderContents = [fileManager contentsOfDirectoryAtURL:[[NSURL alloc] initFileURLWithPath:analyticsFolder] includingPropertiesForKeys:nil options:NSDirectoryEnumerationSkipsHiddenFiles error:nil];
 
-    if (analyticsFolderError) [deletionErrors addObject:analyticsFolderError];
+    for (NSURL *fileURL in analyticsFolderContents) {
+        NSError *cacheItemDeletionError;
+        [fileManager removeItemAtURL:fileURL error:&cacheItemDeletionError];
+
+        if (cacheItemDeletionError) [deletionErrors addObject:cacheItemDeletionError];
+    }
     
     // Caches folder
     NSString *cachesFolder = [[NSSearchPathForDirectoriesInDomains(NSLibraryDirectory, NSUserDomainMask, YES) objectAtIndex:0] stringByAppendingPathComponent:@"Caches"];
@@ -257,5 +266,20 @@
         return stringValue.length - (decimalRange.location + decimalRange.length);
     }
 }
+
+// Ivars
++ (id)getIvarForObj:(id)obj name:(const char *)name {
+    Ivar ivar = class_getInstanceVariable(object_getClass(obj), name);
+    if (!ivar) return nil;
+
+    return object_getIvar(obj, ivar);
+}
++ (void)setIvarForObj:(id)obj name:(const char *)name value:(id)value {
+    Ivar ivar = class_getInstanceVariable(object_getClass(obj), name);
+    if (!ivar) return;
+    
+    object_setIvarWithStrongDefault(obj, ivar, value);
+}
+
 
 @end

@@ -70,4 +70,8 @@
 // Math
 + (NSUInteger)decimalPlacesInDouble:(double)value;
 
+// Ivars
++ (id)getIvarForObj:(id)obj name:(const char *)name;
++ (void)setIvarForObj:(id)obj name:(const char *)name value:(id)value;
+
 @end

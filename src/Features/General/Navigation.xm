@@ -1,5 +1,4 @@
 #import "../../Utils.h"
-#import "../../InstagramHeaders.h"
 
 BOOL isSurfaceShown(IGMainAppSurfaceIntent *surface) {
     BOOL isShown = YES;
@@ -53,10 +52,9 @@ NSArray *filterSurfacesArray(NSArray *surfaces) {
 %hook IGTabBarController
 - (void)_layoutTabBar {
     // Prevents the wrong icon from being shown as selected because of mismatched surface array indexes
-    NSArray *_tabBarSurfaces = MSHookIvar<NSArray *>(self, "_tabBarSurfaces");
+    NSArray *_tabBarSurfaces = [SCIUtils getIvarForObj:self name:"_tabBarSurfaces"];
 
-    Ivar ivar = class_getInstanceVariable(object_getClass(self), "_tabBarSurfaces");
-    object_setIvarWithStrongDefault(self, ivar, filterSurfacesArray(_tabBarSurfaces));
+    [SCIUtils setIvarForObj:self name:"_tabBarSurfaces" value:filterSurfacesArray(_tabBarSurfaces)];
     
     %orig;
 }
