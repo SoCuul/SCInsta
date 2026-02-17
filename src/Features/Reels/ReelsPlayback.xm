@@ -44,3 +44,22 @@
     }
 }
 %end
+
+// * Disable volume/mute button triggering unmutes
+%hook IGAudioStatusAnnouncer
+- (void)_muteSwitchStateChanged:(id)changed {
+    if (![SCIUtils getBoolPref:@"disable_auto_unmuting_reels"]) {
+        %orig(changed);
+    }
+}
+- (void)_didPressVolumeButton:(id)button {
+    if (![SCIUtils getBoolPref:@"disable_auto_unmuting_reels"]) {
+        %orig(button);
+    }
+}
+- (void)_didUnplugHeadphones:(id)headphones {
+    if (![SCIUtils getBoolPref:@"disable_auto_unmuting_reels"]) {
+        %orig(headphones);
+    }
+}
+%end
