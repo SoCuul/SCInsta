@@ -18,6 +18,11 @@
     return [[NSUserDefaults standardUserDefaults] stringForKey:key];
 }
 
++ (_Bool)liquidGlassEnabledBool:(_Bool)fallback {
+    BOOL setting = [SCIUtils getBoolPref:@"liquid_glass_surfaces"];
+    return setting ? true : fallback;
+}
+
 + (void)cleanCache {
     NSFileManager *fileManager = [NSFileManager defaultManager];
     NSMutableArray<NSError *> *deletionErrors = [NSMutableArray array];

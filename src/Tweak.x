@@ -97,6 +97,24 @@ BOOL dmVisualMsgsViewedButtonEnabled = false;
 }
 %end
 
+%hook IGDSLauncherConfig
+- (_Bool)isLiquidGlassInAppNotificationEnabled {
+    return [SCIUtils liquidGlassEnabledBool:%orig];
+}
+- (_Bool)isLiquidGlassContextMenuEnabled{
+    return [SCIUtils liquidGlassEnabledBool:%orig];
+}
+- (_Bool)isLiquidGlassToastEnabled {
+    return [SCIUtils liquidGlassEnabledBool:%orig];
+}
+- (_Bool)isLiquidGlassToastPeekEnabled {
+    return [SCIUtils liquidGlassEnabledBool:%orig];
+}
+- (_Bool)isLiquidGlassAlertDialogEnabled {
+    return [SCIUtils liquidGlassEnabledBool:%orig];
+}
+%end
+
 // Disable sending modded insta bug reports
 %hook IGWindow
 - (void)showDebugMenu {
