@@ -13,7 +13,7 @@
 
 @implementation SCISetting
 
-#pragma mark - - initWithType
+// MARK: - - initWithType
 
 - (instancetype)initWithType:(SCITableCell)type {
     self = [super init];
@@ -26,7 +26,7 @@
 }
 
 
-#pragma mark - + staticCellWithTitle
+// MARK: - + staticCellWithTitle
 
 + (instancetype)staticCellWithTitle:(NSString *)title
                            subtitle:(NSString *)subtitle
@@ -41,7 +41,7 @@
     return setting;
 }
 
-#pragma mark + linkCellWithTitle
+// MARK: - + linkCellWithTitle
 
 + (instancetype)linkCellWithTitle:(NSString *)title
                          subtitle:(NSString *)subtitle
@@ -74,7 +74,7 @@
     return setting;
 }
 
-#pragma mark + switchCellWithTitle
+// MARK: - + switchCellWithTitle
 
 + (instancetype)switchCellWithTitle:(NSString *)title
                            subtitle:(NSString *)subtitle
@@ -104,7 +104,7 @@
     return setting;
 }
 
-#pragma mark + stepperCellWithTitle
+// MARK: - + stepperCellWithTitle
 
 + (instancetype)stepperCellWithTitle:(NSString *)title
                             subtitle:(NSString *)subtitle
@@ -130,7 +130,7 @@
     return setting;
 }
 
-#pragma mark + buttonCellWithTitle
+// MARK: - + buttonCellWithTitle
 
 + (instancetype)buttonCellWithTitle:(NSString *)title
                            subtitle:(NSString *)subtitle
@@ -164,7 +164,7 @@
     return setting;
 }
 
-#pragma mark + navigationCellWithTitle
+// MARK: - + navigationCellWithTitle
 
 + (instancetype)navigationCellWithTitle:(NSString *)title
                                subtitle:(NSString *)subtitle
@@ -183,7 +183,7 @@
 }
 
 
-# pragma mark - Instance methods
+// MARK: -  Instance methods
 
 - (UIMenu *)menuForButton:(UIButton *)button {
     return [self submenuForButton:button submenu:self.baseMenu];

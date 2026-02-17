@@ -2,7 +2,7 @@
 
 @implementation SCITweakSettings
 
-#pragma mark - Sections
+// MARK: - Sections
 
 ///
 /// This returns an array of sections, with each section consisting of a dictionary
@@ -263,7 +263,7 @@
 }
 
 
-#pragma mark - Title
+// MARK: - Title
 
 ///
 /// This is the title displayed on the initial settings page view controller
@@ -274,7 +274,7 @@
 }
 
 
-#pragma mark - Menus
+// MARK: - Menus
 
 ///
 /// This returns a dictionary where each key corresponds to a certain menu that can be displayed.

@@ -80,7 +80,7 @@ static char rowStaticRef[] = "row";
     }
 }
 
-#pragma mark - UITableViewDataSource
+// MARK: - UITableViewDataSource
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     SCISetting *row = self.sections[indexPath.section][@"rows"][indexPath.row];
@@ -218,7 +218,7 @@ static char rowStaticRef[] = "row";
     return self.sections.count;
 }
 
-#pragma mark - UITableViewDelegate
+// MARK: - UITableViewDelegate
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     SCISetting *row = self.sections[indexPath.section][@"rows"][indexPath.row];
@@ -243,7 +243,7 @@ static char rowStaticRef[] = "row";
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
 }
 
-#pragma mark - Actions
+// MARK: - Actions
 
 - (void)switchChanged:(UISwitch *)sender {
     SCISetting *row = objc_getAssociatedObject(sender, rowStaticRef);
@@ -279,7 +279,7 @@ static char rowStaticRef[] = "row";
     }
 }
 
-#pragma mark - Helper
+// MARK: - Helper
 
 - (NSString *)formatString:(NSString *)template withValue:(double)value label:(NSString *)label singularLabel:(NSString *)singularLabel {
     // Singular or plural labels
