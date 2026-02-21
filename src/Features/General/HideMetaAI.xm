@@ -58,7 +58,7 @@
                     }
 
                     // Meta AI (Imagine)
-                    else if ([[_commandResult_command commandString] isEqualToString:@"/imagine"]) {
+                    else if ([[_commandResult_command commandString] hasPrefix:@"/imagine"]) {
                         NSLog(@"[SCInsta] Hiding meta ai: direct message composer /imagine suggestion");
 
                         shouldHide = YES;
