@@ -442,6 +442,9 @@
 @property (readonly, nonatomic) long long destination;
 @end
 
+@interface IGDSMenuItem : NSObject
+@end
+
 
 /////////////////////////////////////////////////////////////////////////////
 

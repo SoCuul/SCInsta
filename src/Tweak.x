@@ -539,6 +539,39 @@ shouldPersistLastBugReportId:(id)arg6
 }
 %end
 
+// Modern IGDS app menus
+%hook IGDSMenu
+- (id)initWithMenuItems:(NSArray<IGDSMenuItem *> *)originalObjs edr:(BOOL)edr headerLabelText:(id)headerLabelText {
+    NSMutableArray *filteredObjs = [NSMutableArray arrayWithCapacity:[originalObjs count]];
+
+    for (id obj in originalObjs) {
+        BOOL shouldHide = NO;
+
+        // Meta AI
+        if (
+            [[obj valueForKey:@"title"] isEqualToString:@"AI images"]
+            || [[obj valueForKey:@"title"] isEqualToString:@"Meta AI"]
+        ) {
+            
+            if ([SCIUtils getBoolPref:@"hide_meta_ai"]) {
+                NSLog(@"[SCInsta] Hiding meta ai from IGDS menu");
+
+                shouldHide = YES;
+            }
+
+        }
+
+        // Populate new objs array
+        if (!shouldHide) {
+            [filteredObjs addObject:obj];
+        }
+
+    }
+
+    return %orig([filteredObjs copy], edr, headerLabelText);
+}
+%end
+
 /////////////////////////////////////////////////////////////////////////////
 
 // Confirm buttons
