@@ -256,7 +256,7 @@ static char targetStaticRef[] = "target";
         if (!model) return;
     }
 
-    SCILog(@"Current note theme model: %@", model);
+    //SCILog(@"Current note theme model: %@", model);
     [model setValue:[composerVC valueForKey:@"_composerText"] forKey:@"customEmoji"];
 
     // Update saved color target
@@ -271,7 +271,7 @@ static char targetStaticRef[] = "target";
     // Always set emoji to prevent it being overwritten
     [model setValue:self.emojiText forKey:@"customEmoji"];  
 
-    SCILog(@"Updated note theme model: %@", model);
+    //SCILog(@"Updated note theme model: %@", model);
 
     // Apply custom notes theme
     [composerVC notesBubbleEditorViewControllerDidUpdateWithCustomThemeCreationModel:model];
