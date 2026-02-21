@@ -17,7 +17,6 @@
 NSString *SCIVersionString = @"v1.0.1-beta";
 
 // Variables that work across features
-BOOL seenButtonEnabled = false;
 BOOL dmVisualMsgsViewedButtonEnabled = false;
 
 // Tweak first-time setup

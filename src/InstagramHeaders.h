@@ -445,6 +445,10 @@
 @interface IGDSMenuItem : NSObject
 @end
 
+@interface IGDirectThreadViewController : UIViewController
+- (void)markLastMessageAsSeen;
+@end
+
 
 /////////////////////////////////////////////////////////////////////////////
 

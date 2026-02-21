@@ -13,12 +13,6 @@
     if ([SCIUtils getBoolPref:@"remove_lastseen"]) {
         UIBarButtonItem *seenButton = [[UIBarButtonItem alloc] initWithImage:[UIImage systemImageNamed:@"checkmark.message"] style:UIBarButtonItemStylePlain target:self action:@selector(seenButtonHandler:)];
         [new_items addObject:seenButton];
-
-        if (seenButtonEnabled) {
-            [seenButton setTintColor:SCIUtils.SCIColor_Primary];
-        } else {
-            [seenButton setTintColor:UIColor.labelColor];
-        }
     }
 
     // DM visual messages viewed
@@ -38,12 +32,14 @@
 
 // Messages seen button
 %new - (void)seenButtonHandler:(UIBarButtonItem *)sender {
-    if (seenButtonEnabled) {
-        seenButtonEnabled = false;
-        [sender setTintColor:UIColor.labelColor];
-    } else {
-        seenButtonEnabled = true;
-        [sender setTintColor:SCIUtils.SCIColor_Primary];
+    UIViewController *nearestVC = [SCIUtils nearestViewControllerForView:self];
+    if ([nearestVC isKindOfClass:%c(IGDirectThreadViewController)]) {
+        
+        [(IGDirectThreadViewController *)nearestVC markLastMessageAsSeen];
+
+        // send toast to notify user messages were marked as read
+        // Would like to use IGActionableConfirmationToastPresenter, that can be accessed from [IGRootViewController toastPresenter]
+
     }
 }
 // DM visual messages viewed button
@@ -62,11 +58,6 @@
 %hook IGDirectThreadViewListAdapterDataSource
 - (BOOL)shouldUpdateLastSeenMessage {
     if ([SCIUtils getBoolPref:@"remove_lastseen"]) {
-        // Check if messages should be shown as seen
-        if (seenButtonEnabled) {
-            return %orig;
-        }
-        
         return false;
     }
     
