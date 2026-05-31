@@ -31,7 +31,7 @@ jobs:
 
         steps:
             - name: Checkout Main
-              uses: actions/checkout@v4
+              uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd #v6.0.2
               with:
                 path: main
                 submodules: recursive
@@ -43,7 +43,7 @@ jobs:
               run: echo "$(brew --prefix make)/libexec/gnubin" >> $GITHUB_PATH 
 
             - name: Setup Theos
-              uses: actions/checkout@v4
+              uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd #v6.0.2
               with:
                 repository: theos/theos
                 ref: master
@@ -52,7 +52,7 @@ jobs:
         
             - name: SDK Caching
               id: SDK
-              uses: actions/cache@v4
+              uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae #v5.0.5
               env:
                 cache-name: iPhoneOS16.2.sdk
               with:
@@ -120,14 +120,14 @@ jobs:
 
             - name: Upload Artifact
               if: ${{ inputs.upload_artifact }}
-              uses: actions/upload-artifact@v4
+              uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a #v7.0.1
               with:
                 name: SCInsta_sideloaded_v${{ steps.scinsta_version.outputs.version }}
                 path: ${{ github.workspace }}/main/packages/${{ steps.package_name.outputs.package }}
                 if-no-files-found: error
 
             - name: Create Release
-              uses: softprops/action-gh-release@v2.0.6
+              uses: softprops/action-gh-release@b4309332981a82ec1c5618f44dd2e27cc8bfbfda #v3.0.0
               with:
                 name: SCInsta_sideloaded_v${{ steps.scinsta_version.outputs.version }}
                 files: ${{ github.workspace }}/main/packages/SCInsta_sideloaded_v*.ipa
