@@ -83,6 +83,8 @@
         if (dmVisualMsgsViewedButtonEnabled) {
             %orig;
         }
+    } else {
+        %orig;
     }
 }
 - (void)visualMessageViewerController:(id)arg1 didEndPlaybackForVisualMessage:(id)arg2 atIndex:(NSInteger)arg3 mediaCurrentTime:(CGFloat)arg4 forNavType:(NSInteger)arg5 {
@@ -91,6 +93,8 @@
         if (dmVisualMsgsViewedButtonEnabled) {
             %orig;
         }
+    } else {
+        %orig;
     }
 }
 %end
