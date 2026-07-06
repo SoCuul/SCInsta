@@ -1,32 +1,54 @@
 #import "../../Utils.h"
 
-#define QUICKSNAPENABLED(orig) return [SCIUtils getBoolPref:@"disable_instants_creation"] ? false : orig;
-
 // Demangled name: IGQuickSnapExperimentation.IGQuickSnapExperimentationHelper
 %hook _TtC26IGQuickSnapExperimentation32IGQuickSnapExperimentationHelper
 + (_Bool)isQuicksnapEnabled:(id)enabled {
-    QUICKSNAPENABLED(%orig);
+    if ([SCIUtils getBoolPref:@"disable_instants_creation"]) {
+        return false;
+    }
+    return %orig(enabled);
 }
 + (_Bool)isQuicksnapEnabledInFeed:(id)feed {
-    QUICKSNAPENABLED(%orig);
+    if ([SCIUtils getBoolPref:@"disable_instants_creation"]) {
+        return false;
+    }
+    return %orig(feed);
 }
 + (_Bool)isQuicksnapEnabledInInbox:(id)inbox {
-    QUICKSNAPENABLED(%orig);
+    if ([SCIUtils getBoolPref:@"disable_instants_creation"]) {
+        return false;
+    }
+    return %orig(inbox);
 }
 + (_Bool)isQuicksnapEnabledInStories:(id)stories {
-    QUICKSNAPENABLED(%orig);
+    if ([SCIUtils getBoolPref:@"disable_instants_creation"]) {
+        return false;
+    }
+    return %orig(stories);
 }
 + (_Bool)isQuicksnapEnabledInNotesTray:(id)tray {
-    QUICKSNAPENABLED(%orig);
+    if ([SCIUtils getBoolPref:@"disable_instants_creation"]) {
+        return false;
+    }
+    return %orig(tray);
 }
 + (_Bool)isQuicksnapEnabledInNotesTrayWithPeek:(id)peek {
-    QUICKSNAPENABLED(%orig);
+    if ([SCIUtils getBoolPref:@"disable_instants_creation"]) {
+        return false;
+    }
+    return %orig(peek);
 }
 + (_Bool)isQuicksnapEnabledInNotesTrayWithPog:(id)pog {
-    QUICKSNAPENABLED(%orig);
+    if ([SCIUtils getBoolPref:@"disable_instants_creation"]) {
+        return false;
+    }
+    return %orig(pog);
 }
 + (_Bool)isQuicksnapNotesTrayEmptyPogEnabled:(id)enabled {
-    QUICKSNAPENABLED(%orig);
+    if ([SCIUtils getBoolPref:@"disable_instants_creation"]) {
+        return false;
+    }
+    return %orig(enabled);
 }
 // + (_Bool)isStoriesSpringEnabled:(id)enabled {
 //     return true;

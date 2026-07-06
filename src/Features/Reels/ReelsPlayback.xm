@@ -1,4 +1,42 @@
+#import <substrate.h>
 #import "../../Utils.h"
+
+// NOTE: Logos' bare %orig substitution corrupts the surrounding braces when
+// used inside a nested block literal (e.g. inside a showConfirmation
+// completion handler), so the reel-refresh confirmation hook below is
+// implemented manually via MSHookMessageEx with a captured C function
+// pointer instead of %hook/%orig.
+static void (*orig_refreshReelsWithParamsForNetworkRequest)(id, SEL, NSInteger, BOOL);
+static void hooked_refreshReelsWithParamsForNetworkRequest(id self, SEL _cmd, NSInteger arg1, BOOL arg2) {
+    if ([SCIUtils getBoolPref:@"prevent_doom_scrolling"]) {
+        IGRefreshControl *_refreshControl = MSHookIvar<IGRefreshControl *>(self, "_refreshControl");
+        [self refreshControlDidEndFinishLoadingAnimation:_refreshControl];
+
+        return;
+    }
+
+    if ([SCIUtils getBoolPref:@"refresh_reel_confirm"]) {
+        NSLog(@"[SCInsta] Reel refresh triggered");
+
+        [SCIUtils showConfirmation:^(void) {
+            orig_refreshReelsWithParamsForNetworkRequest(self, _cmd, arg1, arg2);
+        }
+                     cancelHandler:^(void) {
+                         IGRefreshControl *_refreshControl = MSHookIvar<IGRefreshControl *>(self, "_refreshControl");
+                         [self refreshControlDidEndFinishLoadingAnimation:_refreshControl];
+                     }
+                             title:@"Refresh Reels"];
+    } else {
+        orig_refreshReelsWithParamsForNetworkRequest(self, _cmd, arg1, arg2);
+    }
+}
+
+%ctor {
+    Class cls = objc_getClass("IGSundialFeedViewController");
+    if (!cls) return;
+
+    MSHookMessageEx(cls, @selector(_refreshReelsWithParamsForNetworkRequest:userDidPullToRefresh:), (IMP)hooked_refreshReelsWithParamsForNetworkRequest, (IMP *)&orig_refreshReelsWithParamsForNetworkRequest);
+}
 
 %hook IGSundialPlaybackControlsTestConfiguration
 - (id)initWithLauncherSet:(id)set
@@ -25,30 +63,6 @@
     }
 
     return %orig(set, userTapPauseEnabled, controls, previewThumbEnabled, userMinSec, seekSec, tapSec, userDuration, userShortScrubberEnabled);
-}
-%end
-
-%hook IGSundialFeedViewController
-- (void)_refreshReelsWithParamsForNetworkRequest:(NSInteger)arg1 userDidPullToRefresh:(BOOL)arg2 {
-    if ([SCIUtils getBoolPref:@"prevent_doom_scrolling"]) {
-        IGRefreshControl *_refreshControl = MSHookIvar<IGRefreshControl *>(self, "_refreshControl");
-        [self refreshControlDidEndFinishLoadingAnimation:_refreshControl];
-
-        return;
-    }
-
-    if ([SCIUtils getBoolPref:@"refresh_reel_confirm"]) {
-        NSLog(@"[SCInsta] Reel refresh triggered");
-        
-        [SCIUtils showConfirmation:^(void) { %orig(arg1, arg2); }
-                     cancelHandler:^(void) {
-                         IGRefreshControl *_refreshControl = MSHookIvar<IGRefreshControl *>(self, "_refreshControl");
-                         [self refreshControlDidEndFinishLoadingAnimation:_refreshControl];
-                     }
-                             title:@"Refresh Reels"];
-    } else {
-        return %orig(arg1, arg2);
-    }
 }
 %end
 
