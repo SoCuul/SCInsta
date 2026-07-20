@@ -40,7 +40,11 @@
     if ([SCIUtils getBoolPref:@"refresh_reel_confirm"]) {
         NSLog(@"[SCInsta] Reel refresh triggered");
         
-        [SCIUtils showConfirmation:^(void) { %orig(arg1, arg2); }
+        // Capture the original arguments for use in the block
+        NSInteger refreshArg = arg1;
+        BOOL pullToRefreshArg = arg2;
+        
+        [SCIUtils showConfirmation:^(void) { %orig(refreshArg, pullToRefreshArg); }
                      cancelHandler:^(void) {
                          IGRefreshControl *_refreshControl = MSHookIvar<IGRefreshControl *>(self, "_refreshControl");
                          [self refreshControlDidEndFinishLoadingAnimation:_refreshControl];
