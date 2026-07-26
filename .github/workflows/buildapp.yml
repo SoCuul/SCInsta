@@ -49,6 +49,20 @@ jobs:
                 ref: master
                 path: ${{ github.workspace }}/theos
                 submodules: recursive
+
+            # theos/logos master (777925d, theos/logos#114) rewrote %orig handling: it now
+            # replaces everything from %orig to end-of-line and re-appends only ";", so any
+            # %orig that is not alone on its line -- VOID_HANDLESCREENSHOT(%orig),
+            # [SCIUtils liquidGlassEnabledBool:%orig], removeItemsInList(%orig, YES) -- loses
+            # its closing bracket and the generated code no longer compiles. a623700 is the
+            # commit directly before that change; drop this step once #114 is fixed upstream.
+            - name: Pin Logos to known-good version
+              run: |
+                cd "$THEOS/vendor/logos"
+                git fetch --depth=1 origin a62370066a97e36d59b200a9fa10c5091f5e8972
+                git checkout a62370066a97e36d59b200a9fa10c5091f5e8972
+              env:
+                THEOS: ${{ github.workspace }}/theos
         
             - name: SDK Caching
               id: SDK
