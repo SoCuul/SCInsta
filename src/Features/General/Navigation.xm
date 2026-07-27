@@ -13,6 +13,11 @@ BOOL isSurfaceShown(IGMainAppSurfaceIntent *surface) {
         isShown = NO;
     }
 
+    // Messages
+    else if ([[surface tabStringFromSurfaceIntent] isEqualToString:@"DIRECT"] && [SCIUtils getBoolPref:@"hide_messages_tab"]) {
+        isShown = NO;
+    }
+
     // Explore
     else if ([[surface tabStringFromSurfaceIntent] isEqualToString:@"SEARCH"] && [SCIUtils getBoolPref:@"hide_explore_tab"]) {
         isShown = NO;
@@ -96,5 +101,20 @@ NSArray *filterSurfacesArray(NSArray *surfaces) {
 }
 - (void)setIsTabSwipingEnabled:(BOOL)arg1 {
     return;
+}
+%end
+
+%hook IGHomeFeedHeaderView
+- (void)didMoveToWindow {
+    %orig;
+
+    if ([SCIUtils getBoolPref:@"hide_messages_tab"]) {
+        UIButton *rightButton = [self valueForKey:@"rightButton"];
+        if (rightButton) {
+            NSLog(@"[SCInsta] Hiding messages tab (on feed)");
+
+            [rightButton removeFromSuperview];
+        }
+    }
 }
 %end

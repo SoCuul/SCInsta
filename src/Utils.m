@@ -18,6 +18,27 @@
     return [[NSUserDefaults standardUserDefaults] stringForKey:key];
 }
 
+// MARK: Misc
+
++ (NSString *)IGVersionString {
+    return [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleShortVersionString"];
+};
++ (BOOL)isNotch {
+    return [[[UIApplication sharedApplication] keyWindow] safeAreaInsets].bottom > 0;
+};
+
++ (BOOL)existingLongPressGestureRecognizerForView:(UIView *)view {
+    NSArray *allRecognizers = view.gestureRecognizers;
+
+    for (UIGestureRecognizer *recognizer in allRecognizers) {
+        if ([[recognizer class] isSubclassOfClass:[UILongPressGestureRecognizer class]]) {
+            return YES;
+        }
+    }
+
+    return NO;
+}
+
 + (_Bool)liquidGlassEnabledBool:(_Bool)fallback {
     BOOL setting = [SCIUtils getBoolPref:@"liquid_glass_surfaces"];
     return setting ? true : fallback;
@@ -72,7 +93,7 @@
 
 }
 
-// Displaying View Controllers
+// MARK: Display View Controllers
 + (void)showQuickLookVC:(NSArray<id> *)items {
     QLPreviewController *previewController = [[QLPreviewController alloc] init];
     QuickLookDelegate *quickLookDelegate = [[QuickLookDelegate alloc] initWithPreviewItemURLs:items];
@@ -97,12 +118,12 @@
     [rootController presentViewController:navigationController animated:YES completion:nil];
 }
 
-// Colours
+// MARK: Colours
 + (UIColor *)SCIColor_Primary {
     return [UIColor colorWithRed:0/255.0 green:152/255.0 blue:254/255.0 alpha:1];
 };
 
-// Errors
+// MARK: Errors
 + (NSError *)errorWithDescription:(NSString *)errorDesc {
     return [self errorWithDescription:errorDesc code:1];
 }
@@ -125,7 +146,7 @@
     return hud;
 }
 
-// Media
+// MARK: Media
 + (NSURL *)getPhotoUrl:(IGPhoto *)photo {
     if (!photo) return nil;
 
@@ -167,7 +188,7 @@
     return [SCIUtils getVideoUrl:video];
 }
 
-// View Controllers
+// MARK: View Controller Helpers
 + (UIViewController *)viewControllerForView:(UIView *)view {
     NSString *viewDelegate = @"viewDelegate";
     if ([view respondsToSelector:NSSelectorFromString(viewDelegate)]) {
@@ -191,26 +212,9 @@
 }
 
 // Functions
-+ (NSString *)IGVersionString {
-    return [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleShortVersionString"];
-};
-+ (BOOL)isNotch {
-    return [[[UIApplication sharedApplication] keyWindow] safeAreaInsets].bottom > 0;
-};
 
-+ (BOOL)existingLongPressGestureRecognizerForView:(UIView *)view {
-    NSArray *allRecognizers = view.gestureRecognizers;
 
-    for (UIGestureRecognizer *recognizer in allRecognizers) {
-        if ([[recognizer class] isSubclassOfClass:[UILongPressGestureRecognizer class]]) {
-            return YES;
-        }
-    }
-
-    return NO;
-}
-
-// Alerts
+// MARK: Alerts
 + (BOOL)showConfirmation:(void(^)(void))okHandler title:(NSString *)title {
     UIAlertController* alert = [UIAlertController alertControllerWithTitle:title message:@"Are you sure?" preferredStyle:UIAlertControllerStyleAlert];
     [alert addAction:[UIAlertAction actionWithTitle:@"Yes" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
@@ -253,7 +257,7 @@
     [topMostController() presentViewController:alert animated:YES completion:nil];
 };
 
-// Toasts
+// MARK: Toasts
 + (void)showToastForDuration:(double)duration title:(NSString *)title {
     [SCIUtils showToastForDuration:duration title:title subtitle:nil];
 }
@@ -282,7 +286,7 @@
     [toastPresenter showAlertWithViewModel:model isAnimated:true animationDuration:duration presentationPriority:0 tapActionBlock:nil presentedHandler:nil dismissedHandler:nil];
 }
 
-// Math
+// MARK: Math
 + (NSUInteger)decimalPlacesInDouble:(double)value {
     NSNumberFormatter *formatter = [[NSNumberFormatter alloc] init];
     [formatter setNumberStyle:NSNumberFormatterDecimalStyle];
