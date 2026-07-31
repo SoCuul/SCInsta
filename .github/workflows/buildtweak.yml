@@ -37,6 +37,16 @@ jobs:
                 ref: master
                 path: ${{ github.workspace }}/theos
                 submodules: recursive
+
+            # Logos 777925d breaks %orig embedded in macros and expressions.
+            - name: Pin Logos to known-good version
+              run: |
+                cd "$THEOS/vendor/logos"
+                git fetch --depth=1 origin a62370066a97e36d59b200a9fa10c5091f5e8972
+                git checkout --detach a62370066a97e36d59b200a9fa10c5091f5e8972
+                test "$(git rev-parse HEAD)" = a62370066a97e36d59b200a9fa10c5091f5e8972
+              env:
+                THEOS: ${{ github.workspace }}/theos
         
             - name: SDK Caching
               id: SDK
