@@ -1,5 +1,8 @@
 #import "../../InstagramHeaders.h"
 #import "../../Settings/SCISettingsViewController.h"
+#import <objc/runtime.h>
+
+static char SCInstaSettingsLongPressGestureRecognizerKey;
 
 // Show SCInsta tweak settings by holding on the settings/more icon under profile for ~1 second
 %hook IGBadgedNavigationButton
@@ -14,11 +17,23 @@
 }
 
 %new - (void)addLongPressGestureRecognizer {
-    if ([self.gestureRecognizers count] == 0) {
+    UILongPressGestureRecognizer *longPress = objc_getAssociatedObject(self, &SCInstaSettingsLongPressGestureRecognizerKey);
+
+    if (longPress == nil) {
         NSLog(@"[SCInsta] Adding tweak settings long press gesture recognizer");
 
-        UILongPressGestureRecognizer *longPress = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(handleLongPress:)];
+        longPress = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(handleLongPress:)];
+        objc_setAssociatedObject(self, &SCInstaSettingsLongPressGestureRecognizerKey, longPress, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+    }
+
+    if (longPress.view != self) {
         [self addGestureRecognizer:longPress];
+    }
+
+    for (UIGestureRecognizer *existing in self.gestureRecognizers) {
+        if (existing != longPress) {
+            [existing requireGestureRecognizerToFail:longPress];
+        }
     }
 }
 %new - (void)handleLongPress:(UILongPressGestureRecognizer *)sender {

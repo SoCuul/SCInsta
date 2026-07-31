@@ -5,6 +5,41 @@ set -e
 CMAKE_OSX_ARCHITECTURES="arm64e;arm64"
 CMAKE_OSX_SYSROOT="iphoneos"
 
+resign_macho_tree() {
+    local ipa_path="$1"
+    local ipa_directory
+    local work_dir
+    local binary
+    local file_type
+
+    for tool in file ldid unzip zip; do
+        if ! command -v "$tool" >/dev/null 2>&1; then
+            echo "Required tool not found: $tool"
+            return 1
+        fi
+    done
+
+    ipa_directory="$(cd "$(dirname "$ipa_path")" && pwd)"
+    ipa_path="${ipa_directory}/$(basename "$ipa_path")"
+    work_dir="$(mktemp -d)"
+    trap 'rm -rf "$work_dir"' RETURN
+
+    unzip -q "$ipa_path" -d "$work_dir"
+
+    while IFS= read -r -d '' binary; do
+        file_type="$(file -b "$binary")"
+        [[ "$file_type" == *"Mach-O"* ]] || continue
+
+        ldid -s "$binary"
+    done < <(find "$work_dir/Payload" -depth -type f -print0)
+
+    (
+        cd "$work_dir"
+        zip -qry "${ipa_path}.tmp" .
+    )
+    mv "${ipa_path}.tmp" "$ipa_path"
+}
+
 # Prerequisites
 if [ -z "$(ls -A modules/FLEXing)" ]; then
     echo -e '\033[1m\033[0;31mFLEXing submodule not found.\nPlease run the following command to checkout submodules:\n\n\033[0m    git submodule update --init --recursive'
@@ -79,6 +114,9 @@ then
     
     # Patch IPA for sideloading
     ipapatch --input "packages/SCInsta-sideloaded.ipa" --inplace --noconfirm
+
+    # ipapatch is the final content mutation; re-sign every final Mach-O deepest-first.
+    resign_macho_tree "packages/SCInsta-sideloaded.ipa"
 
     echo -e "\033[1m\033[32mDone, we hope you enjoy SCInsta!\033[0m\n\nYou can find the ipa file at: $(pwd)/packages"
 
