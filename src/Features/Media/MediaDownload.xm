@@ -172,8 +172,16 @@ static void initDownloaders () {
 }
 %new - (void)handleLongPress:(UILongPressGestureRecognizer *)sender {
     if (sender.state != UIGestureRecognizerStateBegan) return;
-    
-    NSURL *videoUrl = [SCIUtils getVideoUrlForMedia:self.video];
+
+    // Older versions expose the media via `video`; newer ones store it in the
+    // `_mediaPassthrough` ivar, so fall back to KVC when `video` is unavailable.
+    IGMedia *media = [self respondsToSelector:@selector(video)] ? self.video : nil;
+    if (!media) {
+        @try { media = [self valueForKey:@"mediaPassthrough"]; }
+        @catch (NSException *e) { media = nil; }
+    }
+
+    NSURL *videoUrl = [SCIUtils getVideoUrlForMedia:media];
     if (!videoUrl) {
         [SCIUtils showErrorHUDWithDescription:@"Could not extract video url from reel"];
 

@@ -151,6 +151,9 @@
 @end
 
 @interface IGSundialViewerVideoCell : UIView
+{
+    IGMedia *_mediaPassthrough;
+}
 @property(readonly, nonatomic) IGMedia *video;
 
 - (void)addLongPressGestureRecognizer; // new
