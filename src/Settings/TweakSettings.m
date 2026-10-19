@@ -270,6 +270,16 @@
             ]
         },
         @{
+            @"header": @"",
+            @"rows": @[
+                [SCISetting buttonCellWithTitle:@"Lock settings"
+                                       subtitle:@"Keeps your current settings and permanently disables this menu. Changing them will require sideloading the app again."
+                                           icon:[SCISymbol symbolWithName:@"lock.fill" color:[UIColor systemRedColor] size:20.0]
+                                         action:^(void) { [SCIUtils showLockSettingsConfirmation]; }
+                ]
+            ]
+        },
+        @{
             @"header": @"Credits",
             @"rows": @[
                 [SCISetting linkCellWithTitle:@"Developer" subtitle:@"SoCuul" imageUrl:@"https://i.imgur.com/c9CbytZ.png" url:@"https://socuul.dev"],

@@ -24,8 +24,22 @@ BOOL dmVisualMsgsViewedButtonEnabled = false;
     // Default SCInsta config
     NSDictionary *sciDefaults = @{
         @"hide_ads": @(YES),
+        @"hide_meta_ai": @(YES),
         @"copy_description": @(YES),
         @"detailed_color_picker": @(YES),
+        @"no_suggested_users": @(YES),
+        @"no_suggested_chats": @(YES),
+        @"hide_explore_grid": @(YES),
+        @"hide_trending_searches": @(YES),
+        @"no_suggested_post": @(YES),
+        @"no_suggested_account": @(YES),
+        @"no_suggested_reels": @(YES),
+        @"no_suggested_threads": @(YES),
+        @"hide_reels_header": @(YES),
+        @"hide_reels_blend": @(YES),
+        @"disable_scrolling_reels": @(YES),
+        @"prevent_doom_scrolling": @(YES),
+        @"hide_reels_tab": @(YES),
         @"remove_screenshot_alert": @(YES),
         @"call_confirm": @(YES),
         @"keep_deleted_message": @(YES),
@@ -40,7 +54,6 @@ BOOL dmVisualMsgsViewedButtonEnabled = false;
         @"swipe_nav_tabs": @"default",
         @"enable_notes_customization": @(YES),
         @"custom_note_themes": @(YES),
-        @"disable_auto_unmuting_reels": @(YES),
         @"doom_scrolling_reel_count": @(1)
     };
     [[NSUserDefaults standardUserDefaults] registerDefaults:sciDefaults];
@@ -62,6 +75,8 @@ BOOL dmVisualMsgsViewedButtonEnabled = false;
     double openDelay = [SCIUtils getBoolPref:@"tweak_settings_app_launch"] ? 0.0 : 5.0;
 
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(openDelay * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+        if ([SCIUtils settingsLocked]) return;
+
         if (
             ![[[NSUserDefaults standardUserDefaults] objectForKey:@"SCInstaFirstRun"] isEqualToString:SCIVersionString]
             || [SCIUtils getBoolPref:@"tweak_settings_app_launch"]

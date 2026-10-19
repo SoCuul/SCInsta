@@ -34,6 +34,10 @@
 + (void)showShareVC:(id)item;
 + (void)showSettingsVC:(UIWindow *)window;
 
+// Settings lock
++ (BOOL)settingsLocked;
++ (void)showLockSettingsConfirmation;
+
 // Colours
 + (UIColor *)SCIColor_Primary;
 

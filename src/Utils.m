@@ -90,11 +90,52 @@
     [topMostController() presentViewController:acVC animated:true completion:nil];
 }
 + (void)showSettingsVC:(UIWindow *)window {
+    if ([SCIUtils settingsLocked]) {
+        NSLog(@"[SCInsta] Settings are locked, not opening settings");
+
+        [SCIUtils showErrorHUDWithDescription:@"SCInsta settings are locked"];
+        return;
+    }
+
     UIViewController *rootController = [window rootViewController];
     SCISettingsViewController *settingsViewController = [SCISettingsViewController new];
     UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:settingsViewController];
     
     [rootController presentViewController:navigationController animated:YES completion:nil];
+}
+
+// Settings lock
++ (BOOL)settingsLocked {
+    return [SCIUtils getBoolPref:@"settings_locked"];
+}
++ (void)showLockSettingsConfirmation {
+    UINavigationController *settingsNavController = topMostController().navigationController;
+
+    UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"Lock settings forever?"
+                                                                   message:@"Your current settings will be kept, but the SCInsta settings menu can never be opened again.\n\nTo change anything afterwards, you will have to delete the app and sideload it again."
+                                                            preferredStyle:UIAlertControllerStyleAlert];
+
+    [alert addAction:[UIAlertAction actionWithTitle:@"Lock forever" style:UIAlertActionStyleDestructive handler:^(UIAlertAction * _Nonnull action) {
+        NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+
+        // Close loopholes that could be used to get back into the settings
+        for (NSString *key in @[@"flex_instagram", @"flex_app_launch", @"flex_app_start", @"settings_shortcut", @"tweak_settings_app_launch"]) {
+            [defaults setBool:NO forKey:key];
+        }
+
+        // Prevent the first-run flow from trying to show settings again
+        [defaults setValue:SCIVersionString forKey:@"SCInstaFirstRun"];
+
+        [defaults setBool:YES forKey:@"settings_locked"];
+
+        NSLog(@"[SCInsta] Settings locked");
+
+        // Dismiss the settings modal
+        [settingsNavController dismissViewControllerAnimated:YES completion:nil];
+    }]];
+    [alert addAction:[UIAlertAction actionWithTitle:@"Cancel" style:UIAlertActionStyleCancel handler:nil]];
+
+    [topMostController() presentViewController:alert animated:YES completion:nil];
 }
 
 // Colours
