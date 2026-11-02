@@ -21,15 +21,22 @@
 
 @interface SCIUtils : NSObject
 
+// Preferences
 + (BOOL)getBoolPref:(NSString *)key;
 + (double)getDoublePref:(NSString *)key;
 + (NSString *)getStringPref:(NSString *)key;
+
+// Misc
++ (NSString *)IGVersionString;
++ (BOOL)isNotch;
+
++ (BOOL)existingLongPressGestureRecognizerForView:(UIView *)view;
 
 + (_Bool)liquidGlassEnabledBool:(_Bool)fallback;
 
 + (void)cleanCache;
 
-// Displaying View Controllers
+// Display View Controllers
 + (void)showQuickLookVC:(NSArray<id> *)items;
 + (void)showShareVC:(id)item;
 + (void)showSettingsVC:(UIWindow *)window;
@@ -51,16 +58,10 @@
 + (NSURL *)getVideoUrl:(IGVideo *)video;
 + (NSURL *)getVideoUrlForMedia:(IGMedia *)media;
 
-// View Controllers
+// View Controller Helpers
 + (UIViewController *)viewControllerForView:(UIView *)view;
 + (UIViewController *)viewControllerForAncestralView:(UIView *)view;
 + (UIViewController *)nearestViewControllerForView:(UIView *)view;
-
-// Functions
-+ (NSString *)IGVersionString;
-+ (BOOL)isNotch;
-
-+ (BOOL)existingLongPressGestureRecognizerForView:(UIView *)view;
 
 // Alerts
 + (BOOL)showConfirmation:(void(^)(void))okHandler title:(NSString *)title;

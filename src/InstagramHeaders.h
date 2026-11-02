@@ -251,8 +251,6 @@
 @end
 
 @interface IGLabelItemViewModel : NSObject
-- (id)labelTitle;
-- (id)uniqueIdentifier;
 @end
 
 @interface IGDirectInboxSuggestedThreadCellViewModel : NSObject
@@ -287,6 +285,9 @@
 @interface IGImageWithAccessoryButton : IGTapButton
 - (void)addLongPressGestureRecognizer; // new
 - (void)handleLongPress:(UILongPressGestureRecognizer *)gr; // new
+@end
+
+@interface IGHomeFeedHeaderView : UIView
 @end
 
 @interface IGHomeFeedHeaderViewController
@@ -484,6 +485,24 @@
 
 @interface IGCreationActionBarLabeledButton : NSObject
 @property (readonly, nonatomic) IGCreationActionBarButton *button;
+@end
+
+@interface IGCommentThreadConfiguration : NSObject
+@end
+
+@interface IGDirectRealtimeIrisDelta : NSObject
+@end
+
+@interface IGDirectRealtimeIrisDeltaPayload : NSObject
+@end
+
+@interface IGDirectRealtimeIrisThreadDeltaPayload : NSObject
+@end
+
+@interface IGDirectRealtimeIrisThreadDelta : NSObject
+@end
+
+@interface IGDirectMessageContentMutation : NSObject
 @end
 
 

@@ -64,7 +64,7 @@
         // Section header 
         if ([obj isKindOfClass:%c(IGLabelItemViewModel)]) {
             // Suggested for you
-            if ([[obj labelTitle] isEqualToString:@"Suggested for you"]) {
+            if ([[obj valueForKey:@"tag"] intValue] == 2) { // 2 == Suggested Users
                 if ([SCIUtils getBoolPref:@"no_suggested_users"]) {
                     NSLog(@"[SCInsta] Hiding suggested users (header: activity feed)");
 

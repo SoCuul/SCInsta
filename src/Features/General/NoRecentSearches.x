@@ -38,13 +38,13 @@
 
 // Recent dm message recipients search bar
 %hook IGDirectRecipientRecentSearchStorage
-- (id)initWithDiskManager:(id)arg1 directCache:(id)arg2 userStore:(id)arg3 currentUser:(id)arg4 featureSets:(id)arg5 {
+- (id)initWithDiskManager:(id)arg1 directRepo:(id)arg2 userMap:(id)arg3 currentUser:(id)arg4 launcherSet:(id)arg5 {
     if ([SCIUtils getBoolPref:@"no_recent_searches"]) {
         NSLog(@"[SCInsta] Disabling recent searches");
 
         return nil;
     }
 
-    return %orig;
+    return %orig(arg1, arg2, arg3, arg4, arg5);
 }
 %end

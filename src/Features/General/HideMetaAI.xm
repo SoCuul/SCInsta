@@ -135,22 +135,35 @@
 // Write with meta ai in message composer
 %hook IGDirectComposer
 - (id)initWithLayoutSpecProvider:(id)arg1
-        userLauncherSetProviding:(id)arg2
+                     userSession:(id)arg2
+                 userLauncherSet:(id)arg3
                           config:(IGDirectComposerConfig *)config
-                           style:(id)arg4
-                            text:(id)arg5
+                           style:(id)arg5
+                            text:(id)arg6
 {
-    return %orig(arg1, arg2, [self patchConfig:config], arg4, arg5);
+    return %orig(arg1, arg2, arg3, [self patchConfig:config], arg5, arg6);
 }
 
 - (id)initWithLayoutSpecProvider:(id)arg1
-        userLauncherSetProviding:(id)arg2
+                     userSession:(id)arg2
+                 userLauncherSet:(id)arg3
                           config:(IGDirectComposerConfig *)config
-                           style:(id)arg4
-                            text:(id)arg5
-           shouldUpdateModeLater:(BOOL)arg6
+                           style:(id)arg5
+                            text:(id)arg6
+           shouldUpdateModeLater:(BOOL)arg7
 {
-    return %orig(arg1, arg2, [self patchConfig:config], arg4, arg5, arg6);
+    return %orig(arg1, arg2, arg3, [self patchConfig:config], arg5, arg6, arg7);
+}
+
+- (id)_initializeWithLayoutSpecProvider:(id)arg1
+                     userSession:(id)arg2
+                 userLauncherSet:(id)arg3
+                          config:(IGDirectComposerConfig *)config
+                           style:(id)arg5
+                            text:(id)arg6
+           shouldUpdateModeLater:(BOOL)arg7
+{
+    return %orig(arg1, arg2, arg3, [self patchConfig:config], arg5, arg6, arg7);
 }
 
 - (void)setConfig:(IGDirectComposerConfig *)config {
@@ -176,6 +189,20 @@
 
     return [config copy];
 }
+%end
+
+// Demangled name: IGAIRewrite.IGAIRewriteStoryRepliesPresenter
+%hook _TtC11IGAIRewrite32IGAIRewriteStoryRepliesPresenter
+- (BOOL)shouldShowAIRewriteButton:(id)arg1 input:(id)arg2 {
+    if ([SCIUtils getBoolPref:@"hide_meta_ai"]) {
+        NSLog(@"[SCInsta] Hiding meta ai: disable ai rewrite story reply presenter");
+
+        return NO;
+    }
+
+    return %orig(arg1, arg2);
+}
+
 %end
 
 // Direct sticker tray picker view
@@ -346,6 +373,24 @@
 // Reels/Sundial
 
 // Suggested AI searches in comment section
+%hook IGCommentConfig
+- (id)initWithUserSession:(id)session
+   commentThreadConfiguration:(IGCommentThreadConfiguration *)threadConfig
+sponsoredSupportConfiguration:(id)supportConfig
+          CTAPresenterContext:(id)context
+                    replyText:(id)text
+              loggingDelegate:(id)loggingDelegate
+     presentingViewController:(id)vc
+   childCommentThreadDelegate:(id)threadDelegate 
+{
+    if ([SCIUtils getBoolPref:@"hide_meta_ai"]) {
+        [threadConfig setValue:@(YES) forKey:@"disableMetaAICarousel"];
+    }
+    return %orig(session, threadConfig, supportConfig, context, text, loggingDelegate, vc, threadDelegate);
+}
+%end
+
+// Suggested AI searches in comment section (workaround if setting comment thread config fails)
 %hook IGCommentThreadAICarousel
 - (id)initWithLauncherSet:(id)arg1 hasSearchPrefix:(BOOL)arg2 {
     if ([SCIUtils getBoolPref:@"hide_meta_ai"]) {
@@ -383,7 +428,7 @@
     NSLog(@"[SCInsta] Hiding meta ai: ai images add to story suggestion");
 
     if ([SCIUtils getBoolPref:@"hide_meta_ai"]) {
-        NSPredicate *predicate = [NSPredicate predicateWithFormat:@"NOT (SELF IN %@)", @[ @(10), @(11) ]];
+        NSPredicate *predicate = [NSPredicate predicateWithFormat:@"NOT (SELF IN %@)", @[ @(9), @(10), @(11) ]];
         newTools = [tools filteredArrayUsingPredicate:predicate];
     }
 

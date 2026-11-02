@@ -13,12 +13,12 @@
 ///////////////////////////////////////////////////////////
 
 // * Tweak version *
-NSString *SCIVersionString = @"v1.1.1";
+NSString *SCIVersionString = @"v1.2.0-dev";
 
 // Variables that work across features
 BOOL dmVisualMsgsViewedButtonEnabled = false;
 
-// Tweak first-time setup
+// MARK: Tweak first-time setup
 %hook IGInstagramAppDelegate
 - (_Bool)application:(UIApplication *)application willFinishLaunchingWithOptions:(id)arg2 {
     // Default SCInsta config
@@ -93,6 +93,8 @@ BOOL dmVisualMsgsViewedButtonEnabled = false;
 }
 %end
 
+// MARK: Liquid glass
+
 %hook IGDSLauncherConfig
 - (_Bool)isLiquidGlassInAppNotificationEnabled {
     return [SCIUtils liquidGlassEnabledBool:%orig];
@@ -110,6 +112,8 @@ BOOL dmVisualMsgsViewedButtonEnabled = false;
     return [SCIUtils liquidGlassEnabledBool:%orig];
 }
 %end
+
+// MARK: Bug reports
 
 // Disable sending modded insta bug reports
 %hook IGWindow
@@ -129,6 +133,8 @@ shouldPersistLastBugReportId:(id)arg6
     return nil;
 }
 %end
+
+// MARK: Screenshots
 
 // Disable anti-screenshot feature on visual messages
 %hook IGStoryViewerContainerView
@@ -190,9 +196,40 @@ shouldPersistLastBugReportId:(id)arg6
 
 /////////////////////////////////////////////////////////////////////////////
 
-// Hide items
+// MARK: Hide items
 
 // Direct suggested chats (in search bar)
+BOOL showSearchSectionLabelForTag(NSInteger tag) {
+    if (
+        (tag == 18 && [SCIUtils getBoolPref:@"hide_meta_ai"]) // AI
+        || (tag == 20 && [SCIUtils getBoolPref:@"hide_meta_ai"]) // Ask Meta AI
+        || (tag == 2 && [SCIUtils getBoolPref:@"no_suggested_users"]) // More suggestions
+        || (tag == 13 && [SCIUtils getBoolPref:@"no_suggested_chats"]) // Suggested channels
+    ) {
+        return false;
+    }
+
+    return true;
+}
+
+%hook IGDirectInboxSearchSectionPartitioningComponent
+- (id)initWithSectionTitle:(id)arg1
+             maxRecipients:(NSInteger)maxRecipients
+               filterBlock:(id)arg3
+                comparator:(id)arg4
+          expandedSections:(id)arg5
+                      type:(NSInteger)arg6
+  recipientListSectionType:(NSInteger)tag
+{
+    if (showSearchSectionLabelForTag(tag)) {
+        return %orig(arg1, maxRecipients, arg3, arg4, arg5, arg6, tag);
+    }
+    else {
+        return %orig(arg1, 0, arg3, arg4, arg5, arg6, tag);
+    }
+}
+%end
+
 %hook IGDirectInboxSearchListAdapterDataSource
 - (id)objectsForListAdapter:(id)arg1 {
     NSArray *originalObjs = %orig();
@@ -201,34 +238,12 @@ shouldPersistLastBugReportId:(id)arg6
     for (id obj in originalObjs) {
         BOOL shouldHide = NO;
 
-        // Section header 
+        // Section headers
         if ([obj isKindOfClass:%c(IGLabelItemViewModel)]) {
 
-            // Broadcast channels
-            if ([[obj valueForKey:@"uniqueIdentifier"] isEqualToString:@"channels"]) {
-                if ([SCIUtils getBoolPref:@"no_suggested_chats"]) {
-                    NSLog(@"[SCInsta] Hiding suggested chats (header)");
-
-                    shouldHide = YES;
-                }
-            }
-
-            // Ask Meta AI
-            else if ([[obj valueForKey:@"labelTitle"] isEqualToString:@"Ask Meta AI"]) {
-                if ([SCIUtils getBoolPref:@"hide_meta_ai"]) {
-                    NSLog(@"[SCInsta] Hiding meta ai suggested chats (header)");
-
-                    shouldHide = YES;
-                }
-            }
-
-            // AI
-            else if ([[obj valueForKey:@"labelTitle"] isEqualToString:@"AI"]) {
-                if ([SCIUtils getBoolPref:@"hide_meta_ai"]) {
-                    NSLog(@"[SCInsta] Hiding ai suggested chats (header)");
-
-                    shouldHide = YES;
-                }
+            NSNumber *tag = [obj valueForKey:@"tag"];
+            if (tag && !showSearchSectionLabelForTag([tag intValue])) {
+                shouldHide = YES;
             }
             
         }
@@ -591,7 +606,7 @@ shouldPersistLastBugReportId:(id)arg6
 
 /////////////////////////////////////////////////////////////////////////////
 
-// Confirm buttons
+// MARK: Confirm buttons
 
 %hook IGFeedItemUFICell
 - (void)UFIButtonBarDidTapOnLike:(id)arg1 {
